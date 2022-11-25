@@ -33,7 +33,6 @@ loom {
     }
 }
 
-
 processResources {
     from project(":Config:Common").sourceSets.main.resources
     from project(":Packets:Fabric").sourceSets.main.resources
@@ -61,7 +60,7 @@ publishing {
 
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            url "file://" + rootProject.local_maven
         }
     }
 }
