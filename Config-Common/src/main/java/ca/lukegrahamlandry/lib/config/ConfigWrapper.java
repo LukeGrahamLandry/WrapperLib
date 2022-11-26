@@ -8,6 +8,8 @@ import net.minecraft.world.level.storage.LevelResource;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,25 +23,32 @@ import java.util.function.Supplier;
 public class ConfigWrapper<T> implements Supplier<T>{
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
-    private final Supplier<T> defaultConfig;
+    private final T defaultConfig;
     private final String name;
     public final Side side;
     public final boolean reloadable;
+    private final Class<T> clazz;
     protected T value;
     private boolean verbose;
 
-    public ConfigWrapper(Supplier<T> defaultConfig, String name, Side side, boolean reloadable, boolean verbose){
-        this.defaultConfig = defaultConfig;
+    public ConfigWrapper(Class<T> clazz, String name, Side side, boolean reloadable, boolean verbose){
+        this.clazz = clazz;
+        try {
+            this.defaultConfig = clazz.getConstructor().newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         this.name = name;
         this.side = side;
         this.reloadable = reloadable;
-        this.value = defaultConfig.get();
+        this.value = defaultConfig;
         this.verbose = verbose;
         ALL.add(this);
     }
 
-    public ConfigWrapper(Supplier<T> defaultConfig, String name, Side side){
-        this(defaultConfig, name, side, true, true);
+    public ConfigWrapper(Class<T> clazz, String name, Side side){
+        this(clazz, name, side, true, true);
     }
 
     public void load(){
@@ -55,16 +64,16 @@ public class ConfigWrapper<T> implements Supplier<T>{
             Reader reader = Files.newBufferedReader(this.getFilePath());
             this.parse(reader);
             reader.close();
-            this.log( "config loaded: \n" + GSON.toJsonTree(this.value).toString());
+            this.log( "config loaded (" + this.getFilePath() + "): \n" + this.getGson().create().toJsonTree(this.value).toString());
         } catch (IOException e) {
             this.log("failed to load config from " + this.getFilename());
             e.printStackTrace();
-            this.value = this.defaultConfig.get();
+            this.value = this.defaultConfig;
         }
     }
 
     protected void parse(Reader reader){
-        this.value = (T) this.getGson().fromJson(reader, defaultConfig.get().getClass());
+        this.value = (T) this.getGson().create().fromJson(reader, this.clazz);
     }
 
     private void writeDefaultFile() {
@@ -84,7 +93,7 @@ public class ConfigWrapper<T> implements Supplier<T>{
 
         // TODO support comments
         try {
-            Files.write(this.getFilePath(), GSON.toJsonTree(this.defaultConfig.get()).toString().getBytes());
+            Files.write(this.getFilePath(), GenerateComments.commentedJson(this.defaultConfig, this.getGson()).getBytes());
         } catch (IOException e){
             this.log("failed to write default config to " + this.getFilePath());
             e.printStackTrace();
@@ -92,7 +101,7 @@ public class ConfigWrapper<T> implements Supplier<T>{
     }
 
     protected String getFilename(){
-        return this.name.toLowerCase(Locale.ROOT) + "-" + this.side.name().toLowerCase(Locale.ROOT) + ".json";
+        return this.name.toLowerCase(Locale.ROOT) + "-" + this.side.name().toLowerCase(Locale.ROOT) + ".json5";
     }
 
     protected Path getFilePath(){
@@ -106,8 +115,8 @@ public class ConfigWrapper<T> implements Supplier<T>{
         }
     }
 
-    private static Gson GSON = new GsonBuilder().setLenient().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
-    protected Gson getGson(){
+    private static GsonBuilder GSON = new GsonBuilder().setLenient().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+    protected GsonBuilder getGson(){
         return GSON;
     }
 
@@ -126,7 +135,7 @@ public class ConfigWrapper<T> implements Supplier<T>{
         // TODO: send packet
     }
 
-    enum Side {
+    public enum Side {
         CLIENT,
         SERVER
     }
