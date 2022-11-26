@@ -1,26 +1,25 @@
 package ca.lukegrahamlandry.lib.config;
 
-import com.google.gson.Gson;
+import ca.lukegrahamlandry.lib.packets.platform.Services;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
+import org.apache.logging.log4j.core.util.FileWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
 // TODO: support subdirectories
-public class ConfigWrapper<T> implements Supplier<T>{
+public class ConfigWrapper<T> implements Supplier<T> {
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
     private final T defaultConfig;
@@ -30,20 +29,26 @@ public class ConfigWrapper<T> implements Supplier<T>{
     private final Class<T> clazz;
     protected T value;
     private boolean verbose;
+    private Logger logger;
+    private boolean loaded = false;
 
     public ConfigWrapper(Class<T> clazz, String name, Side side, boolean reloadable, boolean verbose){
         this.clazz = clazz;
-        try {
-            this.defaultConfig = clazz.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
         this.name = name;
         this.side = side;
         this.reloadable = reloadable;
-        this.value = defaultConfig;
         this.verbose = verbose;
+        String id = this.name + "-" + side.name().toLowerCase(Locale.ROOT) + "-config";
+        this.logger = LoggerFactory.getLogger(id);
+
+        try {
+            this.defaultConfig = clazz.getConstructor().newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            this.logger.error(clazz.getName() + " does not have a public parameterless constructor");
+            throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
+        }
+        this.value = defaultConfig;
+
         ALL.add(this);
     }
 
@@ -51,9 +56,24 @@ public class ConfigWrapper<T> implements Supplier<T>{
         this(clazz, name, side, true, true);
     }
 
+    public static <T> ConfigWrapper<T> server(Class<T> clazz){
+        return new ConfigWrapper<>(clazz, clazz.getName(), Side.SERVER, true, true);
+    }
+
+    public static <T> ConfigWrapper<T> client(Class<T> clazz){
+        String defaultName = clazz.getName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
+        return new ConfigWrapper<>(clazz, defaultName, Side.CLIENT, true, true);
+    }
+
+    public ConfigWrapper<T> named(String name){
+        return new ConfigWrapper<>(this.clazz, name, this.side, this.reloadable, this.verbose);
+    }
+
+    ////// IMPL //////
+
     public void load(){
         if (this.side == Side.SERVER && server == null) {
-            this.log("cannot load server config before server init. default values will be used for now");
+            this.logger.error("cannot load server config before server init. default values will be used for now");
             return;
         }
         if (!Files.exists(this.getFilePath())) {
@@ -64,11 +84,21 @@ public class ConfigWrapper<T> implements Supplier<T>{
             Reader reader = Files.newBufferedReader(this.getFilePath());
             this.parse(reader);
             reader.close();
-            this.log( "config loaded (" + this.getFilePath() + "): \n" + this.getGson().create().toJsonTree(this.value).toString());
+            this.logger.debug("config loaded (from " + this.getFilePath());
         } catch (IOException e) {
-            this.log("failed to load config from " + this.getFilename());
+            this.logger.error("failed to load config from " + this.getFilename());
             e.printStackTrace();
             this.value = this.defaultConfig;
+        }
+    }
+
+    public void watchFile(){
+        try {
+            WatchService watcher = FileSystems.getDefault().newWatchService();
+
+            this.logger.debug("watching config file for changes: " + this.getFilePath());
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't watch config file", e);
         }
     }
 
@@ -82,10 +112,10 @@ public class ConfigWrapper<T> implements Supplier<T>{
             if (Files.exists(globalDefaultLocation)){
                 try {
                     Files.copy(globalDefaultLocation, this.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
-                    this.log("loaded global default config " + globalDefaultLocation);
+                    this.logger.debug("loaded global default config " + globalDefaultLocation);
                     return;
                 } catch (IOException e){
-                    this.log("global instance config file existed but could not be copied. generating default");
+                    this.logger.error("global instance config file existed but could not be copied. generating default");
                     e.printStackTrace();
                 }
             }
@@ -95,7 +125,7 @@ public class ConfigWrapper<T> implements Supplier<T>{
         try {
             Files.write(this.getFilePath(), GenerateComments.commentedJson(this.defaultConfig, this.getGson()).getBytes());
         } catch (IOException e){
-            this.log("failed to write default config to " + this.getFilePath());
+            this.logger.error("failed to write default config to " + this.getFilePath());
             e.printStackTrace();
         }
     }
@@ -125,10 +155,6 @@ public class ConfigWrapper<T> implements Supplier<T>{
         return this.value;
     }
 
-    protected void log(String s){
-        if (this.verbose) System.out.println("(" + this.name + " " + this.side + ") " + s);
-    }
-
     public void sync() {
         if (this.side == Side.CLIENT) return;
 
@@ -138,5 +164,11 @@ public class ConfigWrapper<T> implements Supplier<T>{
     public enum Side {
         CLIENT,
         SERVER
+    }
+
+    public static ReloadTime RELOAD_TIME = Services.PLATFORM.isDevelopmentEnvironment() ? ReloadTime.FILE_CHANGE : ReloadTime.RELOAD_COMMAND;
+    public enum ReloadTime {
+        FILE_CHANGE,
+        RELOAD_COMMAND
     }
 }

@@ -8,6 +8,7 @@ public class EventCallbacks {
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.SERVER){
                 config.load();
+                config.watchFile();
                 config.sync();
             }
         });
@@ -17,6 +18,7 @@ public class EventCallbacks {
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.CLIENT){
                 config.load();
+                config.watchFile();
             }
         });
     }
