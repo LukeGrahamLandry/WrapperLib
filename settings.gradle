@@ -14,5 +14,6 @@ pluginManagement {
 
 rootProject.name = 'FeatureLib'
 include(":Packets-Common", ":Packets-Fabric", ":Packets-Forge",
-        ":Config-Common", ":Config-Fabric", ":Config-Forge"
+        ":Config-Common", ":Config-Fabric", ":Config-Forge",
+        ":Example-Forge"
 )
