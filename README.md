@@ -12,18 +12,22 @@
 - [X] lightweight: no extra bloat increasing your jar size
 - [X] no boilerplate: just write a data class
 - [ ] automatic integration with cloth config screen
+  - [ ] generate english lang file based on comment annotations
 - [ ] min and max values for numbers with annotations
 - [ ] validator annotation 
 - [ ] watch file for changes and reload config
 - [ ] reload configs with reload command
+- [ ] comment translations
 
 TODO: chart with comparison to other config libraries
-- tinyconfig
-- forge config
-- cloth config / autoconfig
-- https://modrinth.com/mod/midnightlib
-- https://www.curseforge.com/minecraft/mc-mods/yacl
-- https://github.com/LambdAurora/SpruceUI
+- Forge Config & Fuzss/forgeconfigapiport-fabric (verbose)
+- Draylar/omega-config (fabric only)
+- wisp-forest/owo-lib (fabric only, bloat)
+- shedaniel/cloth-config
+- ZsoltMolnarrr/TinyConfig (fabric only, not synced)
+- isXander/YetAnotherConfigLib (client only, fabric only)
+- LambdAurora/SpruceUI (verbose, fabric only, not synced)
+- TeamMidnightDust/MidnightLib (bloat, not synced)
 
 ## Packets
 
@@ -36,7 +40,10 @@ TODO: chart with comparison to other config libraries
 
 replaces capabilities or cardinal components on players
 
-- [ ] store data per player in a json file (map of uuid to data object)
+- [ ] store data in a json file (map of uuid to data object) instead of nbt for easy editing
 - [ ] automatically serialize your data class
 - [ ] sync data to clients
 - [ ] cross platform: forge, fabric, quilt
+
+## Geckolib Attack Animations
+
