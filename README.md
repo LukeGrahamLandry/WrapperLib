@@ -1,12 +1,57 @@
 # FeatureLib
 
 A collection of multi-platform implementations of common tasks for developing Minecraft mods. 
-Designed to be modular so you can jar-in-jar only the parts you need. 
+Designed to be modular, so you can jar-in-jar only the parts you need and have no external dependencies. 
 A priority is placed on never manually to writing serialization code for nbt or byte buffers. 
 
-Features: Config, Packets, Saved Data
-Supported Mod Loaders: Forge, Fabric, Quilt
-Supported Versions: 1.19, 1.18, 1.16
+Features: Config, Packets, Saved Data  
+Supported Mod Loaders: Forge, Fabric, Quilt  
+Supported Versions: 1.19, 1.18, 1.16  
+
+## Installation
+
+```groovy
+repositories {
+    maven { url "https://maven.lukegrahamlandry.ca" }
+}
+
+dependencies {
+    shade group: 'ca.lukegrahamlandry.lib', name: 'MODULE-LOADER', version: 'LIB_VER+MC_VER'
+}
+```
+
+- MODULE: packets, config
+- LOADER: forge, fabric
+- MC_VER: 1.19, 1.18, 1.16
+- LIB_VER: MAJOR.MINOR.PATCH (see the latest version numbers in [gradle.properties](gradle.properties))
+
+On forge, make sure to call `fg.deobf` on the dependency.  
+
+**You must relocate my packages when using the shadow plugin, or you will conflict with other mods.**
+
+```groovy
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+shadowJar {
+    archiveClassifier = ''
+    configurations = [project.configurations.shade]
+    relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.featurelib"
+    finalizedBy 'reobfShadowJar'
+}
+
+assemble.dependsOn shadowJar
+
+reobf {
+    shadowJar {}
+}
+```
 
 ## Config
 
@@ -27,6 +72,10 @@ Supported Versions: 1.19, 1.18, 1.16
 - [ ] watch file for changes and reload config
 - [ ] reload configs with reload command
 - [ ] comment translations
+- [ ] update with default values of new fields 
+- [ ] array or map of registry objects that removes missing ones
+- [ ] could be wrapped in data.RegistryObjectGroup or data.RegistryObjectMap that can accept tags as well?
+- [X] provided json serializers for ResourceLocation, CompoundTag, ItemStack
 
 TODO: chart with comparison to other config libraries
 - Forge Config & Fuzss/forgeconfigapiport-fabric (verbose)

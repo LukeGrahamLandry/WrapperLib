@@ -1,9 +1,13 @@
 package ca.lukegrahamlandry.lib.config;
 
+import ca.lukegrahamlandry.lib.config.data.adapter.ItemStackTypeAdapter;
+import ca.lukegrahamlandry.lib.config.data.adapter.NbtTypeAdapter;
 import ca.lukegrahamlandry.lib.packets.platform.Services;
 import com.google.gson.GsonBuilder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +153,11 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
     }
 
-    private static GsonBuilder GSON = new GsonBuilder().setLenient().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+    public static GsonBuilder GSON = new GsonBuilder().setLenient()
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter())
+            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
+
     protected GsonBuilder getGson(){
         return GSON;
     }
