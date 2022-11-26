@@ -56,3 +56,9 @@ subprojects {
         enabled = false
     }
 }
+
+project.tasks.register("mavenPublishAll") {
+    for (task in rootProject.getTasksByName("publish", true)){
+        dependsOn(task)
+    }
+}

@@ -5,14 +5,16 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
-import org.apache.logging.log4j.core.util.FileWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,7 +40,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.side = side;
         this.reloadable = reloadable;
         this.verbose = verbose;
-        String id = this.name + "-" + side.name().toLowerCase(Locale.ROOT) + "-config";
+        String id = "LukeGrahamLandry/FeatureLib:" + this.name + "-" + side.name();
         this.logger = LoggerFactory.getLogger(id);
 
         try {
@@ -57,15 +59,17 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     public static <T> ConfigWrapper<T> server(Class<T> clazz){
-        return new ConfigWrapper<>(clazz, clazz.getName(), Side.SERVER, true, true);
+        String defaultName = clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
+        return new ConfigWrapper<>(clazz, defaultName, Side.SERVER, true, true);
     }
 
     public static <T> ConfigWrapper<T> client(Class<T> clazz){
-        String defaultName = clazz.getName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
+        String defaultName = clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
         return new ConfigWrapper<>(clazz, defaultName, Side.CLIENT, true, true);
     }
 
     public ConfigWrapper<T> named(String name){
+        ALL.remove(this);
         return new ConfigWrapper<>(this.clazz, name, this.side, this.reloadable, this.verbose);
     }
 
@@ -84,21 +88,11 @@ public class ConfigWrapper<T> implements Supplier<T> {
             Reader reader = Files.newBufferedReader(this.getFilePath());
             this.parse(reader);
             reader.close();
-            this.logger.debug("config loaded (from " + this.getFilePath());
+            this.logger.debug("config loaded from " + this.displayPath());
         } catch (IOException e) {
-            this.logger.error("failed to load config from " + this.getFilename());
+            this.logger.error("failed to load config from " + this.displayPath());
             e.printStackTrace();
             this.value = this.defaultConfig;
-        }
-    }
-
-    public void watchFile(){
-        try {
-            WatchService watcher = FileSystems.getDefault().newWatchService();
-
-            this.logger.debug("watching config file for changes: " + this.getFilePath());
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't watch config file", e);
         }
     }
 
@@ -112,7 +106,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             if (Files.exists(globalDefaultLocation)){
                 try {
                     Files.copy(globalDefaultLocation, this.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
-                    this.logger.debug("loaded global default config " + globalDefaultLocation);
+                    this.logger.debug("loaded global default config " + globalDefaultLocation.toAbsolutePath().toFile().getCanonicalPath());
                     return;
                 } catch (IOException e){
                     this.logger.error("global instance config file existed but could not be copied. generating default");
@@ -124,8 +118,9 @@ public class ConfigWrapper<T> implements Supplier<T> {
         // TODO support comments
         try {
             Files.write(this.getFilePath(), GenerateComments.commentedJson(this.defaultConfig, this.getGson()).getBytes());
+            this.logger.debug("wrote default config to " + this.displayPath());
         } catch (IOException e){
-            this.logger.error("failed to write default config to " + this.getFilePath());
+            this.logger.error("failed to write default config to " + this.displayPath());
             e.printStackTrace();
         }
     }
@@ -143,6 +138,15 @@ public class ConfigWrapper<T> implements Supplier<T> {
             default:
                 return null;
         }
+    }
+
+    protected String displayPath(){
+        try {
+            return getFilePath().toAbsolutePath().toFile().getCanonicalPath();
+        } catch (IOException e) {
+            return getFilePath().toAbsolutePath().toString();
+        }
+
     }
 
     private static GsonBuilder GSON = new GsonBuilder().setLenient().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());

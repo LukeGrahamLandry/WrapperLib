@@ -1,3 +1,12 @@
+# FeatureLib
+
+A collection of multi-platform implementations of common tasks for developing Minecraft mods. 
+Designed to be modular so you can jar-in-jar only the parts you need. 
+A priority is placed on never manually to writing serialization code for nbt or byte buffers. 
+
+Features: Config, Packets, Saved Data
+Supported Mod Loaders: Forge, Fabric, Quilt
+Supported Versions: 1.19, 1.18, 1.16
 
 ## Config
 
@@ -8,11 +17,11 @@
 - [X] json format for good support of nested map data structures
 - [X] server checks global folder so modpacks can ship defaults
 - [X] shadow so no external dependencies
-- [X] cross platform: forge, fabric, quilt
+- [ ] cross platform: forge, fabric, quilt
 - [X] lightweight: no extra bloat increasing your jar size
 - [X] no boilerplate: just write a data class
-- [ ] automatic integration with cloth config screen
-  - [ ] generate english lang file based on comment annotations
+- [ ] automatic integration with config screen api
+- [ ] generate english lang file for screens based on comment annotations
 - [ ] min and max values for numbers with annotations
 - [ ] validator annotation 
 - [ ] watch file for changes and reload config
@@ -23,7 +32,8 @@ TODO: chart with comparison to other config libraries
 - Forge Config & Fuzss/forgeconfigapiport-fabric (verbose)
 - Draylar/omega-config (fabric only)
 - wisp-forest/owo-lib (fabric only, bloat)
-- shedaniel/cloth-config
+- shedaniel/cloth-config (not synced)
+- Minenash/TinyConfig (fabric only, not synced)
 - ZsoltMolnarrr/TinyConfig (fabric only, not synced)
 - isXander/YetAnotherConfigLib (client only, fabric only)
 - LambdAurora/SpruceUI (verbose, fabric only, not synced)
@@ -31,19 +41,24 @@ TODO: chart with comparison to other config libraries
 
 ## Packets
 
+Replaces `SimpleChannel` on Forge or `ClientPlayNetworking` and `ServerPlayNetworking` on Fabric.
+
 - [ ] automatically serialize your data class (to json to bytebuffer)
 - [ ] cross platform: forge, fabric, quilt
 - [ ] send options: client -> server, server -> client, server -> all clients
 - [ ] handshake system to know that server and client are on the same version
 
-## Player Data
+## Saved Data
 
-replaces capabilities or cardinal components on players
+Replaces `WorldSavedData` and capabilities on Forge or cardinal components on Fabric.
 
-- [ ] store data in a json file (map of uuid to data object) instead of nbt for easy editing
+Data for all players is stored in a json file mapping uuids to data objects. 
+World data is just a file with a json object (perhaps multiple files if stored separate per dimension).
+
+- [ ] store data in a json file instead of nbt for easy editing
 - [ ] automatically serialize your data class
 - [ ] sync data to clients
 - [ ] cross platform: forge, fabric, quilt
 
-## Geckolib Attack Animations
+## Geckolib Animation Managers
 

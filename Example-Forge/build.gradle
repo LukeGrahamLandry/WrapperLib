@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-archivesBaseName = "${mod_name}-config-forge-${minecraft_version}"
+archivesBaseName = "config-forge"
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -71,17 +71,23 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly project(":Config-Common")
+    compileOnly project(":Packets-Common")
     compileOnly project(":Packets-Forge")
+    compileOnly project(":Config-Common")
     compileOnly project(":Config-Forge")
 }
 
 tasks.withType(JavaCompile) {
+    source(project(":Packets-Common").sourceSets.main.allSource)
+    source(project(":Packets-Forge").sourceSets.main.allSource)
     source(project(":Config-Common").sourceSets.main.allSource)
     source(project(":Config-Forge").sourceSets.main.allSource)
 }
 
 processResources {
+    from project(":Packets-Common").sourceSets.main.resources
+    from project(":Packets-Forge").sourceSets.main.resources
+    from project(":Config-Common").sourceSets.main.resources
     from project(":Config-Forge").sourceSets.main.resources
 }
 
@@ -99,7 +105,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file://" + rootProject.local_maven
+            url "file://" + rootProject.my_maven_location
         }
     }
 }

@@ -1,6 +1,7 @@
 package ca.lukegrahamlandry.lib.config;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
 public class EventCallbacks {
     public static void onServerStart(MinecraftServer server){
@@ -8,7 +9,15 @@ public class EventCallbacks {
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.SERVER){
                 config.load();
-                config.watchFile();
+                config.sync();
+            }
+        });
+    }
+
+    public static void onPlayerLoginServer(ServerPlayer player){
+        ConfigWrapper.ALL.forEach((config) -> {
+            if (config.side == ConfigWrapper.Side.SERVER){
+                // TODO: dont have to resync to all players, just the new one
                 config.sync();
             }
         });
@@ -18,7 +27,6 @@ public class EventCallbacks {
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.CLIENT){
                 config.load();
-                config.watchFile();
             }
         });
     }
