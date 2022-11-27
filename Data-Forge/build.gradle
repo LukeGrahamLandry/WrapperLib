@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-archivesBaseName = "example-forge"
+archivesBaseName = "data-forge"
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -34,6 +34,7 @@ minecraft {
             mods {
                 modClientRun {
                     source sourceSets.main
+                    source project(":Data-Common").sourceSets.main
                 }
             }
         }
@@ -47,6 +48,7 @@ minecraft {
             mods {
                 modServerRun {
                     source sourceSets.main
+                    source project(":Data-Common").sourceSets.main
                 }
             }
         }
@@ -61,6 +63,7 @@ minecraft {
             mods {
                 modDataRun {
                     source sourceSets.main
+                    source project(":Data-Common").sourceSets.main
                 }
             }
         }
@@ -71,31 +74,34 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly project(":Data-Common")
     compileOnly project(":Packets-Common")
     compileOnly project(":Packets-Forge")
-    compileOnly project(":Config-Common")
-    compileOnly project(":Config-Forge")
-    compileOnly project(":Data-Common")
-    compileOnly project(":Data-Forge")
 }
 
 tasks.withType(JavaCompile) {
-    source(project(":Packets-Common").sourceSets.main.allSource)
-    source(project(":Packets-Forge").sourceSets.main.allSource)
-    source(project(":Config-Common").sourceSets.main.allSource)
-    source(project(":Config-Forge").sourceSets.main.allSource)
     source(project(":Data-Common").sourceSets.main.allSource)
-    source(project(":Data-Forge").sourceSets.main.allSource)
 }
 
 processResources {
-    from project(":Packets-Common").sourceSets.main.resources
-    from project(":Packets-Forge").sourceSets.main.resources
-    from project(":Config-Common").sourceSets.main.resources
-    from project(":Config-Forge").sourceSets.main.resources
     from project(":Data-Common").sourceSets.main.resources
-    from project(":Data-Forge").sourceSets.main.resources
 }
 
 
 jar.finalizedBy('reobfJar')
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://" + rootProject.my_maven_location
+        }
+    }
+}

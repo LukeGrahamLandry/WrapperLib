@@ -111,5 +111,23 @@ World data is just a file with a json object (perhaps multiple files if stored s
 - [ ] sync data to clients
 - [ ] cross platform: forge, fabric, quilt
 
+global, world, player, entity
+synced or server or client
+saved or not
+global client is just a GenericHolder
+config is a global that writes with comments
+not synced plus not saved is just a map
+
+DataWrapper data = DataWrapper.world(Data.class).synced().saved().named("modid:data").dir("modid")
+Data instance = data.get(world)
+data.setDirty()
+
 ## Geckolib Animation Managers
 
+- [ ] use geckolib in common code 1.16/1.18 (fix official mappings fabric)
+- [ ] looped animations with conditions for triggering (ie idle, walk, swim, fly)
+- [ ] jump animations
+- [ ] attack animations
+- [ ] death animations
+
+look at how 4.0 does it? i think they have some helpers 

@@ -168,7 +168,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.side = side;
         this.fileExtension = fileExtension;
         this.reloadable = reloadable;
-        String id = "LukeGrahamLandry/FeatureLib:" + this.name + "-" + side.name();
+        String id = "LukeGrahamLandry/FeatureLib-Config:" + this.name + "-" + side.name();
         this.logger = LoggerFactory.getLogger(id);
 
         try {
