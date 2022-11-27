@@ -10,13 +10,11 @@ import java.util.List;
 
 // TODO: if the elements of an array, list or map have comment annotations, bring them up to the comment of that field
 public class GenerateComments {
-    public static <T> String commentedJson(T instance, GsonBuilder gsonBuilder){
-        return commentedJson(instance, gsonBuilder, 1);
+    public static <T> String commentedJson(T instance, Gson gson){
+        return commentedJson(instance, gson.newBuilder().setPrettyPrinting().create(), 1);
     }
 
-    public static <T> String commentedJson(T instance, GsonBuilder gsonBuilder, int level){
-        Gson gson = gsonBuilder.setPrettyPrinting().create();
-
+    public static <T> String commentedJson(T instance, Gson gson, int level){
         int comments = 0;
         for (Field field : instance.getClass().getFields()){
             Comment annotation = field.getAnnotation(Comment.class);
@@ -62,7 +60,7 @@ public class GenerateComments {
             }
 
             output.append("  ".repeat(level));
-            output.append("\"").append(field.getName()).append("\": ").append(commentedJson(value, gsonBuilder, level + 1)).append(",\n");
+            output.append("\"").append(field.getName()).append("\": ").append(commentedJson(value, gson, level + 1)).append(",\n");
         }
 
         output.deleteCharAt(output.length() - 1);

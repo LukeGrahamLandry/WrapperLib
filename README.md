@@ -27,7 +27,7 @@ dependencies {
 
 On forge, make sure to call `fg.deobf` on the dependency.  
 
-**You must relocate my packages when using the shadow plugin, or you will conflict with other mods.**
+**You must relocate my packages when using the shadow plugin, or you will conflict with other mods. You must also call `mergeServiceFiles()` for my crossplatform stuff to work.**
 
 ```groovy
 plugins {
@@ -44,6 +44,7 @@ shadowJar {
     configurations = [project.configurations.shade]
     relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.featurelib"
     finalizedBy 'reobfShadowJar'
+    mergeServiceFiles()
 }
 
 assemble.dependsOn shadowJar
@@ -76,6 +77,7 @@ reobf {
 - [ ] array or map of registry objects that removes missing ones
 - [ ] could be wrapped in data.RegistryObjectGroup or data.RegistryObjectMap that can accept tags as well?
 - [X] provided json serializers for ResourceLocation, CompoundTag, ItemStack
+- [ ] subdirectory support in case you want lots of config files without risk of conflicting with other mods
 
 TODO: chart with comparison to other config libraries
 - Forge Config & Fuzss/forgeconfigapiport-fabric (verbose)

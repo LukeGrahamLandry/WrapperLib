@@ -1,11 +1,8 @@
 package ca.lukegrahamlandry.lib.config.data.adapter;
 
-import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import com.google.gson.*;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

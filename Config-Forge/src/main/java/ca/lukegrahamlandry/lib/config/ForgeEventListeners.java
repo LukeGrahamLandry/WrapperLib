@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus= Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventListeners {
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onServerStart(ServerStartedEvent event){
         EventCallbacks.onServerStart(event.getServer());
     }

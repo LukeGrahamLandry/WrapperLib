@@ -2,7 +2,7 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.config.data.adapter.ItemStackTypeAdapter;
 import ca.lukegrahamlandry.lib.config.data.adapter.NbtTypeAdapter;
-import ca.lukegrahamlandry.lib.packets.platform.Services;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -26,67 +26,112 @@ import java.util.function.Supplier;
 
 // TODO: support subdirectories
 public class ConfigWrapper<T> implements Supplier<T> {
-    public static MinecraftServer server;
-    public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
-    private final T defaultConfig;
-    private final String name;
-    public final Side side;
-    public final boolean reloadable;
-    private final Class<T> clazz;
-    protected T value;
-    private boolean verbose;
-    private Logger logger;
-    private boolean loaded = false;
-
-    public ConfigWrapper(Class<T> clazz, String name, Side side, boolean reloadable, boolean verbose){
-        this.clazz = clazz;
-        this.name = name;
-        this.side = side;
-        this.reloadable = reloadable;
-        this.verbose = verbose;
-        String id = "LukeGrahamLandry/FeatureLib:" + this.name + "-" + side.name();
-        this.logger = LoggerFactory.getLogger(id);
-
-        try {
-            this.defaultConfig = clazz.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            this.logger.error(clazz.getName() + " does not have a public parameterless constructor");
-            throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
-        }
-        this.value = defaultConfig;
-
-        ALL.add(this);
+    /**
+     * Creates a new config object for reading settings from player editable files.
+     * The config will be synced to all clients, so it may be used from common code.
+     * The config will be loaded from world/serverconfig
+     * If the file is missing we check ./config before using default values.
+     */
+    public static <T> ConfigWrapper<T> synced(Class<T> clazz){
+        return new ConfigWrapper<>(clazz, defaultName(clazz), Side.SYNCED, "json5", true);
     }
 
-    public ConfigWrapper(Class<T> clazz, String name, Side side){
-        this(clazz, name, side, true, true);
-    }
-
-    public static <T> ConfigWrapper<T> server(Class<T> clazz){
-        String defaultName = clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
-        return new ConfigWrapper<>(clazz, defaultName, Side.SERVER, true, true);
-    }
-
+    /**
+     * Creates a new config object for reading settings from player editable files.
+     * The config will ONLY be available on the logical CLIENT.
+     * The config will be loaded from ./config
+     */
     public static <T> ConfigWrapper<T> client(Class<T> clazz){
-        String defaultName = clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
-        return new ConfigWrapper<>(clazz, defaultName, Side.CLIENT, true, true);
+        return new ConfigWrapper<>(clazz, defaultName(clazz), Side.CLIENT, "json5",true);
     }
 
+    /**
+     * Creates a new config object for reading settings from player editable files.
+     * The config will ONLY be available on the logical SERVER.
+     * The config will be loaded from world/serverconfig
+     * If the file is missing we check ./config before using default values.
+     */
+    public static <T> ConfigWrapper<T> server(Class<T> clazz){
+        return new ConfigWrapper<>(clazz, defaultName(clazz), Side.SERVER_ONLY, "json5",true);
+    }
+
+    /**
+     * Set the name to be used for your config file (and log messages).
+     * The file will be [name]-[side].[ext]
+     */
     public ConfigWrapper<T> named(String name){
         ALL.remove(this);
-        return new ConfigWrapper<>(this.clazz, name, this.side, this.reloadable, this.verbose);
+        return new ConfigWrapper<>(this.clazz, name, this.side, this.fileExtension, this.reloadable);
     }
 
-    ////// IMPL //////
+    /**
+     * Change the extension used by your config file.
+     * This does NOT change the data format. It will always be stored as commented json.
+     * The file will be [name]-[side].[ext]
+     * Defaults to json5, other reasonable options might be json, cfg, data, config
+     */
+    public ConfigWrapper<T> ext(String ext){
+        ALL.remove(this);
+        return new ConfigWrapper<>(this.clazz, name, this.side, ext, this.reloadable);
+    }
 
+    /**
+     * By default, the config may reload while the game is running.
+     * If this method is called:
+     * The config will be loaded once during client/server setup and then the data will never change.
+     * Use this for values that are used during setup where it would be strange if they changed without fully restarting the game.
+     * Calling this has the same effect as caching the object returned by ConfigWrapper#get
+     */
+    public ConfigWrapper<T> noReload(){
+        ALL.remove(this);
+        return new ConfigWrapper<>(this.clazz, this.name, this.side, this.fileExtension, false);
+    }
+
+    /**
+     * Set the gson instance that will be used for config serialization/deserialization.
+     * Allows you to register your own type adapters.
+     * See ConfigWrapper#GSON for defaults.
+     * GsonBuilder#setPrettyPrinting will automatically be called when writing defaults to a file (but not for sending over network).
+     */
+    public ConfigWrapper<T> useGson(Gson gson){
+        this.gson = gson;
+        return this;
+    }
+
+    ////// API //////
+
+    /**
+     * Retrieve the current config values as an instance of
+     */
+    @Override
+    public T get() {
+        if (!this.loaded) this.logger.debug("reading config before calling ConfigWrapper#load, default values will be used for now");
+        return this.value;
+    }
+
+    /**
+     * Syncs config data from the server to all clients
+     * May only be called for `Side.SYNCED` configs
+     */
+    public void sync() {
+        if (this.side != Side.SYNCED) return;
+        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketManager")){
+            this.logger.error("cannot sync config to client because FeatureLib-Packets module is missing");
+            return;
+        }
+        // TODO: send packet
+    }
+
+    /**
+     * Loads the config data from the file system.
+     * Will automatically be called on server/client setup.
+     */
     public void load(){
-        if (this.side == Side.SERVER && server == null) {
+        if (this.side.inWorldDir && server == null) {
             this.logger.error("cannot load server config before server init. default values will be used for now");
             return;
         }
-        if (!Files.exists(this.getFilePath())) {
-            this.writeDefaultFile();
-        }
+        if (!Files.exists(this.getFilePath())) this.writeDefaultFile();
 
         try {
             Reader reader = Files.newBufferedReader(this.getFilePath());
@@ -98,14 +143,57 @@ public class ConfigWrapper<T> implements Supplier<T> {
             e.printStackTrace();
             this.value = this.defaultConfig;
         }
+
+        this.loaded = true;
+    }
+
+    ////// CONSTRUCTION //////
+
+    public static MinecraftServer server;
+    public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
+    private final T defaultConfig;
+    private final String name;
+    public final Side side;
+    public final boolean reloadable;
+    private final Class<T> clazz;
+    protected T value;
+    private final Logger logger;
+    private boolean loaded = false;
+    private final String fileExtension;
+    private Gson gson;
+
+    public ConfigWrapper(Class<T> clazz, String name, Side side, String fileExtension, boolean reloadable){
+        this.clazz = clazz;
+        this.name = name;
+        this.side = side;
+        this.fileExtension = fileExtension;
+        this.reloadable = reloadable;
+        String id = "LukeGrahamLandry/FeatureLib:" + this.name + "-" + side.name();
+        this.logger = LoggerFactory.getLogger(id);
+
+        try {
+            this.defaultConfig = clazz.getConstructor().newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            this.logger.error(clazz.getName() + " does not have a public parameterless constructor");
+            throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
+        }
+        this.value = defaultConfig;
+        this.useGson(GSON.create());
+        ALL.add(this);
+    }
+
+    ////// IMPL //////
+
+    private static String defaultName(Class<?> clazz){
+        return clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
     }
 
     protected void parse(Reader reader){
-        this.value = (T) this.getGson().create().fromJson(reader, this.clazz);
+        this.value = (T) this.getGson().fromJson(reader, this.clazz);
     }
 
-    private void writeDefaultFile() {
-        if (this.side == Side.SERVER){
+    protected void writeDefaultFile() {
+        if (this.side.inWorldDir){
             Path globalDefaultLocation = Paths.get("config").resolve(this.getFilename());
             if (Files.exists(globalDefaultLocation)){
                 try {
@@ -119,9 +207,14 @@ public class ConfigWrapper<T> implements Supplier<T> {
             }
         }
 
-        // TODO support comments
         try {
-            Files.write(this.getFilePath(), GenerateComments.commentedJson(this.defaultConfig, this.getGson()).getBytes());
+            String configData;
+            if (canFindClass("ca.lukegrahamlandry.lib.config.GenerateComments")){
+                configData = GenerateComments.commentedJson(this.defaultConfig, this.getGson());
+            } else {
+                configData = this.getGson().newBuilder().setPrettyPrinting().create().toJson(this.defaultConfig);
+            }
+            Files.write(this.getFilePath(), configData.getBytes());
             this.logger.debug("wrote default config to " + this.displayPath());
         } catch (IOException e){
             this.logger.error("failed to write default config to " + this.displayPath());
@@ -135,7 +228,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
     protected Path getFilePath(){
         switch (this.side){
-            case SERVER:
+            case SYNCED:
                 return server.getWorldPath(LevelResource.ROOT).resolve("serverconfig").resolve(this.getFilename());
             case CLIENT:
                 return Paths.get("config").resolve(this.getFilename());
@@ -144,43 +237,53 @@ public class ConfigWrapper<T> implements Supplier<T> {
         }
     }
 
+    /**
+     * The file path to be displayed in log messages.
+     */
     protected String displayPath(){
         try {
             return getFilePath().toAbsolutePath().toFile().getCanonicalPath();
         } catch (IOException e) {
             return getFilePath().toAbsolutePath().toString();
         }
-
     }
 
-    public static GsonBuilder GSON = new GsonBuilder().setLenient()
-            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-            .registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter())
-            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
-
-    protected GsonBuilder getGson(){
-        return GSON;
+    public Gson getGson(){
+        return this.gson;
     }
 
-    @Override
-    public T get() {
-        return this.value;
+    /**
+     * Used to check if other modules are available.
+     * It is safe to include only this file in your mod if you have simple config needs.
+     * My extra type adapters and syncing packets will only be used if their class is found by this method.
+     */
+    private static boolean canFindClass(String className){
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
-    public void sync() {
-        if (this.side == Side.CLIENT) return;
-
-        // TODO: send packet
+    private static GsonBuilder GSON = new GsonBuilder().setLenient()
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+    static {
+        if (canFindClass("ca.lukegrahamlandry.config.data.adapter.NbtTypeAdapter"))
+            GSON = GSON.registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter());
+        if (canFindClass("ca.lukegrahamlandry.config.data.adapter.ItemStackTypeAdapter"))
+            GSON = GSON.registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
     }
 
     public enum Side {
-        CLIENT,
-        SERVER
-    }
+        CLIENT(false),
+        SYNCED(true),
+        SERVER_ONLY(true);
 
-    public static ReloadTime RELOAD_TIME = Services.PLATFORM.isDevelopmentEnvironment() ? ReloadTime.FILE_CHANGE : ReloadTime.RELOAD_COMMAND;
-    public enum ReloadTime {
-        FILE_CHANGE,
-        RELOAD_COMMAND
+        public final boolean inWorldDir;
+
+        Side(boolean perWorld){
+            this.inWorldDir = perWorld;
+        }
     }
 }

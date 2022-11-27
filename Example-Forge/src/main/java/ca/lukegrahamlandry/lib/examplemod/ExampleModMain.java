@@ -7,6 +7,6 @@ import java.util.function.Supplier;
 
 @Mod("featurelib")
 public class ExampleModMain {
-    public static Supplier<ExampleConfig> config = ConfigWrapper.server(ExampleConfig.class).named("featurelib-example");
+    public static Supplier<ExampleConfig> config = ConfigWrapper.synced(ExampleConfig.class).named("featurelib-example");
     public static Supplier<ExampleClientConfig> clientConfig = ConfigWrapper.client(ExampleClientConfig.class);
 }
