@@ -1,19 +1,20 @@
 package ca.lukegrahamlandry.lib.data.type;
 
-import ca.lukegrahamlandry.lib.data.DataWrapper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class LevelDataWrapper<T> extends DataWrapper<T> {
+public class LevelDataWrapper<T> extends MapDataWrapper<Level, ResourceLocation, T> {
     public LevelDataWrapper(Class<T> clazz) {
-        super(clazz);
+        super(ResourceLocation.class, clazz);
     }
 
-    public T get(Level level){
-        if (!this.loaded) {
-            this.logger.error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced");
-            return null;
-        }
+    @Override
+    public ResourceLocation keyToId(Level key) {
+        return key.dimension().location();
+    }
 
-        return null;
+    @Override
+    public ResourceLocation stringToId(String id) {
+        return new ResourceLocation(id);
     }
 }

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(bus= Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEventListeners {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onServerStart(FMLClientSetupEvent event){
+    public static void onClientStart(FMLClientSetupEvent event){
         EventCallbacks.onClientStart();
     }
 }

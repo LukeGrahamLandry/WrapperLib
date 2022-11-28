@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.examplemod;
+package ca.lukegrahamlandry.lib.examplemod.model;
 
 import ca.lukegrahamlandry.lib.config.Comment;
 import net.minecraft.nbt.CompoundTag;

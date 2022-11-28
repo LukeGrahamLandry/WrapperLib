@@ -14,7 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +29,8 @@ import java.util.Locale;
  * Same for fields of T, they can't extend the type of the field, they must be GenericHolders as well.
  * Instead of using holders, you could write your own type adapter that saves the exact type info and call setGson.
  */
-public class DataWrapper<T> {
+public abstract class DataWrapper<T> {
+
     public static <T> GlobalDataWrapper<T> global(Class<T> clazz){
         return new GlobalDataWrapper<>(clazz);
     }
@@ -41,17 +44,22 @@ public class DataWrapper<T> {
     }
 
     public <W extends DataWrapper<T>> W synced(){
-        this.synced = true;
+        this.shouldSync = true;
         return (W) this;
     }
 
     public <W extends DataWrapper<T>> W saved(){
-        this.saved = true;
+        this.shouldSave = true;
         return (W) this;
     }
 
     public <W extends DataWrapper<T>> W named(String name){
-        this.name = name;
+        this.name = name.toLowerCase(Locale.ROOT).replace(":", "-").replace(" ", "-");
+        return (W) this;
+    }
+
+    public <W extends DataWrapper<T>> W dir(String subDirectory){
+        this.subDirectory = subDirectory;
         return (W) this;
     }
 
@@ -67,20 +75,14 @@ public class DataWrapper<T> {
 
     ////// API //////
 
-    public void save(){
+    public abstract void save();
 
-    }
+    public abstract void load();
 
-    public void load(){
-
-    }
-
-    public void sync(){
-
-    }
+    public abstract void sync();
 
     public void setDirty(){
-
+        this.isDirty = true;
     }
 
     ////// CONSTRUCTION //////
@@ -90,17 +92,18 @@ public class DataWrapper<T> {
 
     protected final Class<T> clazz;
     protected String name;
-    protected String fileExtension;
-    boolean saved = false;
-    protected boolean synced = false;
-    protected boolean loaded = false;
+    protected String fileExtension = "json";
+    protected String subDirectory = null;
+    boolean shouldSave = false;
+    protected boolean shouldSync = false;
+    protected boolean isLoaded = false;
+    protected boolean isDirty = false;
     protected final Logger logger;
     private Gson gson;
 
     protected DataWrapper(Class<T> clazz){
         this.clazz = clazz;
-        this.name = defaultName(clazz);
-        this.fileExtension = "json";
+        this.named(defaultName(clazz));
         String id = "LukeGrahamLandry/FeatureLib-Data:" + this.name;
         this.logger = LoggerFactory.getLogger(id);
         this.useGson(GSON.create());
@@ -109,6 +112,8 @@ public class DataWrapper<T> {
     }
 
     ////// IMPL //////
+
+    protected abstract Path getFilePath();
 
     private static String defaultName(Class<?> clazz){
         return clazz.getSimpleName().toLowerCase(Locale.ROOT);
@@ -132,12 +137,20 @@ public class DataWrapper<T> {
      * It is safe to include only this file in your mod if you have simple needs.
      * My extra type adapters and syncing packets will only be used if their class is found by this method.
      */
-    private static boolean canFindClass(String className){
+    protected static boolean canFindClass(String className){
         try {
             Class.forName(className);
             return true;
         } catch (ClassNotFoundException e) {
             return false;
+        }
+    }
+
+    protected static String forDisplay(Path path){
+        try {
+            return path.toAbsolutePath().toFile().getCanonicalPath();
+        } catch (IOException e) {
+            return path.toAbsolutePath().toString();
         }
     }
 

@@ -8,8 +8,8 @@ public class EventCallbacks {
     public static void onServerStart(MinecraftServer server){
         DataWrapper.server = server;
         DataWrapper.ALL.forEach((data) -> {
-            if (data.saved) data.load();
-            if (data.synced) data.sync();
+            if (data.shouldSave) data.load();
+            if (data.shouldSync) data.sync();
         });
     }
 
@@ -21,13 +21,13 @@ public class EventCallbacks {
     // TODO: players and global only overworld? does that work if you exit world from the nether? i think it says overworld stays loaded no matter what.
     public static void onWorldSave(LevelAccessor level){
         DataWrapper.ALL.forEach((data) -> {
-            if (data.saved) data.save();
+            if (data.shouldSave) data.save();
         });
     }
 
     public static void onPlayerLoginServer(ServerPlayer player){
         DataWrapper.ALL.forEach((data) -> {
-            if (data.synced) data.sync();
+            if (data.shouldSync) data.sync();
         });
     }
 }
