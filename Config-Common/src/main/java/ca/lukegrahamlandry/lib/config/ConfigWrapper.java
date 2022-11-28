@@ -2,6 +2,7 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.config.data.adapter.ItemStackTypeAdapter;
 import ca.lukegrahamlandry.lib.config.data.adapter.NbtTypeAdapter;
+import ca.lukegrahamlandry.lib.packets.PacketWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.nbt.CompoundTag;
@@ -112,14 +113,18 @@ public class ConfigWrapper<T> implements Supplier<T> {
     /**
      * Syncs config data from the server to all clients
      * May only be called for `Side.SYNCED` configs
+     * Requires Packets module
      */
     public void sync() {
-        if (this.side != Side.SYNCED) return;
-        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketManager")){
-            this.logger.error("cannot sync config to client because FeatureLib-Packets module is missing");
+        if (this.side != Side.SYNCED) {
+            this.logger.error("called ConfigWrapper#sync but side=" + this.side);
             return;
         }
-        // TODO: send packet
+        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+            this.logger.error("called ConfigWrapper#sync but FeatureLib-Packets module is missing");
+            return;
+        }
+        PacketWrapper.sendToAllClients(new ConfigSyncMessage(this));
     }
 
     /**
@@ -152,10 +157,10 @@ public class ConfigWrapper<T> implements Supplier<T> {
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
     private final T defaultConfig;
-    private final String name;
+    public final String name;
     public final Side side;
     public final boolean reloadable;
-    private final Class<T> clazz;
+    public final Class<T> clazz;
     protected T value;
     private final Logger logger;
     private boolean loaded = false;
@@ -190,6 +195,10 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
     protected void parse(Reader reader){
         this.value = (T) this.getGson().fromJson(reader, this.clazz);
+    }
+
+    void set(Object v){
+        this.value = (T) v;
     }
 
     protected void writeDefaultFile() {

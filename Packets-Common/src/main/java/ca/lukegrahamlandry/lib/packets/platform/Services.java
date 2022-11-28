@@ -1,6 +1,5 @@
 package ca.lukegrahamlandry.lib.packets.platform;
 
-import ca.lukegrahamlandry.lib.packets.Constants;
 import ca.lukegrahamlandry.lib.packets.platform.services.IPlatformHelper;
 
 import java.util.ServiceLoader;

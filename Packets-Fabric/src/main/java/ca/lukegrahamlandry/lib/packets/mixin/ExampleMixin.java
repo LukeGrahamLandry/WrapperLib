@@ -1,6 +1,5 @@
 package ca.lukegrahamlandry.lib.packets.mixin;
 
-import ca.lukegrahamlandry.lib.packets.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
