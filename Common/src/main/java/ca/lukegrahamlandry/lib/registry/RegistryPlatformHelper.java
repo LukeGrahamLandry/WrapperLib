@@ -7,12 +7,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.config;
+package ca.lukegrahamlandry.lib.registry;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Comment {
-    String value();
+public class RegistryPlatformHelper {
+    @ExpectPlatform
+    public static <T> void init(RegistryWrapper<T> wrapper){
+
+    }
 }

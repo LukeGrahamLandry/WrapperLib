@@ -7,12 +7,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.config;
+package ca.lukegrahamlandry.lib.registry.forge;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Comment {
-    String value();
+public class RegistryPlatformHelperImpl {
+    public void init(){
+        System.out.println("forge.RegistryWrapperImpl");
+    }
 }
