@@ -22,7 +22,7 @@
                 "paths": []
             }
         },
-        "packets": {
+        "network": {
             "Common": {
                 "lines": 17,
                 "bytes": 596,
@@ -48,6 +48,24 @@
                 "files": 1,
                 "paths": [
                     "/Fabric/src/main/java/torcherino/platform/NetworkUtilsImpl.java"
+                ]
+            }
+        },
+        "registry": {
+            "Forge": {
+                "lines": 101,
+                "bytes": 5793,
+                "files": 1,
+                "paths": [
+                    "/Forge/src/main/java/torcherino/ModContent.java"
+                ]
+            },
+            "Fabric": {
+                "lines": 90,
+                "bytes": 4811,
+                "files": 1,
+                "paths": [
+                    "/Fabric/src/main/java/torcherino/blocks/ModBlocks.java"
                 ]
             }
         }

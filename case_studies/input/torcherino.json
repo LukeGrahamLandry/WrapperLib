@@ -6,7 +6,7 @@
                 "config": [
                     "src/main/java/torcherino/config"
                 ], 
-                "packets": [
+                "network": [
                     "src/main/java/torcherino/platform/NetworkUtils.java"
                 ]
             },
@@ -14,17 +14,23 @@
                 "config": [
                     
                 ], 
-                "packets": [
+                "network": [
                     "src/main/java/torcherino/platform/NetworkUtilsImpl.java",
                     "src/main/java/torcherino/network"
+                ],
+                "registry": [
+                    "src/main/java/torcherino/ModContent.java"
                 ]
             },
             "Fabric": {
                 "config": [
                     
                 ], 
-                "packets": [
+                "network": [
                     "src/main/java/torcherino/platform/NetworkUtilsImpl.java"
+                ],
+                "registry": [
+                    "src/main/java/torcherino/blocks/ModBlocks.java"
                 ]
             }
         }
