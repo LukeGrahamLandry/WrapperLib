@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.packets.platform.services;
+package ca.lukegrahamlandry.lib.packets;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import net.minecraft.server.level.ServerPlayer;

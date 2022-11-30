@@ -4,11 +4,11 @@ A collection of multi-platform implementations of common tasks for developing Mi
 
 - Provides a uniform api across mod loaders and minecraft versions.
 - A priority is placed on never manually writing serialization code for nbt or byte buffers.
-- Designed to be modular, so you can jar-in-jar only the parts you need and have no external dependencies. 
+- Designed to be modular, so you can shadow only the parts you need and have no external dependencies. 
 
 Supported Mod Loaders: Forge, ~~Fabric, Quilt~~  
-Supported Versions: 1.19, ~~1.18, 1.16~~
-API Objects: ConfigWrapper, PacketWrapper, DataWrapper
+Supported Versions: 1.19, ~~1.18, 1.16~~  
+API Objects: ConfigWrapper, PacketWrapper, DataWrapper  
 
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
 

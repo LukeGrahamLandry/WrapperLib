@@ -51,13 +51,17 @@ dependencies {
 tasks.withType(JavaCompile) {
     source(project(":Common").sourceSets.main.allSource)
     source(project(":Forge").sourceSets.main.allSource)
+
+    exclude "ca/lukegrahamlandry/lib/mod"
 }
 
 // Caused by: java.lang.NullPointerException: Failed to load service for ca.lukegrahamlandry.lib.packets.platform.services.INetworkHelper
 // but what happens if i have multiple files for the same service. resolution stategy that concatenates them
 processResources {
     from(project(":Common").sourceSets.main.resources)
-    from(project(":Forge").sourceSets.main.resources)
+    from(project(":Forge").sourceSets.main.resources) {
+        exclude "META-INF/mods.toml"
+    }
 }
 
 tasks.withType(JavaCompile) {
@@ -78,6 +82,9 @@ shadowJar {
     mergeServiceFiles()
     append 'META-INF/accesstransformer.cfg'
     classifier "dev-shadow"  // not obfuscated, with shadowed stuff
+
+    exclude "META-INF/mods.toml"
+    exclude "ca/lukegrahamlandry/lib/mod"
 }
 
 remapJar {

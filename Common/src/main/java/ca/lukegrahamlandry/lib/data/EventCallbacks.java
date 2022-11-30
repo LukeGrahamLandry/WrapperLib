@@ -1,11 +1,14 @@
 package ca.lukegrahamlandry.lib.data;
 
+import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 
-public class EventCallbacks {
-    public static void onServerStart(MinecraftServer server){
+public class EventCallbacks implements IEventCallbacks {
+    @Override
+    public void onServerStart(MinecraftServer server){
         DataWrapper.server = server;
         DataWrapper.ALL.forEach((data) -> {
             if (data.shouldSave) data.load();
@@ -13,19 +16,24 @@ public class EventCallbacks {
         });
     }
 
-    public static void onServerStop(MinecraftServer server){
+    @Override
+    public void onServerStop(MinecraftServer server){
         DataWrapper.server = null;
     }
 
     // TODO: we only have to save the data of the level being saved
     // TODO: players and global only overworld? does that work if you exit world from the nether? i think it says overworld stays loaded no matter what.
-    public static void onWorldSave(LevelAccessor level){
+    @Override
+    public void onLevelSave(LevelAccessor level){
         DataWrapper.ALL.forEach((data) -> {
             if (data.shouldSave && data.isDirty) data.save();
         });
     }
 
-    public static void onPlayerLoginServer(ServerPlayer player){
+    @Override
+    public void onPlayerLogin(Player player){
+        if (player.level.isClientSide) return;
+
         DataWrapper.ALL.forEach((data) -> {
             if (data.shouldSync) data.sync();
         });

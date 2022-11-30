@@ -1,10 +1,13 @@
 package ca.lukegrahamlandry.lib.config;
 
+import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
-public class EventCallbacks {
-    public static void onServerStart(MinecraftServer server){
+public class EventCallbacks implements IEventCallbacks {
+    @Override
+    public void onServerStart(MinecraftServer server){
         ConfigWrapper.server = server;
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side.inWorldDir){
@@ -14,7 +17,10 @@ public class EventCallbacks {
         });
     }
 
-    public static void onPlayerLoginServer(ServerPlayer player){
+    @Override
+    public void onPlayerLogin(Player player){
+        if (player.level.isClientSide()) return;
+
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.SYNCED){
                 // TODO: dont have to resync to all players, just the new one
@@ -23,7 +29,8 @@ public class EventCallbacks {
         });
     }
 
-    public static void onClientStart(){
+    @Override
+    public void onClientSetup(){
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.CLIENT){
                 config.load();
@@ -32,7 +39,8 @@ public class EventCallbacks {
     }
 
     // figure out dealing with client ones where the player might not have perms to use reload command
-    public static void onReloadCommand(){
+    @Override
+    public void onReloadCommand(){
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.reloadable){
                 config.load();

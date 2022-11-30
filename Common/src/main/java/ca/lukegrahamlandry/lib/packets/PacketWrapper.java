@@ -1,7 +1,7 @@
 package ca.lukegrahamlandry.lib.packets;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
-import ca.lukegrahamlandry.lib.packets.platform.Services;
+import ca.lukegrahamlandry.lib.base.Services;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,19 +12,21 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class PacketWrapper {
+    private static final INetworkHelper NETWORK = Services.load(INetworkHelper.class);
+
     public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Packets");
     public static Map<String, BiConsumer<ServerPlayer, Object>> HANDLERS = new HashMap<>();
 
     public static <T> void sendToClient(ServerPlayer player, T message){
-        Services.NETWORK.sendToClient(player, new GenericHolder<>(message));
+        NETWORK.sendToClient(player, new GenericHolder<>(message));
     }
 
     public static <T> void sendToServer(T message){
-        Services.NETWORK.sendToServer(new GenericHolder<>(message));
+        NETWORK.sendToServer(new GenericHolder<>(message));
     }
 
     public static <T> void sendToAllClients(T message){
-        Services.NETWORK.sendToAllClients(new GenericHolder<>(message));
+        NETWORK.sendToAllClients(new GenericHolder<>(message));
     }
 
     public static <T> void registerClientHandler(Class<T> clazz, Consumer<T> handler){

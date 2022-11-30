@@ -1,12 +1,8 @@
-package ca.lukegrahamlandry.lib.packets.platform;
-
-import ca.lukegrahamlandry.lib.packets.platform.services.INetworkHelper;
+package ca.lukegrahamlandry.lib.base;
 
 import java.util.ServiceLoader;
 
 public class Services {
-
-    public static final INetworkHelper NETWORK = load(INetworkHelper.class);
 
     public static <T> T load(Class<T> clazz) {
 

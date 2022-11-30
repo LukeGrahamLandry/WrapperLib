@@ -15,7 +15,9 @@ public class EventWrapper {
         try {
             Class<?> clazz = Class.forName(handlerClassName);
             add((IEventCallbacks) clazz.getConstructor().newInstance());
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+            // dev used shadow exclude, that's fine
+        }
         catch (ClassCastException e) {
             throw new RuntimeException(handlerClassName + " must implement IEventCallbacks", e);
         }
@@ -24,14 +26,15 @@ public class EventWrapper {
         }
     }
 
-    public static List<IEventCallbacks> get(){
-        return HANDLERS;
-    }
-
     static {
         add("ca.lukegrahamlandry.lib.base.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.packets.EventCallbacks");
+        add("ca.lukegrahamlandry.lib.packets.ForgeEventCallbacks");
+        add("ca.lukegrahamlandry.lib.packets.FabricEventCallbacks");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
+    }
+
+    public static List<IEventCallbacks> get(){
+        return HANDLERS;
     }
 }
