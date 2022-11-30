@@ -104,7 +104,7 @@ public abstract class DataWrapper<T> {
     protected DataWrapper(Class<T> clazz){
         this.clazz = clazz;
         this.named(defaultName(clazz));
-        String id = "LukeGrahamLandry/FeatureLib-Data:" + this.name;
+        String id = "LukeGrahamLandry/WrapperLib-Data:" + this.name;
         this.logger = LoggerFactory.getLogger(id);
         this.useGson(GSON.create());
         this.createDefaultInstance();

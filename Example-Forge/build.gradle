@@ -1,82 +1,46 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
+plugins {
+    id "dev.architectury.loom" version "0.12.0-SNAPSHOT"
+    id "maven-publish"
 }
-apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = "example-forge"
 
-minecraft {
-    mappings channel: 'official', version: minecraft_version
-    
-    if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
-        // This location is hardcoded in Forge and can not be changed.
-        // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
-        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-        project.logger.debug('Forge Access Transformers are enabled for this project.')
+loom {
+    silentMojangMappingsLicense()
+
+    forge {
+        // mixinConfigs = []
+
+        // dataGen { mod project.mod_id }
     }
 
-    runs {
-        client {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'Client'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                modClientRun {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'Server'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                modServerRun {
-                    source sourceSets.main
-                }
-            }
-        }
-
+    launches {
         data {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-            taskName 'Data'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                modDataRun {
-                    source sourceSets.main
-                }
-            }
+            arg "--existing", file("src/main/resources").absolutePath
         }
     }
 }
 
-sourceSets.main.resources.srcDir 'src/generated/resources'
+repositories {
+    maven { url = "https://maven.lukegrahamlandry.ca" }
+    maven { url = 'https://maven.parchmentmc.org' }
+}
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
     compileOnly project(":Packets-Common")
     compileOnly project(":Packets-Forge")
     compileOnly project(":Config-Common")
     compileOnly project(":Config-Forge")
     compileOnly project(":Data-Common")
     compileOnly project(":Data-Forge")
+
+    modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
 }
 
 tasks.withType(JavaCompile) {
@@ -86,9 +50,17 @@ tasks.withType(JavaCompile) {
     source(project(":Config-Forge").sourceSets.main.allSource)
     source(project(":Data-Common").sourceSets.main.allSource)
     source(project(":Data-Forge").sourceSets.main.allSource)
+
+    options.encoding = "UTF-8"
 }
 
 processResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+
     from project(":Packets-Common").sourceSets.main.resources
     from project(":Packets-Forge").sourceSets.main.resources
     from project(":Config-Common").sourceSets.main.resources
@@ -96,6 +68,7 @@ processResources {
     from project(":Data-Common").sourceSets.main.resources
     from project(":Data-Forge").sourceSets.main.resources
 }
+
 
 
 jar.finalizedBy('reobfJar')

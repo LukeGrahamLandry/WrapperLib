@@ -2,6 +2,7 @@ package ca.lukegrahamlandry.lib.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

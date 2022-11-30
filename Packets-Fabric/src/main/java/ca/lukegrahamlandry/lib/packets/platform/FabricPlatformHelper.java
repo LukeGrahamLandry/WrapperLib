@@ -1,6 +1,5 @@
 package ca.lukegrahamlandry.lib.packets.platform;
 
-import ca.lukegrahamlandry.lib.packets.platform.services.IPlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class FabricPlatformHelper implements IPlatformHelper {

@@ -1,4 +1,4 @@
-# FeatureLib
+# WrapperLib
 
 A collection of multi-platform implementations of common tasks for developing Minecraft mods. 
 
@@ -6,7 +6,7 @@ A collection of multi-platform implementations of common tasks for developing Mi
 - A priority is placed on never manually to writing serialization code for nbt or byte buffers. 
 - Provides a uniform api across mod loaders and minecraft versions
 
-Features: Config, Packets, Saved Data  
+API Objects: ConfigWrapper, PacketWrapper, DataWrapper
 Supported Mod Loaders: Forge, Fabric, Quilt  
 Supported Versions: 1.19, 1.18, 1.16
 
@@ -54,9 +54,10 @@ configurations {
 shadowJar {
     archiveClassifier = ''
     configurations = [project.configurations.shade]
-    relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.featurelib"
+    relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.wrapperlib"
     finalizedBy 'reobfShadowJar'
     mergeServiceFiles()
+    append 'META-INF/accesstransformer.cfg'
 }
 
 assemble.dependsOn shadowJar
@@ -66,6 +67,10 @@ reobf {
 }
 ```
 
+note: 
+i cant just append fabric accesswideners cause they have version info at the top. 
+they get added to fabric.mod.json but doesnt support giving a list
+write my own Transformer and make sure to always use the same aw version/mappings
 ## Config
 
 - [X] support configs on both client and server sides
@@ -104,7 +109,7 @@ TODO: chart with comparison to other config libraries
 
 ## Packets
 
-Replaces `SimpleImpl` on Forge or `ClientPlayNetworking` and `ServerPlayNetworking` on Fabric.
+Replaces `SimpleImpl` on Forge or `*PlayNetworking` on Fabric.
 
 - [ ] automatically serialize your data class (to json to bytebuffer)
 - [ ] cross platform: forge, fabric, quilt

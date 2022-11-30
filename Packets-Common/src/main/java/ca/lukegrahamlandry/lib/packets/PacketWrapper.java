@@ -1,5 +1,6 @@
 package ca.lukegrahamlandry.lib.packets;
 
+import ca.lukegrahamlandry.lib.packets.platform.Services;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +15,15 @@ public class PacketWrapper {
     public static Map<String, BiConsumer<ServerPlayer, Object>> HANDLERS = new HashMap<>();
 
     public static <T> void sendToClient(ServerPlayer player, T message){
-
+        Services.NETWORK.sendToClient(player, new GenericHolder<>(message));
     }
 
     public static <T> void sendToServer(T message){
-
+        Services.NETWORK.sendToServer(new GenericHolder<>(message));
     }
 
     public static <T> void sendToAllClients(T message){
-
+        Services.NETWORK.sendToAllClients(new GenericHolder<>(message));
     }
 
     public static <T> void registerClientHandler(Class<T> clazz, Consumer<T> handler){

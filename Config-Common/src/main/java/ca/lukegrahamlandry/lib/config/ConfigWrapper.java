@@ -121,7 +121,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             return;
         }
         if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
-            this.logger.error("called ConfigWrapper#sync but FeatureLib-Packets module is missing");
+            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
             return;
         }
         PacketWrapper.sendToAllClients(new ConfigSyncMessage(this));
@@ -173,7 +173,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.side = side;
         this.fileExtension = fileExtension;
         this.reloadable = reloadable;
-        String id = "LukeGrahamLandry/FeatureLib-Config:" + this.name + "-" + side.name();
+        String id = "LukeGrahamLandry/WrapperLib-Config:" + this.name + "-" + side.name();
         this.logger = LoggerFactory.getLogger(id);
 
         try {
@@ -276,13 +276,9 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     private static GsonBuilder GSON = new GsonBuilder().setLenient()
-            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
-    static {
-        if (canFindClass("ca.lukegrahamlandry.config.data.adapter.NbtTypeAdapter"))
-            GSON = GSON.registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter());
-        if (canFindClass("ca.lukegrahamlandry.config.data.adapter.ItemStackTypeAdapter"))
-            GSON = GSON.registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
-    }
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter())
+            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
 
     public enum Side {
         CLIENT(false),

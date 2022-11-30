@@ -2,7 +2,6 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.packets.ClientboundHandler;
 import ca.lukegrahamlandry.lib.packets.GenericHolder;
-import ca.lukegrahamlandry.lib.packets.PacketWrapper;
 
 // TODO: check against subDirectory
 public class ConfigSyncMessage implements ClientboundHandler {
