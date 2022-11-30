@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.examplemod;
+package ca.lukegrahamlandry.examplemod;
 
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

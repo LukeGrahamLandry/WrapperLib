@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.examplemod.model;
+package ca.lukegrahamlandry.examplemod.model;
 
 import ca.lukegrahamlandry.lib.config.Comment;
 

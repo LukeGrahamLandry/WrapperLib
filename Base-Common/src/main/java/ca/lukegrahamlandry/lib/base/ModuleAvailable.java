@@ -17,7 +17,7 @@ public class ModuleAvailable {
         return canFindClass("ca.lukegrahamlandry.lib.config.GenerateComments");
     }
 
-    private static boolean canFindClass(String className){
+    public static boolean canFindClass(String className){
         try {
             Class.forName(className);
             return true;

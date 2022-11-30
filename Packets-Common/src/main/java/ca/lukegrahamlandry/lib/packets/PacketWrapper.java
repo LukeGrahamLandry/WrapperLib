@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class PacketWrapper {
-    public static Logger LOGGER = LoggerFactory.getLogger(PacketWrapper.class);
+    public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib-Packets");
     public static Map<String, BiConsumer<ServerPlayer, Object>> HANDLERS = new HashMap<>();
 
     public static <T> void sendToClient(ServerPlayer player, T message){

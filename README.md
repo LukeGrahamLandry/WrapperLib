@@ -10,8 +10,13 @@ API Objects: ConfigWrapper, PacketWrapper, DataWrapper
 Supported Mod Loaders: Forge, Fabric, Quilt  
 Supported Versions: 1.19, 1.18, 1.16
 
-maybe sync messages can have generics 
-i didnt before because they cant get recreated on the other side but at runtime they dont exist so maybe its fine
+haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
+
+name adapter map in case they want to change the name of config files or data files
+register(context, oldname, newname, old dir, new dir, transformer)
+transformer is a function JsonElement -> JsonElement that maps the old data format to the new data format
+system for data_format_version numbers in the json that trigger adapters in the same way
+context is like config or PlayerDataWrapper or whatever. make an enum 
 
 ## Installation
 
@@ -116,23 +121,15 @@ Replaces `WorldSavedData` and capabilities on Forge or cardinal components on Fa
 Data for all players is stored in a json file mapping uuids to data objects. 
 World data is just a file with a json object (perhaps multiple files if stored separate per dimension).
 
-- [ ] store data in a json file instead of nbt for easy editing
-- [ ] automatically serialize your data class
-- [ ] sync data to clients
+- [X] store data in a json file instead of nbt for easy editing
+- [X] automatically serialize your data class
+- [X] sync data to clients
 - [ ] cross platform: forge, fabric, quilt
-- [ ] store data linked to each server or world or player
+- [X] store data linked to each server or world or player
 - [ ] system for loading data packs to a Map<ResourceLocation, Object>
+- [ ] ItemStackDataWrapper since you cant have fields on an item, dont even need the json file stuff, just save to nbt. i think it syncs automatically 
+- [ ] store data linked to any entity or tile entity. maybe just go to nbt there as well 
 
-global, world, player, entity
-synced or server or client
-saved or not
-global client is just a GenericHolder
-config is a global that writes with comments
-not synced plus not saved is just a map
-
-DataWrapper data = DataWrapper.world(Data.class).synced().saved().named("modid:data").dir("modid")
-Data instance = data.get(world)
-data.setDirty()
 
 ## Geckolib Animation Managers
 

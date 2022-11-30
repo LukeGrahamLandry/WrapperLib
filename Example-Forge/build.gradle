@@ -1,6 +1,7 @@
 plugins {
     id "dev.architectury.loom" version "0.12.0-SNAPSHOT"
     id "maven-publish"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
@@ -28,12 +29,16 @@ repositories {
     maven { url = 'https://maven.parchmentmc.org' }
 }
 
+configurations {
+    shadowCommon
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
-    compileOnly project(":Base")
+    compileOnly project(":Base-Common")
     compileOnly project(":Packets-Common")
     compileOnly project(":Packets-Forge")
     compileOnly project(":Config-Common")
@@ -41,18 +46,18 @@ dependencies {
     compileOnly project(":Data-Common")
     compileOnly project(":Data-Forge")
 
+    shadowCommon (project(":Base-Common")) {transitive=false}
+    shadowCommon (project(":Packets-Common")) {transitive=false}
+    shadowCommon (project(":Packets-Forge")) {transitive=false}
+    shadowCommon (project(":Config-Common")) {transitive=false}
+    shadowCommon (project(":Config-Forge")) {transitive=false}
+    shadowCommon (project(":Data-Common")) {transitive=false}
+    shadowCommon (project(":Data-Forge")) {transitive=false}
+
     modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
 }
 
 tasks.withType(JavaCompile) {
-    source(project(":Base").sourceSets.main.allSource)
-    source(project(":Packets-Common").sourceSets.main.allSource)
-    source(project(":Packets-Forge").sourceSets.main.allSource)
-    source(project(":Config-Common").sourceSets.main.allSource)
-    source(project(":Config-Forge").sourceSets.main.allSource)
-    source(project(":Data-Common").sourceSets.main.allSource)
-    source(project(":Data-Forge").sourceSets.main.allSource)
-
     options.encoding = "UTF-8"
 }
 
@@ -62,15 +67,20 @@ processResources {
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
-
-    from project(":Packets-Common").sourceSets.main.resources
-    from project(":Packets-Forge").sourceSets.main.resources
-    from project(":Config-Common").sourceSets.main.resources
-    from project(":Config-Forge").sourceSets.main.resources
-    from project(":Data-Common").sourceSets.main.resources
-    from project(":Data-Forge").sourceSets.main.resources
 }
 
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    relocate 'ca.lukegrahamlandry.lib', "ca.lukegrahamlandry.examplemod.shadow.wrapperlib"
+    mergeServiceFiles()
+    append 'META-INF/accesstransformer.cfg'
+    classifier "dev-shadow"  // not obfuscated, with shadowed stuff
+}
 
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier null  // obfuscated, with shadowed stuff
+}
 
-jar.finalizedBy('reobfJar')
+assemble.dependsOn remapJar

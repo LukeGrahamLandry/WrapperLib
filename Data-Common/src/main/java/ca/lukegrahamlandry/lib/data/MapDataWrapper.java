@@ -24,6 +24,14 @@ import java.util.Map;
 // SingleMapDataWrapper<K, I, V> extends GlobalDataWrapper<Map<String, V>> implements MapDataWrapper
 // MultiMapDataWrapper<K, I, V> extends DataWrapper implements DataWrapper
 
+/**
+ * @param <K> the user facing key object. ie. player or world
+ * @param <I> the id of a key object. i.e. uuid or dimension resource location
+ *           - must have a consistent hash value (bad: Player#hashCode uses Entity#id which depends on the order players joined the server that run)
+ *           - there must exist a bijection between K and I (so i can recreate the list of K that have a value)
+ *           - there must exist a bijection between String and I (using the toString method of I)
+ * @param <V> the value to be stored
+ */
 public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     ///// INIT
 
@@ -64,6 +72,11 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
     public abstract I keyToId(K key);
 
+    /**
+     *
+     * @param id the toString value of the orignal id object
+     * @return a recreation of the original id object with the same hashcode
+     */
     public abstract I stringToId(String id);
 
     protected Path getFilePath(){

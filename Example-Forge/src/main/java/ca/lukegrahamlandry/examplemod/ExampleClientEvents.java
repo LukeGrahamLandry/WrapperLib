@@ -1,6 +1,6 @@
-package ca.lukegrahamlandry.lib.examplemod;
+package ca.lukegrahamlandry.examplemod;
 
-import ca.lukegrahamlandry.lib.examplemod.model.KillTracker;
+import ca.lukegrahamlandry.examplemod.model.KillTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
