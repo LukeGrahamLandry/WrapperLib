@@ -2,7 +2,7 @@ package ca.lukegrahamlandry.lib.data;
 
 import ca.lukegrahamlandry.lib.data.sync.MultiMapDataSyncMessage;
 import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
-import ca.lukegrahamlandry.lib.packets.PacketWrapper;
+import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -192,12 +192,12 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             this.logger.error("called DataWrapper#sync but shouldSync=false");
             return;
         }
-        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+        if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
             this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
             return;
         }
 
-        PacketWrapper.sendToAllClients(new MultiMapDataSyncMessage(this));
+        NetworkWrapper.sendToAllClients(new MultiMapDataSyncMessage(this));
     }
 
     public void sync(K key) {
@@ -205,12 +205,12 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             this.logger.error("called DataWrapper#sync but shouldSync=false");
             return;
         }
-        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+        if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
             this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
             return;
         }
 
-        PacketWrapper.sendToAllClients(new SingleMapDataSyncMessage(this, this.keyToId(key)));
+        NetworkWrapper.sendToAllClients(new SingleMapDataSyncMessage(this, this.keyToId(key)));
     }
 
     /**

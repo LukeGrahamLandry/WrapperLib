@@ -2,7 +2,7 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.base.ModuleAvailable;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
-import ca.lukegrahamlandry.lib.packets.PacketWrapper;
+import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
@@ -120,7 +120,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
             return;
         }
-        PacketWrapper.sendToAllClients(new ConfigSyncMessage(this));
+        NetworkWrapper.sendToAllClients(new ConfigSyncMessage(this));
     }
 
     /**

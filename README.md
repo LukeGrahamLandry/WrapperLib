@@ -8,7 +8,7 @@ A collection of multi-platform implementations of common tasks for developing Mi
 
 Supported Mod Loaders: Forge, ~~Fabric, Quilt~~  
 Supported Versions: 1.19, ~~1.18, 1.16~~  
-API Objects: ConfigWrapper, PacketWrapper, DataWrapper  
+API Objects: ConfigWrapper, NetworkWrapper, DataWrapper  
 
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
 
@@ -101,7 +101,7 @@ TODO: chart with comparison to other config libraries
 - LambdAurora/SpruceUI (verbose, fabric only, not synced)
 - TeamMidnightDust/MidnightLib (bloat, not synced)
 
-## Packets
+## Network
 
 Replaces `SimpleImpl` on Forge or `*PlayNetworking` on Fabric.
 
@@ -110,7 +110,7 @@ Replaces `SimpleImpl` on Forge or `*PlayNetworking` on Fabric.
 - [X] send options: client -> server, server -> client, server -> all clients
 - [ ] handshake system to know that server and client are on the same version
 
-CompressedPacketWrapper that does reflection whatever to just write field values in order because the other side already knows what their names are
+CompressedNetworkWrapper that does reflection whatever to just write field values in order because the other side already knows what their names are
 
 ## Saved Data
 

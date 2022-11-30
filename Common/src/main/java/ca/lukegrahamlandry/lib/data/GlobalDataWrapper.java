@@ -1,7 +1,7 @@
 package ca.lukegrahamlandry.lib.data;
 
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
-import ca.lukegrahamlandry.lib.packets.PacketWrapper;
+import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.world.level.storage.LevelResource;
@@ -75,12 +75,12 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
             this.logger.error("called DataWrapper#sync but shouldSync=false");
             return;
         }
-        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+        if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
             this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
             return;
         }
 
-        PacketWrapper.sendToAllClients(new GlobalDataSyncMessage(this));
+        NetworkWrapper.sendToAllClients(new GlobalDataSyncMessage(this));
     }
 
     protected Path getFilePath(){

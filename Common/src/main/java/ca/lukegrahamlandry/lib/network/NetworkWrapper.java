@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.packets;
+package ca.lukegrahamlandry.lib.network;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.base.Services;
@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class PacketWrapper {
+public class NetworkWrapper {
     private static final INetworkHelper NETWORK = Services.load(INetworkHelper.class);
 
-    public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Packets");
+    public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
     public static Map<String, BiConsumer<ServerPlayer, Object>> HANDLERS = new HashMap<>();
 
     public static <T> void sendToClient(ServerPlayer player, T message){

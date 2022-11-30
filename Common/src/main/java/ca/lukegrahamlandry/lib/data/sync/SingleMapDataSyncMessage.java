@@ -2,7 +2,7 @@ package ca.lukegrahamlandry.lib.data.sync;
 
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.MapDataWrapper;
-import ca.lukegrahamlandry.lib.packets.ClientboundHandler;
+import ca.lukegrahamlandry.lib.network.ClientboundHandler;
 
 import java.util.Objects;
 

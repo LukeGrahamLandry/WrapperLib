@@ -1,6 +1,6 @@
 package ca.lukegrahamlandry.lib.config;
 
-import ca.lukegrahamlandry.lib.packets.ClientboundHandler;
+import ca.lukegrahamlandry.lib.network.ClientboundHandler;
 
 // TODO: check against subDirectory
 

@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.packets;
+package ca.lukegrahamlandry.lib.network;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 

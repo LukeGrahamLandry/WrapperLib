@@ -28,8 +28,8 @@ public class EventWrapper {
 
     static {
         add("ca.lukegrahamlandry.lib.base.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.packets.ForgeEventCallbacks");
-        add("ca.lukegrahamlandry.lib.packets.FabricEventCallbacks");
+        add("ca.lukegrahamlandry.lib.network.ForgeEventCallbacks");
+        add("ca.lukegrahamlandry.lib.network.FabricEventCallbacks");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
     }

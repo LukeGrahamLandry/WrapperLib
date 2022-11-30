@@ -2,7 +2,7 @@ package ca.lukegrahamlandry.lib.base;
 
 public class ModuleAvailable {
     public static boolean packets(){
-        return canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper");
+        return canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper");
     }
 
     public static boolean data(){

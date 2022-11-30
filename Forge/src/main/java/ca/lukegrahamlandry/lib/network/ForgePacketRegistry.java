@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.packets;
+package ca.lukegrahamlandry.lib.network;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
@@ -41,11 +41,11 @@ public class ForgePacketRegistry {
     public void handle(GenericHolder<?> message, Supplier<NetworkEvent.Context> context){
         context.get().enqueueWork(() -> {
             if (context.get().getSender() == null) {
-                Consumer action = PacketWrapper.getClientHandler(message.clazz);
+                Consumer action = NetworkWrapper.getClientHandler(message.clazz);
                 if (action != null) action.accept(message.value);
             }
             else {
-                BiConsumer action = PacketWrapper.getServerHandler(message.clazz);
+                BiConsumer action = NetworkWrapper.getServerHandler(message.clazz);
                 if (action != null) action.accept(context.get().getSender(), message.value);
             }
         });

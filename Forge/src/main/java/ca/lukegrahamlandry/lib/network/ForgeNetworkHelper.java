@@ -1,8 +1,6 @@
-package ca.lukegrahamlandry.lib.packets;
+package ca.lukegrahamlandry.lib.network;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
-import ca.lukegrahamlandry.lib.packets.ForgePacketRegistry;
-import ca.lukegrahamlandry.lib.packets.INetworkHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.PacketDistributor;
 
