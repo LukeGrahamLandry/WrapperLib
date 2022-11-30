@@ -1,6 +1,8 @@
-package ca.lukegrahamlandry.lib.data.type;
+package ca.lukegrahamlandry.lib.data;
 
-import ca.lukegrahamlandry.lib.data.DataWrapper;
+import ca.lukegrahamlandry.lib.data.sync.MultiMapDataSyncMessage;
+import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
+import ca.lukegrahamlandry.lib.packets.PacketWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,8 +19,11 @@ import java.util.Map;
 
 // TODO: only load nessisary if this.useMultipleFiles
 // TODO: a MapDataWrapper with useMultipleFiles=false is really a GlobalDataWrapper it just so happens that im writting a map in there instead
-// so maybe if useMultipleFiles=false we have a GlobalDataWrapper instance wrapped with one field for the map
-// maybe also fields for the key/value class names idk quite how to make that work
+
+// TODO: split into an interface!
+// SingleMapDataWrapper<K, I, V> extends GlobalDataWrapper<Map<String, V>> implements MapDataWrapper
+// MultiMapDataWrapper<K, I, V> extends DataWrapper implements DataWrapper
+
 public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     ///// INIT
 
@@ -34,6 +39,16 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
     public V get(K key){
         return this.getById(this.keyToId(key));
+    }
+
+    /**
+     * Same as setDirty() but only syncs data for the one instance that changed.
+     * Results in a smaller packet being sent.
+     * TODO: if useMultipleFiles=true we should only write the changed file as well. so i guess keep a Map I->Boolean isDirty
+     */
+    public void setDirty(K key){
+        this.isDirty = true;
+        if (this.shouldSync) this.sync(key);
     }
 
 
@@ -131,16 +146,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
                 Reader reader = Files.newBufferedReader(path);
                 JsonObject fileInfo = this.getGson().fromJson(reader, JsonObject.class);
                 reader.close();
-                for (Map.Entry<String, JsonElement> entry : fileInfo.entrySet()){
-                    try {
-                        I id = this.stringToId(entry.getKey());
-                        V value = this.getGson().fromJson(entry.getValue(), this.clazz);
-                        this.data.put(id, value);
-                    } catch (JsonSyntaxException e){
-                        this.logger.error("failed to parse json data of " + entry.getValue() + " in " + forDisplay(path));
-                        e.printStackTrace();
-                    }
-                }
+                this.loadFromMap(fileInfo);
             } catch (IOException | JsonSyntaxException e) {
                 this.logger.error("failed to load data from " + forDisplay(path));
                 e.printStackTrace();
@@ -151,9 +157,47 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
         this.isLoaded = true;
     }
 
+    // NEVER CALL THIS
+    // its just for the syncing stuff
+    // TODO: apionly annotation or whatever
+    public void loadFromMap(JsonObject json){
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()){
+            try {
+                I id = this.stringToId(entry.getKey());
+                V value = this.getGson().fromJson(entry.getValue(), this.clazz);
+                this.data.put(id, value);
+            } catch (JsonSyntaxException e){
+                this.logger.error("failed to parse json data " + entry.getValue() + " ignoring key " + entry.getKey());
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void sync() {
+        if (!this.shouldSync) {
+            this.logger.error("called DataWrapper#sync but shouldSync=false");
+            return;
+        }
+        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            return;
+        }
 
+        PacketWrapper.sendToAllClients(new MultiMapDataSyncMessage(this));
+    }
+
+    public void sync(K key) {
+        if (!this.shouldSync) {
+            this.logger.error("called DataWrapper#sync but shouldSync=false");
+            return;
+        }
+        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            return;
+        }
+
+        PacketWrapper.sendToAllClients(new SingleMapDataSyncMessage(this, this.keyToId(key)));
     }
 
     /**
@@ -173,5 +217,17 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
         }
 
         return path;
+    }
+
+    // NEVER CALL THIS
+    // its just for the syncing stuff
+    // TODO: apionly annotation or whatever
+    public void set(Object id, Object value) {
+        this.data.put((I) id, (V) value);
+    }
+
+    // internal use only
+    public Map<I, V> getMap() {
+        return this.data;
     }
 }

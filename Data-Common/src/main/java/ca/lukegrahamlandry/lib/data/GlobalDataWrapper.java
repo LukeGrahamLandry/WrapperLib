@@ -1,9 +1,8 @@
-package ca.lukegrahamlandry.lib.data.type;
+package ca.lukegrahamlandry.lib.data;
 
-import ca.lukegrahamlandry.lib.data.DataWrapper;
+import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
+import ca.lukegrahamlandry.lib.packets.PacketWrapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> {
@@ -73,7 +71,16 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
 
     @Override
     public void sync() {
+        if (!this.shouldSync) {
+            this.logger.error("called DataWrapper#sync but shouldSync=false");
+            return;
+        }
+        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            return;
+        }
 
+        PacketWrapper.sendToAllClients(new GlobalDataSyncMessage(this));
     }
 
     protected Path getFilePath(){
@@ -81,5 +88,12 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
         if (this.subDirectory != null) path = path.resolve(this.subDirectory);
         path = path.resolve(this.name + "." + this.fileExtension);
         return path;
+    }
+
+    // NEVER CALL THIS
+    // its just for the sync stuff
+    // TODO: apionly annotation or whatever
+    public void set(Object v){
+        this.value = (T) v;
     }
 }

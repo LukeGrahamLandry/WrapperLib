@@ -10,15 +10,8 @@ API Objects: ConfigWrapper, PacketWrapper, DataWrapper
 Supported Mod Loaders: Forge, Fabric, Quilt  
 Supported Versions: 1.19, 1.18, 1.16
 
-1. config
-2. packets
-3. data
-4. figure out mixins
-5. base
-6. example mod
-7. tutorials
-8. energy
-9. geckolib
+maybe sync messages can have generics 
+i didnt before because they cant get recreated on the other side but at runtime they dont exist so maybe its fine
 
 ## Installation
 
@@ -179,7 +172,9 @@ make a quilt version to make sure everything works
 
 ## Base Module
 
-- type adapters: nbt, item stack
+- [X] type adapters: nbt, item stack
+- [ ] services for event listeners so i dont need that code many times
+- [ ] annotated forge event classes for those event listeners 
 - fabric: mixin that loads InjectedModInit and InjectedClientModInit services since no annotations
 - canFindClass helpers for each module
 

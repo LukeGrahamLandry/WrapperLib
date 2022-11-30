@@ -1,5 +1,6 @@
 package ca.lukegrahamlandry.lib.config;
 
+import ca.lukegrahamlandry.lib.base.ModuleAvailable;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.packets.PacketWrapper;
 import com.google.gson.Gson;
@@ -115,7 +116,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             this.logger.error("called ConfigWrapper#sync but side=" + this.side);
             return;
         }
-        if (!canFindClass("ca.lukegrahamlandry.lib.packets.PacketWrapper")){
+        if (!ModuleAvailable.packets()){
             this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
             return;
         }
@@ -213,7 +214,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
         try {
             String configData;
-            if (canFindClass("ca.lukegrahamlandry.lib.config.GenerateComments")){
+            if (ModuleAvailable.commentedJson()){
                 configData = GenerateComments.commentedJson(this.defaultConfig, this.getGson());
             } else {
                 configData = this.getGson().newBuilder().setPrettyPrinting().create().toJson(this.defaultConfig);
@@ -254,20 +255,6 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
     public Gson getGson(){
         return this.gson;
-    }
-
-    /**
-     * Used to check if other modules are available.
-     * It is safe to include only this file in your mod if you have simple config needs.
-     * My extra type adapters and syncing packets will only be used if their class is found by this method.
-     */
-    private static boolean canFindClass(String className){
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 
     public enum Side {

@@ -21,7 +21,7 @@ public class EventCallbacks {
     // TODO: players and global only overworld? does that work if you exit world from the nether? i think it says overworld stays loaded no matter what.
     public static void onWorldSave(LevelAccessor level){
         DataWrapper.ALL.forEach((data) -> {
-            if (data.shouldSave) data.save();
+            if (data.shouldSave && data.isDirty) data.save();
         });
     }
 

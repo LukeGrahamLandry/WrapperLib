@@ -24,13 +24,17 @@ public class ForgePacketRegistry {
         channel.registerMessage(i++, GenericHolder.class, packet::encode, packet::decode, packet::handle);
     }
 
+    // TODO: remove log spam before release
+
     public void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
         JsonElement data = JsonHelper.GSON.toJsonTree(message);
+        System.out.println("encode " + data);
         buffer.writeUtf(data.toString());
     }
 
     public GenericHolder<?> decode(FriendlyByteBuf buffer){
         String data = buffer.readUtf();
+        System.out.println("decode " + data);
         return JsonHelper.GSON.fromJson(data, GenericHolder.class);
     }
 

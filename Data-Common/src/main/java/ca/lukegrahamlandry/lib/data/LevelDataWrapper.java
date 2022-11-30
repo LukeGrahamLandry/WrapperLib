@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.data.type;
+package ca.lukegrahamlandry.lib.data;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;

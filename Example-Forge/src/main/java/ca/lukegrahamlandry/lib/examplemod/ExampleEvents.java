@@ -30,9 +30,10 @@ public class ExampleEvents {
         if (event.getEntity().level.isClientSide()) return;
         Entity killer = event.getSource().getEntity();
         if (killer instanceof Player){
-            if (event.getEntity() instanceof Player) ExampleModMain.kills.get((Player) killer).players++;
-            else ExampleModMain.kills.get((Player) killer).mobs++;
-            ExampleModMain.kills.setDirty();
+            Player player = (Player) killer;
+            if (event.getEntity() instanceof Player) ExampleModMain.kills.get(player).players++;
+            else ExampleModMain.kills.get(player).mobs++;
+            ExampleModMain.kills.setDirty(player);
         }
     }
 }

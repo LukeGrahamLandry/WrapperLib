@@ -1,16 +1,8 @@
 package ca.lukegrahamlandry.lib.data;
 
-import ca.lukegrahamlandry.lib.data.adapter.ItemStackTypeAdapter;
-import ca.lukegrahamlandry.lib.data.adapter.NbtTypeAdapter;
-import ca.lukegrahamlandry.lib.data.type.GlobalDataWrapper;
-import ca.lukegrahamlandry.lib.data.type.PlayerDataWrapper;
-import ca.lukegrahamlandry.lib.data.type.LevelDataWrapper;
+import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +75,7 @@ public abstract class DataWrapper<T> {
 
     public void setDirty(){
         this.isDirty = true;
+        if (this.shouldSync) this.sync();
     }
 
     ////// CONSTRUCTION //////
@@ -90,7 +83,7 @@ public abstract class DataWrapper<T> {
     public static List<DataWrapper<?>> ALL = new ArrayList<>();
     public static MinecraftServer server;
 
-    protected final Class<T> clazz;
+    public final Class<T> clazz;
     protected String name;
     protected String fileExtension = "json";
     protected String subDirectory = null;
@@ -106,12 +99,20 @@ public abstract class DataWrapper<T> {
         this.named(defaultName(clazz));
         String id = "LukeGrahamLandry/WrapperLib-Data:" + this.name;
         this.logger = LoggerFactory.getLogger(id);
-        this.useGson(GSON.create());
+        this.useGson(JsonHelper.GSON);
         this.createDefaultInstance();
         ALL.add(this);
     }
 
     ////// IMPL //////
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getSubDirectory() {
+        return this.subDirectory;
+    }
 
     protected abstract Path getFilePath();
 
@@ -152,14 +153,5 @@ public abstract class DataWrapper<T> {
         } catch (IOException e) {
             return path.toAbsolutePath().toString();
         }
-    }
-
-    private static GsonBuilder GSON = new GsonBuilder().setLenient()
-            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
-    static {
-        if (canFindClass("ca.lukegrahamlandry.data.adapter.NbtTypeAdapter"))
-            GSON = GSON.registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter());
-        if (canFindClass("ca.lukegrahamlandry.data.adapter.ItemStackTypeAdapter"))
-            GSON = GSON.registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
     }
 }
