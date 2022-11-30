@@ -19,7 +19,7 @@ haven't tested on servers yet. its possible syncing doesn't actually work cause 
 - fabric test mod
 - config reloading
 - data for item stacks, entities, tile entities
-- RegistryWrapper
+- test RegistryWrapper
 - add maven to publish.gradle
 - wiki
 - packet version handshake

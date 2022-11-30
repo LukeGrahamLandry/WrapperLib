@@ -7,10 +7,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.registry.forge;
+package ca.lukegrahamlandry.lib.registry;
 
-public class RegistryPlatformHelperImpl {
-    public void init(){
-        System.out.println("forge.RegistryWrapperImpl");
+import dev.architectury.injectables.annotations.ExpectPlatform;
+
+public class RegistryPlatform {
+    @ExpectPlatform
+    public static <T> void init(RegistryWrapper<T> wrapper){
+        throw new AssertionError();
     }
 }

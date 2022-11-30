@@ -41,9 +41,18 @@ public class EventWrapper {
         add("ca.lukegrahamlandry.lib.network.FabricEventCallbacks");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
+        add("ca.lukegrahamlandry.lib.registry.EventCallbacks");
     }
 
     public static List<IEventCallbacks> get(){
         return HANDLERS;
+    }
+
+    /**
+     * Sends the mod init event to all tracking IEventCallbacks.
+     * If you are shading you must call this in your mod initializer after setting up all your Wrappers.
+     */
+    public static void triggerInit(){
+        EventWrapper.get().forEach(IEventCallbacks::onInit);
     }
 }
