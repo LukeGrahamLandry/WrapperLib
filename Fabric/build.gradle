@@ -1,56 +1,84 @@
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
-    id 'maven-publish'
-    id 'idea'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-archivesBaseName = "WrapperLib-Common"
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    implementation project(":Common")
-}
 
-loom {
-    runs {
-        client {
-            client()
-            setConfigName("Fabric Client")
-            ideConfigGenerated(true)
-            runDir("run")
-        }
-        server {
-            server()
-            setConfigName("Fabric Server")
-            ideConfigGenerated(true)
-            runDir("run")
-        }
-    }
+    common(project(path: ":Common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":Common", configuration: "transformProductionFabric")) { transitive false }
 }
 
 processResources {
-    inputs.property "version", project.version
-
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
+    inputs.property "version", project.version
 }
 
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier null
+}
+
+task renameJarForPublication(type: Zip, dependsOn: remapJar) {
+    from remapJar.archiveFile.map { zipTree(it) }
+    extension "jar"
+    metadataCharset "UTF-8"
+    destinationDirectory = base.libsDirectory
+    classifier project.name
+}
+
+assemble.dependsOn renameJarForPublication
+
+jar {
+    classifier "dev"
+}
+
+sourcesJar {
+    afterEvaluate {
+        [":Common"].forEach {
+            def depSources = project(it).sourcesJar
+            dependsOn depSources
+            from(depSources.archiveFile.map { zipTree(it) }) {
+                // exclude "modid.accessWidener"
+            }
+        }
+    }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
 }
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.archives_base_name.replace("-", "-Fabric-")
             from components.java
+            version "${rootProject.mod_version}"
         }
     }
 

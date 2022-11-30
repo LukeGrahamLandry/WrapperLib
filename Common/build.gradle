@@ -1,26 +1,25 @@
-plugins {
-    id 'java'
-    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
-    id 'maven-publish'
+loom {
+    // accessWidenerPath = file("src/main/resources/modid.accessWidener")
 }
 
-archivesBaseName = "WrapperLib-Common"
-
-minecraft {
-    version(minecraft_version)
+architectury {
+    common(rootProject.platforms.split(","))
 }
 
 dependencies {
-    compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
+    // We depend on fabric loader here to use the fabric @Environment annotations
+    // Do NOT use other classes from fabric loader
+    // also if you dont have this you will get
+    // - cannot find class org.web  .asm.MethodNode
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 }
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
+        mavencommon(MavenPublication) {
+            artifactId = rootProject.archives_base_name.replace("-", "-Common-")
             from components.java
+            version "${rootProject.mod_version}"
         }
     }
 
