@@ -16,9 +16,6 @@ pluginManagement {
 }
 
 rootProject.name = 'WrapperLib'
-include(":packets:Packets-Common", ":packets:Packets-Fabric", ":packets:Packets-Forge",
-        ":config:Config-Common", ":config:Config-Fabric", ":config:Config-Forge",
-        ":data:Data-Common", ":data:Data-Fabric", ":data:Data-Forge",
-        ":example:Example-Forge",
-        ":base:Base-Common"
+include(":Common", ":Forge", ":Fabric",
+        ":example:Example-Forge"
 )

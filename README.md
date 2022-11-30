@@ -2,21 +2,15 @@
 
 A collection of multi-platform implementations of common tasks for developing Minecraft mods. 
 
+- Provides a uniform api across mod loaders and minecraft versions.
+- A priority is placed on never manually writing serialization code for nbt or byte buffers.
 - Designed to be modular, so you can jar-in-jar only the parts you need and have no external dependencies. 
-- A priority is placed on never manually to writing serialization code for nbt or byte buffers. 
-- Provides a uniform api across mod loaders and minecraft versions
 
+Supported Mod Loaders: Forge, ~~Fabric, Quilt~~  
+Supported Versions: 1.19, ~~1.18, 1.16~~
 API Objects: ConfigWrapper, PacketWrapper, DataWrapper
-Supported Mod Loaders: Forge, Fabric, Quilt  
-Supported Versions: 1.19, 1.18, 1.16
 
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
-
-name adapter map in case they want to change the name of config files or data files
-register(context, oldname, newname, old dir, new dir, transformer)
-transformer is a function JsonElement -> JsonElement that maps the old data format to the new data format
-system for data_format_version numbers in the json that trigger adapters in the same way
-context is like config or PlayerDataWrapper or whatever. make an enum 
 
 ## Installation
 
@@ -34,8 +28,6 @@ dependencies {
 - LOADER: common, forge, fabric
 - MC_VER: 1.19, 1.18, 1.16
 - LIB_VER: MAJOR.MINOR.PATCH (see the latest version numbers in [gradle.properties](gradle.properties))
-
-On forge, make sure to call `fg.deobf` on the dependency.  
 
 **You must relocate my packages when using the shadow plugin, or you will conflict with other mods. You must also call `mergeServiceFiles()` for my crossplatform stuff to work.**
 
@@ -55,6 +47,7 @@ shadowJar {
     relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.wrapperlib"
     finalizedBy 'reobfShadowJar'
     mergeServiceFiles()
+    exclude 'ca.lukegrahamlandry.lib.mod.WrapperLibForgeModMain'
     append 'META-INF/accesstransformer.cfg'
 }
 
@@ -65,14 +58,17 @@ reobf {
 }
 ```
 
+on fabric you need to add my mod and client init classes to your entry points (before yours)
+
 note: 
 i cant just append fabric accesswideners cause they have version info at the top. 
 they get added to fabric.mod.json but doesnt support giving a list
 write my own Transformer and make sure to always use the same aw version/mappings
+
 ## Config
 
 - [X] support configs on both client and server sides
-- [ ] sync server side configs to the client
+- [X] sync server side configs to the client
 - [X] define default values in code
 - [X] generate default config file with comments
 - [X] json format for good support of nested map data structures
@@ -109,10 +105,12 @@ TODO: chart with comparison to other config libraries
 
 Replaces `SimpleImpl` on Forge or `*PlayNetworking` on Fabric.
 
-- [ ] automatically serialize your data class (to json to bytebuffer)
+- [X] automatically serialize your data class (to json to bytebuffer)
 - [ ] cross platform: forge, fabric, quilt
-- [ ] send options: client -> server, server -> client, server -> all clients
+- [X] send options: client -> server, server -> client, server -> all clients
 - [ ] handshake system to know that server and client are on the same version
+
+CompressedPacketWrapper that does reflection whatever to just write field values in order because the other side already knows what their names are
 
 ## Saved Data
 
@@ -152,9 +150,9 @@ look at how 4.0 does it? i think they have some helpers
 
 ## Registries
 
-feels like there are a lot of agressivly clever registry helper libs 
+feels like there are a lot of aggressively clever registry helper libs 
 but really all i want is to wrap a deferred register so i can use it from common code
-then in mod init just RegistryWrapper.init() on forge it can get the mod bus and fabric doesn't need it
+then in mod init just RegistryWrapper.init(), on forge it can get the mod bus and fabric doesn't need it
 
 ## Example Mod
 
@@ -170,22 +168,27 @@ make a quilt version to make sure everything works
 ## Base Module
 
 - [X] type adapters: nbt, item stack
-- [ ] services for event listeners so i dont need that code many times
+- [X] system for event listeners so i dont need that code many times
 - [ ] annotated forge event classes for those event listeners 
-- fabric: mixin that loads InjectedModInit and InjectedClientModInit services since no annotations
-- canFindClass helpers for each module
+- [X] canFindClass helpers for each module
 
-everything needs base
-data and config need packets if you call sync
 distribute a fat jar that contains everything
-putting it on curseforge makes me part of the problem
+i could have just done everything in a normal multiloader project and used shade to exclude the modules that arent being used
+i think i'll do that, it just makes it so much less overhead to keep track of everything
+they're still split into packages to its easy to see which parts are where
+if you shadow it you have to exlude the mods.toml and the services of the modules that are excluded
+i could write a gradle plugin that handles it
 
-should rename it WrapperLib 
-i like the pattern of exposing every api as a ThingWrapper
-seems to reflect what's actually going on well
+putting it on curseforge makes me part of the problem
 
 implementing config and data on bukkit would give me a good starting place in case someone offered to pay a lot for a plugin 
 even packets would work. just only meaningful if theres a client mod to accept them
+
+name adapter map in case they want to change the name of config files or data files
+register(context, oldname, newname, old dir, new dir, transformer)
+transformer is a function JsonElement -> JsonElement that maps the old data format to the new data format
+system for data_format_version numbers in the json that trigger adapters in the same way
+context is like config or PlayerDataWrapper or whatever. make an enum
 
 ## Make Shading Work
 
@@ -194,13 +197,10 @@ even packets would work. just only meaningful if theres a client mod to accept t
     - forge: add to jar manifest
     - fabric: add to fabric.mod.json
     - does shade remap mixin package name?
-- figure out how to merge mod initializers on fabric
-- perhaps just do initializers as mixins since those are more important 
 - probably have to be a gradle plugin
 - tell it which to remap ie. featurelib-config.mixins.json to modid-featurelib-config.mixins.json
 - i want each mod to have their own copy of the mixins in case i change them, no weird shared version negotiation 
   - just don't ever overwrite methods; only use as hooks so its fine for there to be multiple 
-- have a mixin that loads services for mod init interface. does it become a problem if i use the same name as fabric?
 
 ## my mods plan
 
@@ -211,3 +211,4 @@ simple xp config - config
 cosmetology - packets
 staff of travelling - config, (packets)
 find my friends - (config, packets) if i do fabric port
+rain events - data, datapacks

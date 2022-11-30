@@ -1,14 +1,12 @@
 package ca.lukegrahamlandry.examplemod;
 
-import ca.lukegrahamlandry.lib.config.ConfigWrapper;
-import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.PlayerDataWrapper;
 import ca.lukegrahamlandry.examplemod.model.ExampleClientConfig;
 import ca.lukegrahamlandry.examplemod.model.ExampleConfig;
 import ca.lukegrahamlandry.examplemod.model.KillTracker;
+import ca.lukegrahamlandry.lib.config.ConfigWrapper;
+import ca.lukegrahamlandry.lib.data.DataWrapper;
+import ca.lukegrahamlandry.lib.data.PlayerDataWrapper;
 import ca.lukegrahamlandry.lib.packets.ForgePacketRegistry;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.tslat.smartbrainlib.api.core.SmartBrain;
 

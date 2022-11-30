@@ -38,46 +38,26 @@ dependencies {
     mappings loom.officialMojangMappings()
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
-    compileOnly (project(":base:Base-Common")) {transitive=false}
-    compileOnly (project(":packets:Packets-Common")) {transitive=false}
-    compileOnly (project(":packets:Packets-Forge")) {transitive=false}
-    compileOnly (project(":config:Config-Common")) {transitive=false}
-    compileOnly (project(":config:Config-Forge")) {transitive=false}
-    compileOnly (project(":data:Data-Common")) {transitive=false}
-    compileOnly (project(":data:Data-Forge")) {transitive=false}
+    compileOnly (project(":Common")) {transitive=false}
+    shadowCommon (project(":Common")) {transitive=false}
 
-    shadowCommon (project(":base:Base-Common")) {transitive=false}
-    shadowCommon (project(":packets:Packets-Common")) {transitive=false}
-    shadowCommon (project(":packets:Packets-Forge")) {transitive=false}
-    shadowCommon (project(":config:Config-Common")) {transitive=false}
-    shadowCommon (project(":config:Config-Forge")) {transitive=false}
-    shadowCommon (project(":data:Data-Common")) {transitive=false}
-    shadowCommon (project(":data:Data-Forge")) {transitive=false}
+    compileOnly (project(":Forge")) {transitive=false}
+    shadowCommon (project(":Forge")) {transitive=false}
 
     modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
 }
 
 // using implementation or the common setup from arch-api gave class not found
 tasks.withType(JavaCompile) {
-    source(project(":base:Base-Common").sourceSets.main.allSource)
-    source(project(":packets:Packets-Common").sourceSets.main.allSource)
-    source(project(":packets:Packets-Forge").sourceSets.main.allSource)
-    source(project(":config:Config-Common").sourceSets.main.allSource)
-    source(project(":config:Config-Forge").sourceSets.main.allSource)
-    source(project(":data:Data-Common").sourceSets.main.allSource)
-    source(project(":data:Data-Forge").sourceSets.main.allSource)
+    source(project(":Common").sourceSets.main.allSource)
+    source(project(":Forge").sourceSets.main.allSource)
 }
 
 // Caused by: java.lang.NullPointerException: Failed to load service for ca.lukegrahamlandry.lib.packets.platform.services.INetworkHelper
 // but what happens if i have multiple files for the same service. resolution stategy that concatenates them
 processResources {
-    from(project(":base:Base-Common").sourceSets.main.resources)
-    from(project(":packets:Packets-Common").sourceSets.main.resources)
-    from(project(":packets:Packets-Forge").sourceSets.main.resources)
-    from(project(":config:Config-Common").sourceSets.main.resources)
-    from(project(":config:Config-Forge").sourceSets.main.resources)
-    from(project(":data:Data-Common").sourceSets.main.resources)
-    from(project(":data:Data-Forge").sourceSets.main.resources)
+    from(project(":Common").sourceSets.main.resources)
+    from(project(":Forge").sourceSets.main.resources)
 }
 
 tasks.withType(JavaCompile) {
