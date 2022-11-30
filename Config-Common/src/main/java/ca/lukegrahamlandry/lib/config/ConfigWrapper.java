@@ -1,14 +1,9 @@
 package ca.lukegrahamlandry.lib.config;
 
-import ca.lukegrahamlandry.lib.config.data.adapter.ItemStackTypeAdapter;
-import ca.lukegrahamlandry.lib.config.data.adapter.NbtTypeAdapter;
+import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.packets.PacketWrapper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,9 +84,9 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     /**
-     * Set the gson instance that will be used for config serialization/deserialization.
+     * Set the gson instance that will be used for config serialization/deserialization (to file and network).
      * Allows you to register your own type adapters.
-     * See ConfigWrapper#GSON for defaults.
+     * See JsonHelper for defaults.
      * GsonBuilder#setPrettyPrinting will automatically be called when writing defaults to a file (but not for sending over network).
      */
     public ConfigWrapper<T> useGson(Gson gson){
@@ -183,7 +178,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
         }
         this.value = defaultConfig;
-        this.useGson(GSON.create());
+        this.useGson(JsonHelper.GSON);
         ALL.add(this);
     }
 
@@ -274,11 +269,6 @@ public class ConfigWrapper<T> implements Supplier<T> {
             return false;
         }
     }
-
-    private static GsonBuilder GSON = new GsonBuilder().setLenient()
-            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-            .registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter())
-            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
 
     public enum Side {
         CLIENT(false),

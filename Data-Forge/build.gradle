@@ -74,12 +74,14 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly project(":Base")
     compileOnly project(":Data-Common")
     compileOnly project(":Packets-Common")
     compileOnly project(":Packets-Forge")
 }
 
 tasks.withType(JavaCompile) {
+    source(project(":Base").sourceSets.main.allSource)
     source(project(":Data-Common").sourceSets.main.allSource)
 }
 

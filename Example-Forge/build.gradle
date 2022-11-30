@@ -33,6 +33,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
+    compileOnly project(":Base")
     compileOnly project(":Packets-Common")
     compileOnly project(":Packets-Forge")
     compileOnly project(":Config-Common")
@@ -44,6 +45,7 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) {
+    source(project(":Base").sourceSets.main.allSource)
     source(project(":Packets-Common").sourceSets.main.allSource)
     source(project(":Packets-Forge").sourceSets.main.allSource)
     source(project(":Config-Common").sourceSets.main.allSource)

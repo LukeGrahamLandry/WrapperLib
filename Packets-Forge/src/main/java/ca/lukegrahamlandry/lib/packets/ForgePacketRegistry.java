@@ -1,5 +1,7 @@
 package ca.lukegrahamlandry.lib.packets;
 
+import ca.lukegrahamlandry.lib.base.GenericHolder;
+import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.JsonElement;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -23,13 +25,13 @@ public class ForgePacketRegistry {
     }
 
     public void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
-        JsonElement data = GsonHelper.GSON.toJsonTree(message);
+        JsonElement data = JsonHelper.GSON.toJsonTree(message);
         buffer.writeUtf(data.toString());
     }
 
     public GenericHolder<?> decode(FriendlyByteBuf buffer){
         String data = buffer.readUtf();
-        return GsonHelper.GSON.fromJson(data, GenericHolder.class);
+        return JsonHelper.GSON.fromJson(data, GenericHolder.class);
     }
 
     public void handle(GenericHolder<?> message, Supplier<NetworkEvent.Context> context){

@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.config.data.adapter;
+package ca.lukegrahamlandry.lib.base.json;
 
 import com.google.gson.*;
 import net.minecraft.core.Registry;

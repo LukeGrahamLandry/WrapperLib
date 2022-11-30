@@ -1,5 +1,6 @@
 package ca.lukegrahamlandry.lib.packets;
 
+import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.packets.platform.Services;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;

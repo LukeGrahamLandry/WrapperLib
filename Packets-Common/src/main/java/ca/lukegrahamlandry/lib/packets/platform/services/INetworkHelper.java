@@ -1,6 +1,6 @@
 package ca.lukegrahamlandry.lib.packets.platform.services;
 
-import ca.lukegrahamlandry.lib.packets.GenericHolder;
+import ca.lukegrahamlandry.lib.base.GenericHolder;
 import net.minecraft.server.level.ServerPlayer;
 
 public interface INetworkHelper {

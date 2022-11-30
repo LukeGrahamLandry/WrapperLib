@@ -19,5 +19,6 @@ rootProject.name = 'WrapperLib'
 include(":Packets-Common", ":Packets-Fabric", ":Packets-Forge",
         ":Config-Common", ":Config-Fabric", ":Config-Forge",
         ":Data-Common", ":Data-Fabric", ":Data-Forge",
-        ":Example-Forge"
+        ":Example-Forge",
+        ":Base"
 )

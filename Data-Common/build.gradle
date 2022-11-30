@@ -12,6 +12,7 @@ minecraft {
 
 dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
+    implementation project(":Base")
     implementation project(":Packets-Common")
 }
 

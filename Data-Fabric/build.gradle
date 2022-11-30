@@ -12,7 +12,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    implementation project(":Base")
     implementation project(":Data-Common")
+    implementation project(":Packets-Common")
     implementation project(":Packets-Fabric")
 }
 
@@ -43,6 +45,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile) {
+    source(project(":Base").sourceSets.main.allSource)
     source(project(":Data-Common").sourceSets.main.allSource)
 }
 

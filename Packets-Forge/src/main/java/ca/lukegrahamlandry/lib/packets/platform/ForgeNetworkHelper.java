@@ -1,11 +1,9 @@
 package ca.lukegrahamlandry.lib.packets.platform;
 
+import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.packets.ForgePacketRegistry;
-import ca.lukegrahamlandry.lib.packets.GenericHolder;
 import ca.lukegrahamlandry.lib.packets.platform.services.INetworkHelper;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.PacketDistributor;
 
 public class ForgeNetworkHelper implements INetworkHelper {

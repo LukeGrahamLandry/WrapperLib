@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ExampleEvents {
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event){
+        if (event.getEntity().level.isClientSide()) return;
         event.getEntity().addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, ExampleModMain.config.get().speedLevel));
     }
 
@@ -24,7 +26,7 @@ public class ExampleEvents {
     }
 
     @SubscribeEvent
-    public static void onJoin(LivingDeathEvent event){
+    public static void onDeath(LivingDeathEvent event){
         if (event.getEntity().level.isClientSide()) return;
         Entity killer = event.getSource().getEntity();
         if (killer instanceof Player){
