@@ -2,7 +2,7 @@ package ca.lukegrahamlandry.lib.data.sync;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.GlobalDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
 import ca.lukegrahamlandry.lib.network.ClientboundHandler;
 
 import java.util.Objects;

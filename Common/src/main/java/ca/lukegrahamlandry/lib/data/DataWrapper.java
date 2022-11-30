@@ -1,6 +1,9 @@
 package ca.lukegrahamlandry.lib.data;
 
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
+import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.map.LevelDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.map.PlayerDataWrapper;
 import com.google.gson.Gson;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
@@ -12,8 +15,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-// TODO: support subdirectories
 
 /**
  * You can never save data that extends T with extra fields because the json won't recognise how to read it back.

@@ -1,5 +1,6 @@
-package ca.lukegrahamlandry.lib.data;
+package ca.lukegrahamlandry.lib.data.impl;
 
+import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;

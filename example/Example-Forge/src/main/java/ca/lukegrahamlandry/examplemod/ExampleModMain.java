@@ -7,7 +7,7 @@ import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.PlayerDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.map.PlayerDataWrapper;
 import net.minecraftforge.fml.common.Mod;
 import net.tslat.smartbrainlib.api.core.SmartBrain;
 

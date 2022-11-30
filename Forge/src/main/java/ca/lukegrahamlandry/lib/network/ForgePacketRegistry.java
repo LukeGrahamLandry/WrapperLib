@@ -28,13 +28,13 @@ public class ForgePacketRegistry {
 
     public void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
         JsonElement data = JsonHelper.GSON.toJsonTree(message);
-        System.out.println("encode " + data);
+        if (NetworkWrapper.DEBUG) System.out.println("encode " + data);
         buffer.writeUtf(data.toString());
     }
 
     public GenericHolder<?> decode(FriendlyByteBuf buffer){
         String data = buffer.readUtf();
-        System.out.println("decode " + data);
+        if (NetworkWrapper.DEBUG) System.out.println("decode " + data);
         return JsonHelper.GSON.fromJson(data, GenericHolder.class);
     }
 

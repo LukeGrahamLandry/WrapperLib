@@ -1,7 +1,7 @@
 package ca.lukegrahamlandry.lib.data.sync;
 
 import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.MapDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.map.MapDataWrapper;
 import ca.lukegrahamlandry.lib.network.ClientboundHandler;
 import com.google.gson.JsonObject;
 

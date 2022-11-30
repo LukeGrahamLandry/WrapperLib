@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.data;
+package ca.lukegrahamlandry.lib.data.impl.map;
 
 import net.minecraft.world.entity.player.Player;
 

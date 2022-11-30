@@ -5,12 +5,25 @@ A collection of multi-platform implementations of common tasks for developing Mi
 - Provides a uniform api across mod loaders and minecraft versions.
 - A priority is placed on never manually writing serialization code for nbt or byte buffers.
 - Designed to be modular, so you can shadow only the parts you need and have no external dependencies. 
+- Extensive documentation (wiki & javadocs)
 
 Supported Mod Loaders: Forge, ~~Fabric, Quilt~~  
 Supported Versions: 1.19, ~~1.18, 1.16~~  
 API Objects: ConfigWrapper, NetworkWrapper, DataWrapper  
 
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
+
+- test servers
+- test quilt
+- fabric impl
+- fabric test mod
+- config reloading
+- data for item stacks, entities, tile entities
+- RegistryWrapper
+- add maven to publish.gradle
+- wiki
+- packet version handshake
+- config / data version adapters
 
 ## Installation
 
@@ -20,12 +33,11 @@ repositories {
 }
 
 dependencies {
-    shade group: 'ca.lukegrahamlandry.lib', name: 'MODULE-LOADER', version: 'LIB_VER+MC_VER'
+    shade group: 'ca.lukegrahamlandry.lib', name: 'WrapperLib-LOADER', version: 'LIB_VER+MC_VER'
 }
 ```
 
-- MODULE: packets, config, data
-- LOADER: common, forge, fabric
+- LOADER: Common, Forge, Fabric
 - MC_VER: 1.19, 1.18, 1.16
 - LIB_VER: MAJOR.MINOR.PATCH (see the latest version numbers in [gradle.properties](gradle.properties))
 
@@ -168,18 +180,9 @@ make a quilt version to make sure everything works
 ## Base Module
 
 - [X] type adapters: nbt, item stack
-- [X] system for event listeners so i dont need that code many times
-- [ ] annotated forge event classes for those event listeners 
+- [X] system for event listeners so i don't need that code many times
+- [X] annotated forge event classes for those event listeners 
 - [X] canFindClass helpers for each module
-
-distribute a fat jar that contains everything
-i could have just done everything in a normal multiloader project and used shade to exclude the modules that arent being used
-i think i'll do that, it just makes it so much less overhead to keep track of everything
-they're still split into packages to its easy to see which parts are where
-if you shadow it you have to exlude the mods.toml and the services of the modules that are excluded
-i could write a gradle plugin that handles it
-
-putting it on curseforge makes me part of the problem
 
 implementing config and data on bukkit would give me a good starting place in case someone offered to pay a lot for a plugin 
 even packets would work. just only meaningful if theres a client mod to accept them
@@ -212,3 +215,20 @@ cosmetology - packets
 staff of travelling - config, (packets)
 find my friends - (config, packets) if i do fabric port
 rain events - data, datapacks
+
+## wiki
+
+Case Studies
+Torcherino 1.2.3 had x lines of config and packets. By implementing WrapperLib Torcherino 1.2.4 reduced that to just y!
+Jar size went from x kb to y kb (z% increase)
+
+About
+  - Case Studies
+  - Serialization
+Installation: loom, forge gradle, shadowing
+Each Wrapper: the features checklist
+  - Alternatives: explain what it replaces on each loader and other libs that do the same thing
+  - Usage
+Future Ideas
+Problems
+Contributing 

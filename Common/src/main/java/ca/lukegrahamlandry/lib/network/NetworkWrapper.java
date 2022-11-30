@@ -12,6 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class NetworkWrapper {
+    public static boolean DEBUG = true;
     private static final INetworkHelper NETWORK = Services.load(INetworkHelper.class);
 
     public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");

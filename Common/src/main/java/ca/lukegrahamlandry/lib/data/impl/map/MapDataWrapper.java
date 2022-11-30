@@ -1,5 +1,6 @@
-package ca.lukegrahamlandry.lib.data;
+package ca.lukegrahamlandry.lib.data.impl.map;
 
+import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.MultiMapDataSyncMessage;
 import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
