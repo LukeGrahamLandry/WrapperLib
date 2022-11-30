@@ -1,0 +1,55 @@
+{
+    "before": {
+        "config": {
+            "Common": {
+                "lines": 107,
+                "bytes": 4782,
+                "files": 1,
+                "paths": [
+                    "/Common/src/main/java/torcherino/config/Config.java"
+                ]
+            },
+            "Forge": {
+                "lines": 0,
+                "bytes": 0,
+                "files": 0,
+                "paths": []
+            },
+            "Fabric": {
+                "lines": 0,
+                "bytes": 0,
+                "files": 0,
+                "paths": []
+            }
+        },
+        "packets": {
+            "Common": {
+                "lines": 17,
+                "bytes": 596,
+                "files": 1,
+                "paths": [
+                    "/Common/src/main/java/torcherino/platform/NetworkUtils.java"
+                ]
+            },
+            "Forge": {
+                "lines": 234,
+                "bytes": 10440,
+                "files": 4,
+                "paths": [
+                    "/Forge/src/main/java/torcherino/platform/NetworkUtilsImpl.java",
+                    "/Forge/src/main/java/torcherino/network/OpenScreenMessage.java",
+                    "/Forge/src/main/java/torcherino/network/S2CTierSyncMessage.java",
+                    "/Forge/src/main/java/torcherino/network/ValueUpdateMessage.java"
+                ]
+            },
+            "Fabric": {
+                "lines": 157,
+                "bytes": 7558,
+                "files": 1,
+                "paths": [
+                    "/Fabric/src/main/java/torcherino/platform/NetworkUtilsImpl.java"
+                ]
+            }
+        }
+    }
+}

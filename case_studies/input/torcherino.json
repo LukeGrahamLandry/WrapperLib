@@ -1,0 +1,32 @@
+{
+    "before": {
+        "manifest": "torcherino-1.19-17.0.4.json",
+        "projects": {
+            "Common": {
+                "config": [
+                    "src/main/java/torcherino/config"
+                ], 
+                "packets": [
+                    "src/main/java/torcherino/platform/NetworkUtils.java"
+                ]
+            },
+            "Forge": {
+                "config": [
+                    
+                ], 
+                "packets": [
+                    "src/main/java/torcherino/platform/NetworkUtilsImpl.java",
+                    "src/main/java/torcherino/network"
+                ]
+            },
+            "Fabric": {
+                "config": [
+                    
+                ], 
+                "packets": [
+                    "src/main/java/torcherino/platform/NetworkUtilsImpl.java"
+                ]
+            }
+        }
+    }
+}

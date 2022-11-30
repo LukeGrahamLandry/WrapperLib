@@ -1,0 +1,303 @@
+{
+    "": {
+        "files": {
+            "build.gradle": {
+                "bytes": 1768,
+                "lines": 55
+            },
+            "settings.gradle": {
+                "bytes": 387,
+                "lines": 16
+            }
+        },
+        "Common": {
+            "files": {
+                "build.gradle": {
+                    "bytes": 1458,
+                    "lines": 53
+                }
+            },
+            "src": {
+                "files": {},
+                "main": {
+                    "files": {},
+                    "resources": {
+                        "files": {},
+                        "data": {
+                            "files": {},
+                            "torcherino": {
+                                "files": {},
+                                "loot_tables": {
+                                    "files": {}
+                                },
+                                "advancements": {
+                                    "files": {}
+                                }
+                            },
+                            "minecraft": {
+                                "files": {},
+                                "tags": {
+                                    "files": {},
+                                    "blocks": {
+                                        "files": {}
+                                    }
+                                }
+                            }
+                        },
+                        "assets": {
+                            "files": {},
+                            "torcherino": {
+                                "files": {},
+                                "textures": {
+                                    "files": {}
+                                },
+                                "models": {
+                                    "files": {}
+                                }
+                            }
+                        }
+                    },
+                    "java": {
+                        "files": {},
+                        "torcherino": {
+                            "files": {
+                                "TorcherinoImpl.java": {
+                                    "bytes": 3916,
+                                    "lines": 109
+                                }
+                            },
+                            "config": {
+                                "files": {
+                                    "Config.java": {
+                                        "bytes": 4782,
+                                        "lines": 107
+                                    }
+                                }
+                            },
+                            "platform": {
+                                "files": {
+                                    "NetworkUtils.java": {
+                                        "bytes": 596,
+                                        "lines": 17
+                                    },
+                                    "Services.java": {
+                                        "bytes": 580,
+                                        "lines": 17
+                                    },
+                                    "PlatformUtils.java": {
+                                        "bytes": 235,
+                                        "lines": 13
+                                    }
+                                }
+                            },
+                            "api": {
+                                "files": {
+                                    "Tier.java": {
+                                        "bytes": 1222,
+                                        "lines": 27
+                                    },
+                                    "TorcherinoAPI.java": {
+                                        "bytes": 3506,
+                                        "lines": 92
+                                    },
+                                    "TierSupplier.java": {
+                                        "bytes": 1276,
+                                        "lines": 30
+                                    }
+                                }
+                            },
+                            "client": {
+                                "files": {},
+                                "screen": {
+                                    "files": {
+                                        "TorcherinoScreen.java": {
+                                            "bytes": 7100,
+                                            "lines": 165
+                                        }
+                                    },
+                                    "widgets": {
+                                        "files": {
+                                            "StateButtonWidget.java": {
+                                                "bytes": 1754,
+                                                "lines": 53
+                                            },
+                                            "GradatedSliderWidget.java": {
+                                                "bytes": 1147,
+                                                "lines": 34
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "block": {
+                                "files": {
+                                    "WallTorcherinoBlock.java": {
+                                        "bytes": 3148,
+                                        "lines": 74
+                                    },
+                                    "TorcherinoLogic.java": {
+                                        "bytes": 3295,
+                                        "lines": 74
+                                    },
+                                    "JackoLanterinoBlock.java": {
+                                        "bytes": 2845,
+                                        "lines": 72
+                                    },
+                                    "TorcherinoBlock.java": {
+                                        "bytes": 2968,
+                                        "lines": 74
+                                    },
+                                    "LanterinoBlock.java": {
+                                        "bytes": 3853,
+                                        "lines": 93
+                                    }
+                                },
+                                "entity": {
+                                    "files": {
+                                        "TorcherinoBlockEntity.java": {
+                                            "bytes": 7555,
+                                            "lines": 195
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Forge": {
+            "files": {
+                "build.gradle": {
+                    "bytes": 3455,
+                    "lines": 105
+                },
+                "settings.gradle": {
+                    "bytes": 139,
+                    "lines": 6
+                }
+            },
+            "src": {
+                "files": {},
+                "main": {
+                    "files": {},
+                    "resources": {
+                        "files": {},
+                        "META-INF": {
+                            "files": {}
+                        }
+                    },
+                    "java": {
+                        "files": {},
+                        "torcherino": {
+                            "files": {
+                                "ModContent.java": {
+                                    "bytes": 5793,
+                                    "lines": 101
+                                },
+                                "Torcherino.java": {
+                                    "bytes": 2737,
+                                    "lines": 61
+                                },
+                                "ClientHelper.java": {
+                                    "bytes": 1258,
+                                    "lines": 29
+                                }
+                            },
+                            "platform": {
+                                "files": {
+                                    "NetworkUtilsImpl.java": {
+                                        "bytes": 3396,
+                                        "lines": 71
+                                    },
+                                    "PlatformUtilsImpl.java": {
+                                        "bytes": 787,
+                                        "lines": 27
+                                    }
+                                }
+                            },
+                            "network": {
+                                "files": {
+                                    "OpenScreenMessage.java": {
+                                        "bytes": 2653,
+                                        "lines": 61
+                                    },
+                                    "S2CTierSyncMessage.java": {
+                                        "bytes": 2201,
+                                        "lines": 54
+                                    },
+                                    "ValueUpdateMessage.java": {
+                                        "bytes": 2190,
+                                        "lines": 48
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Fabric": {
+            "files": {
+                "build.gradle": {
+                    "bytes": 1752,
+                    "lines": 75
+                }
+            },
+            "src": {
+                "files": {},
+                "main": {
+                    "files": {},
+                    "resources": {
+                        "files": {},
+                        "META-INF": {
+                            "files": {}
+                        }
+                    },
+                    "java": {
+                        "files": {},
+                        "torcherino": {
+                            "files": {
+                                "Torcherino.java": {
+                                    "bytes": 2919,
+                                    "lines": 67
+                                }
+                            },
+                            "blocks": {
+                                "files": {
+                                    "ModBlocks.java": {
+                                        "bytes": 4811,
+                                        "lines": 90
+                                    }
+                                }
+                            },
+                            "platform": {
+                                "files": {
+                                    "NetworkUtilsImpl.java": {
+                                        "bytes": 7558,
+                                        "lines": 157
+                                    },
+                                    "PlatformUtilsImpl.java": {
+                                        "bytes": 759,
+                                        "lines": 26
+                                    }
+                                }
+                            },
+                            "api": {
+                                "files": {},
+                                "entrypoints": {
+                                    "files": {
+                                        "TorcherinoInitializer.java": {
+                                            "bytes": 1610,
+                                            "lines": 35
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
