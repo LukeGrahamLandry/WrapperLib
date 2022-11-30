@@ -1,0 +1,109 @@
+plugins {
+    id "dev.architectury.loom" version "0.12.0-SNAPSHOT"
+    id "maven-publish"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+
+archivesBaseName = "example-forge"
+
+loom {
+    silentMojangMappingsLicense()
+
+    forge {
+        // mixinConfigs = []
+
+        // dataGen { mod project.mod_id }
+    }
+
+    launches {
+        data {
+            arg "--existing", file("src/main/resources").absolutePath
+        }
+    }
+}
+
+repositories {
+    maven { url = "https://maven.lukegrahamlandry.ca" }
+    maven { url = 'https://maven.parchmentmc.org' }
+}
+
+configurations {
+    shadowCommon
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    compileOnly (project(":base:Base-Common")) {transitive=false}
+    compileOnly (project(":packets:Packets-Common")) {transitive=false}
+    compileOnly (project(":packets:Packets-Forge")) {transitive=false}
+    compileOnly (project(":config:Config-Common")) {transitive=false}
+    compileOnly (project(":config:Config-Forge")) {transitive=false}
+    compileOnly (project(":data:Data-Common")) {transitive=false}
+    compileOnly (project(":data:Data-Forge")) {transitive=false}
+
+    shadowCommon (project(":base:Base-Common")) {transitive=false}
+    shadowCommon (project(":packets:Packets-Common")) {transitive=false}
+    shadowCommon (project(":packets:Packets-Forge")) {transitive=false}
+    shadowCommon (project(":config:Config-Common")) {transitive=false}
+    shadowCommon (project(":config:Config-Forge")) {transitive=false}
+    shadowCommon (project(":data:Data-Common")) {transitive=false}
+    shadowCommon (project(":data:Data-Forge")) {transitive=false}
+
+    modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
+}
+
+// using implementation or the common setup from arch-api gave class not found
+tasks.withType(JavaCompile) {
+    source(project(":base:Base-Common").sourceSets.main.allSource)
+    source(project(":packets:Packets-Common").sourceSets.main.allSource)
+    source(project(":packets:Packets-Forge").sourceSets.main.allSource)
+    source(project(":config:Config-Common").sourceSets.main.allSource)
+    source(project(":config:Config-Forge").sourceSets.main.allSource)
+    source(project(":data:Data-Common").sourceSets.main.allSource)
+    source(project(":data:Data-Forge").sourceSets.main.allSource)
+}
+
+// Caused by: java.lang.NullPointerException: Failed to load service for ca.lukegrahamlandry.lib.packets.platform.services.INetworkHelper
+// but what happens if i have multiple files for the same service. resolution stategy that concatenates them
+processResources {
+    from(project(":base:Base-Common").sourceSets.main.resources)
+    from(project(":packets:Packets-Common").sourceSets.main.resources)
+    from(project(":packets:Packets-Forge").sourceSets.main.resources)
+    from(project(":config:Config-Common").sourceSets.main.resources)
+    from(project(":config:Config-Forge").sourceSets.main.resources)
+    from(project(":data:Data-Common").sourceSets.main.resources)
+    from(project(":data:Data-Forge").sourceSets.main.resources)
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    relocate 'ca.lukegrahamlandry.lib', "ca.lukegrahamlandry.examplemod.shadow.wrapperlib"
+    mergeServiceFiles()
+    append 'META-INF/accesstransformer.cfg'
+    classifier "dev-shadow"  // not obfuscated, with shadowed stuff
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier null  // obfuscated, with shadowed stuff
+}
+
+assemble.dependsOn remapJar
