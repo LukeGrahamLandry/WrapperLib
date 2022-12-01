@@ -156,6 +156,12 @@ look at how 4.0 does it? i think they have some helpers
 
 - [X] provide an implementation like Forge's DeferredRegister that can be used from common code
 
+
+## Entity
+
+- `AttributeHelper#register`: register an entity's attributes from common code
+- replacement for NetworkHooks#getEntitySpawningPacket
+
 ## Example Mod
 
 have two versions. showing what you'd have to do without the library
