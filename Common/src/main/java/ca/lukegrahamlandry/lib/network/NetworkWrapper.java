@@ -10,11 +10,13 @@
 package ca.lukegrahamlandry.lib.network;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -107,6 +109,10 @@ public class NetworkWrapper {
         return null;
     }
 
+    /**
+     * You're able to change this but if you're sending a packet bigger than 64 kb it might be a sign you should reconsider your life choices.
+     */
+    public static int MAX_CHARS = 2 << 15;
     public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
     public static Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
     public static Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();

@@ -36,22 +36,13 @@ public class EventWrapper {
     }
 
     static {
-        add("ca.lukegrahamlandry.lib.base.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.network.forge.ForgeEventCallbacks");
-        add("ca.lukegrahamlandry.lib.network.fabric.FabricEventCallbacks");
+        add("ca.lukegrahamlandry.lib.network.forge.NetworkWrapperImpl");
+        add("ca.lukegrahamlandry.lib.network.fabric.NetworkWrapperImpl");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
     }
 
     public static List<IEventCallbacks> get(){
         return HANDLERS;
-    }
-
-    /**
-     * Sends the mod init event to all tracking IEventCallbacks.
-     * If you are shading you must call this in your mod initializer after setting up all your Wrappers.
-     */
-    public static void triggerInit(){
-        EventWrapper.get().forEach(IEventCallbacks::onInit);
     }
 }

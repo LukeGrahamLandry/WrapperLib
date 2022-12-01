@@ -24,8 +24,8 @@ public interface IEventCallbacks {
 
     default void onClientSetup() {}
 
-    // currently must be called in mod constructor if shadowing and excluding mod class because no event annotation for this
     default void onInit() {}
 
-    default void onReloadCommand() {}
+    // TODO. needs mixin?
+    // default void onReloadCommand() {}
 }

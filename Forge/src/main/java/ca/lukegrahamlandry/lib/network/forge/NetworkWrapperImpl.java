@@ -28,33 +28,30 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class NetworkWrapperImpl implements IEventCallbacks {
-    // SETUP
-    @Override
-    public void onInit(){
-        registerPacketChannel();
-    }
-
+    public static final ResourceLocation ID = new ResourceLocation("wrapperlib", NetworkWrapper.class.getName().toLowerCase(Locale.US));
     public static SimpleChannel channel;
     static int i = 0;
 
-    public static void registerPacketChannel(){
+    @Override
+    public void onInit(){
         if (channel != null){
             NetworkWrapper.LOGGER.error("forge.NetworkWrapperImpl#registerPacketChannel called twice");
             return;
         }
-        channel = NetworkRegistry.newSimpleChannel(new ResourceLocation("wrapperlib", NetworkWrapper.class.getName().toLowerCase(Locale.US)), () -> "1.0", s -> true, s -> true);
+        channel = NetworkRegistry.newSimpleChannel(ID, () -> "1.0", s -> true, s -> true);
         channel.registerMessage(i++, GenericHolder.class, NetworkWrapperImpl::encode, NetworkWrapperImpl::decode, NetworkWrapperImpl::handle);
+
     }
 
-    // HANDLING
+    // ENCODING & HANDLING
 
     public static void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
         JsonElement data = JsonHelper.GSON.toJsonTree(message);
-        buffer.writeUtf(data.toString());
+        buffer.writeUtf(data.toString(), NetworkWrapper.MAX_CHARS);
     }
 
     public static GenericHolder<?> decode(FriendlyByteBuf buffer){
-        String data = buffer.readUtf();
+        String data = buffer.readUtf(NetworkWrapper.MAX_CHARS);
         return JsonHelper.GSON.fromJson(data, GenericHolder.class);
     }
 
