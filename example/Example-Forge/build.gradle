@@ -52,7 +52,7 @@ shadowJar {
     configurations = [project.configurations.shadowCommon]
     classifier "dev-shadow"  // not obfuscated, with shadowed stuff
 
-    exclude 'ca/lukegrahamlandry/lib/forge/mod/**'
+    exclude 'ca/lukegrahamlandry/lib/mod/forge/**'
     relocate 'ca.lukegrahamlandry.lib', 'ca.lukegrahamlandry.examplemod.shadow.wrapperlib'
 
 }

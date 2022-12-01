@@ -7,7 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.forge.registry;
+package ca.lukegrahamlandry.lib.registry.forge;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;

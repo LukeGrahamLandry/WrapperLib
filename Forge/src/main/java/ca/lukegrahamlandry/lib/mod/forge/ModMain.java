@@ -7,7 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.forge.mod;
+package ca.lukegrahamlandry.lib.mod.forge;
 
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import net.minecraftforge.fml.common.Mod;

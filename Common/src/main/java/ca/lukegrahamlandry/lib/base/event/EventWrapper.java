@@ -37,11 +37,11 @@ public class EventWrapper {
 
     static {
         add("ca.lukegrahamlandry.lib.base.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.forge.network.ForgeEventCallbacks");
-        add("ca.lukegrahamlandry.lib.fabric.network.FabricEventCallbacks");
+        add("ca.lukegrahamlandry.lib.network.forge.ForgeEventCallbacks");
+        add("ca.lukegrahamlandry.lib.network.fabric.FabricEventCallbacks");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.forge.registry.RegistryPlatformImpl");
+        add("ca.lukegrahamlandry.lib.registry.forge.RegistryPlatformImpl");
     }
 
     public static List<IEventCallbacks> get(){

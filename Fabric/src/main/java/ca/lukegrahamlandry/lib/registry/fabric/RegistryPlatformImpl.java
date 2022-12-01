@@ -7,7 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.fabric.registry;
+package ca.lukegrahamlandry.lib.registry.fabric;
 
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.core.Registry;
