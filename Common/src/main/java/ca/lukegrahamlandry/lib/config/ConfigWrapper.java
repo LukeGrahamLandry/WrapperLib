@@ -126,7 +126,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             return;
         }
         if (!ModuleAvailable.packets()){
-            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            this.logger.error("called ConfigWrapper#sync but WrapperLib Network module is missing");
             return;
         }
         NetworkWrapper.sendToAllClients(new ConfigSyncMessage(this));

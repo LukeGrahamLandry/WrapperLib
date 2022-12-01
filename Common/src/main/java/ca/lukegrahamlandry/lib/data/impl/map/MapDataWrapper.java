@@ -203,7 +203,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             return;
         }
         if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
-            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            this.logger.error("called ConfigWrapper#sync but WrapperLib Network module is missing");
             return;
         }
 
@@ -216,7 +216,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             return;
         }
         if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
-            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            this.logger.error("called DataWrapper#sync but WrapperLib Network module is missing");
             return;
         }
 

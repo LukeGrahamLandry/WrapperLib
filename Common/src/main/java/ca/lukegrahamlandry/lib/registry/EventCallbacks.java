@@ -10,14 +10,14 @@
 package ca.lukegrahamlandry.lib.registry;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
-import ca.lukegrahamlandry.lib.data.DataWrapper;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.LevelAccessor;
 
 public class EventCallbacks implements IEventCallbacks {
+    // instead of doing this at the earliest possible time, it should be done at the latest possible time
+    // can i mixin to when the registry gets frozen
     @Override
     public void onInit() {
-        RegistryWrapper.ALL.forEach(RegistryWrapper::init);
+        RegistryWrapper.ALL.forEach((wrapper) -> {
+            if (wrapper.autoInit) wrapper.init();
+        });
     }
 }

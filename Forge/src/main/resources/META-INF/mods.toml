@@ -22,7 +22,7 @@ displayName="WrapperLib" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+displayURL="https://github.com/LukeGrahamLandry/WrapperLib" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="multiloader.png" #optional
 # A text field displayed in the mod UI
@@ -34,7 +34,7 @@ description='''
 - Provides a uniform api across mod loaders and minecraft versions.
 - A priority is placed on never manually writing serialization code for nbt or byte buffers.
 - Designed to be modular, so you can shadow only the parts you need and have no external dependencies.
-- Implements: ConfigWrapper, NetworkWrapper, DataWrapper
+- Implements: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.wrapperlib]] #optional

@@ -5,11 +5,12 @@ A collection of multi-platform implementations of common tasks for developing Mi
 - Provides a uniform api across mod loaders and minecraft versions.
 - A priority is placed on never manually writing serialization code for nbt or byte buffers.
 - Designed to be modular, so you can shadow only the parts you need and have no external dependencies. 
-- Extensive documentation (wiki & javadocs)
+- Each api concept is exposed as a Builder like class with no additional setup required.
+- Extensive documentation (wiki & javadocs).
 
-Supported Mod Loaders: Forge, ~~Fabric, Quilt~~  
-Supported Versions: 1.19, ~~1.18, 1.16~~  
-API Objects: ConfigWrapper, NetworkWrapper, DataWrapper  
+Supported Mod Loaders: Forge, Fabric, ~~Quilt~~  
+Supported Versions: 1.19, ~~1.18, 1.16, 1.12~~  
+API Objects: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper  
 
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
 
@@ -25,6 +26,15 @@ haven't tested on servers yet. its possible syncing doesn't actually work cause 
 - packet version handshake
 - config / data version adapters
 
+the sources platform jar doesn't include common classes. might be a problem for maven finding it on single loader projects
+
+## Official Sources
+
+- curseforge
+- modrinth
+- https://github.com/LukeGrahamLandry/WrapperLib/releases
+- https://maven.lukegrahamlandry.ca
+
 ## Installation
 
 ```groovy
@@ -33,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    shade group: 'ca.lukegrahamlandry.lib', name: 'WrapperLib-LOADER', version: 'LIB_VER+MC_VER'
+    shade group: 'ca.lukegrahamlandry.lib', name: 'WrapperLib-LOADER-MC_VER', version: 'LIB_VER'
 }
 ```
 
@@ -41,41 +51,23 @@ dependencies {
 - MC_VER: 1.19, 1.18, 1.16
 - LIB_VER: MAJOR.MINOR.PATCH (see the latest version numbers in [gradle.properties](gradle.properties))
 
-**You must relocate my packages when using the shadow plugin, or you will conflict with other mods. You must also call `mergeServiceFiles()` for my crossplatform stuff to work.**
+## Shadowing 
+
+- **You must relocate my packages when using the shadow plugin, or you will conflict with other mods.**
+- On Fabric, you need to add my mod and client init classes to your entry points.
+- On Forge, you need to call `EventWrapper.triggerInit()` from your mod constructor. 
 
 ```groovy
-plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
-
-configurations {
-    shade
-    implementation.extendsFrom shade
-}
-
 shadowJar {
-    archiveClassifier = ''
-    configurations = [project.configurations.shade]
     relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.wrapperlib"
-    finalizedBy 'reobfShadowJar'
-    mergeServiceFiles()
-    exclude 'ca.lukegrahamlandry.lib.mod.WrapperLibForgeModMain'
-    append 'META-INF/accesstransformer.cfg'
-}
-
-assemble.dependsOn shadowJar
-
-reobf {
-    shadowJar {}
 }
 ```
-
-on fabric you need to add my mod and client init classes to your entry points (before yours)
 
 note: 
 i cant just append fabric accesswideners cause they have version info at the top. 
 they get added to fabric.mod.json but doesnt support giving a list
 write my own Transformer and make sure to always use the same aw version/mappings
+look at architectury's thing, they seem to have some sort of combiner code
 
 ## Config
 
@@ -162,9 +154,7 @@ look at how 4.0 does it? i think they have some helpers
 
 ## Registries
 
-feels like there are a lot of aggressively clever registry helper libs 
-but really all i want is to wrap a deferred register so i can use it from common code
-then in mod init just RegistryWrapper.init(), on forge it can get the mod bus and fabric doesn't need it
+- [X] provide an implementation like Forge's DeferredRegister that can be used from common code
 
 ## Example Mod
 
@@ -219,7 +209,7 @@ rain events - data, datapacks
 ## wiki
 
 Case Studies
-Torcherino 1.2.3 had x lines of config and packets. By implementing WrapperLib Torcherino 1.2.4 reduced that to just y!
+Torcherino 1.2.3 had x lines (x kb) of config and packets. By implementing WrapperLib Torcherino 1.2.4 reduced that to just y lines (y kb)!
 Jar size went from x kb to y kb (z% increase)
 
 About
@@ -232,3 +222,15 @@ Each Wrapper: the features checklist
 Future Ideas
 Problems
 Contributing 
+
+## Licensing Info
+
+- WrapperLib is available under the MPL 2.0 License as seen in the LICENSE file. This summary is not a substitute for the full license text.
+- You may distribute a Larger Work containing official versions of WrapperLib (ie by shading it into your mods). 
+  - You must prominently link to WrapperLib's Source Code Form (this repo).
+  - Your Larger Work may be under any license you like.
+- You may create and distribute modified versions of WrapperLib. 
+  - You must prominently link to the Source Code Form of any modified versions of WrapperLib files.
+  - Modified versions of WrapperLib files must be available under the MPL 2.0.
+  - The rest of your modified version may be under any license you like.
+- You may not remove license notices from any WrapperLib files. 

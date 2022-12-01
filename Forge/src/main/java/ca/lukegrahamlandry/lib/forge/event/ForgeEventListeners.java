@@ -7,7 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.event;
+package ca.lukegrahamlandry.lib.forge.event;
 
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import net.minecraftforge.event.entity.player.PlayerEvent;

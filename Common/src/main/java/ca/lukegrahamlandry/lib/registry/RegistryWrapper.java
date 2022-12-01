@@ -19,14 +19,6 @@ import java.util.function.Supplier;
 
 
 public class RegistryWrapper<T> {
-    /**
-     * Be careful that you are actually class loading the class that calls this method.
-     * If you have it static-inited in a separate class with all your other objects you can call
-     * RegistryWrapper#init from your mod initializer to make sure it gets class loaded.
-     * RegistryWrapper#init will generally be called automatically.
-     * @param <T> the type of object that will be registered.
-     * @param vanillaRegistry Registry.OBJECT_TYPE
-     */
     public static <T> RegistryWrapper<T> of(Registry<T> vanillaRegistry, String modid){
         return new RegistryWrapper<>(vanillaRegistry, modid);
     }
@@ -38,6 +30,7 @@ public class RegistryWrapper<T> {
     private final Logger logger;
     private final Map<String, Supplier<T>> values = new HashMap<>();
     private int initCount = -1;
+    protected boolean autoInit = false;
     public RegistryWrapper(Registry<T> vanillaRegistry, String modid) {
         this.registry = vanillaRegistry;
         this.modid = modid;
@@ -62,24 +55,31 @@ public class RegistryWrapper<T> {
         return this.values.entrySet();
     }
 
-    public RegistryWrapper<T> noAutoInit(){
-        ALL.remove(this);
+    public RegistryWrapper<T> autoInit(){
+        this.autoInit = true;
         return this;
     }
 
     /**
      * Passes all current values to the loader to be registered.
-     * May only be called once which must be after you've added all your objects.
-     * Important that it either be called before IEventCallbacks#init or in your mod initializer.
+     * Should only be called once which must be after you've added all your objects (subsequent calls will be ignored).
+     * Either:
+     * - call this from your mod initializer after you register all your objects or
+     *      - fabic mods are unordered so this won't work
+     * - call autoInit() and ensure your containing class is loaded with all objects registered before IEventCallbacks#init fires
      */
     public void init(){
-        if (this.entrySet().size() == 0) return;
+        if (this.entrySet().size() == 0) {
+            this.logger.debug("no objects to register");
+            return;
+        }
         if (this.initCount != -1) {
             int newEntries = this.entrySet().size() - this.initCount;
             if (newEntries > 0) this.logger.error("RegistryWrapper#init called twice. {} new items will be ignored", newEntries);
             return;
         }
 
+        this.logger.debug("registering {} objects", this.entrySet().size());
         RegistryPlatform.init(this);
         this.initCount = this.entrySet().size();
     }

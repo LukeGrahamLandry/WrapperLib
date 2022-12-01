@@ -7,22 +7,19 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.registry.forge;
+package ca.lukegrahamlandry.lib.registry.fabric;
 
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryManager;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class RegistryPlatformImpl {
     public static <T> void init(RegistryWrapper<T> wrapper){
-        DeferredRegister<T> register = DeferredRegister.create(RegistryManager.ACTIVE.getRegistry(wrapper.registry.key()), wrapper.modid);
         for (Map.Entry<String, Supplier<T>> entry : wrapper.entrySet()){
-            register.register(entry.getKey(), entry.getValue());
+            Registry.register(wrapper.registry, new ResourceLocation(wrapper.modid, entry.getKey()), entry.getValue().get());
         }
-        register.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 }

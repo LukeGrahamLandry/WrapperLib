@@ -1,94 +1,75 @@
 plugins {
-    id "dev.architectury.loom" version "0.12.0-SNAPSHOT"
-    id "maven-publish"
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = "example-forge"
-
 loom {
-    silentMojangMappingsLicense()
-
     forge {
-        // mixinConfigs = []
-
-        // dataGen { mod project.mod_id }
+        // mixinConfig "modid.mixins.json"
     }
+}
 
-    launches {
-        data {
-            arg "--existing", file("src/main/resources").absolutePath
-        }
-    }
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
 }
 
 repositories {
     maven { url = "https://maven.lukegrahamlandry.ca" }
-    maven { url = 'https://maven.parchmentmc.org' }
-}
-
-configurations {
-    shadowCommon
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
 
-    compileOnly (project(":Common")) {transitive=false}
-    shadowCommon (project(":Common")) {transitive=false}
-
-    compileOnly (project(":Forge")) {transitive=false}
-    shadowCommon (project(":Forge")) {transitive=false}
+    implementation project(path: ":Forge", configuration: "namedElements")
+    common(project(path: ":Common", configuration: "namedElements")) { transitive false }
+    shadowCommon project(path: ":Common", configuration: "namedElements")
+    shadowCommon project(path: ":Forge", configuration: "namedElements")
 
     modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
 }
 
-// using implementation or the common setup from arch-api gave class not found
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
-    source(project(":Forge").sourceSets.main.allSource)
-
-    exclude "ca/lukegrahamlandry/lib/mod"
-}
-
-// Caused by: java.lang.NullPointerException: Failed to load service for ca.lukegrahamlandry.lib.packets.platform.services.INetworkHelper
-// but what happens if i have multiple files for the same service. resolution stategy that concatenates them
 processResources {
-    from(project(":Common").sourceSets.main.resources)
-    from(project(":Forge").sourceSets.main.resources) {
-        exclude "META-INF/mods.toml"
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
-processResources {
-    inputs.property "version", project.version
-
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
+    inputs.property "META-INF/mods.toml", project.version
 }
 
 shadowJar {
     configurations = [project.configurations.shadowCommon]
-    relocate 'ca.lukegrahamlandry.lib', "ca.lukegrahamlandry.examplemod.shadow.wrapperlib"
-    mergeServiceFiles()
-    append 'META-INF/accesstransformer.cfg'
-    classifier "dev-shadow"  // not obfuscated, with shadowed stuff
+    classifier "dev-shadow"
 
-    exclude "META-INF/mods.toml"
-    exclude "ca/lukegrahamlandry/lib/mod"
+    exclude 'ca/lukegrahamlandry/lib/forge/mod/**'
+    relocate 'ca.lukegrahamlandry.lib', 'ca.lukegrahamlandry.examplemod.shadow.wrapperlib'
+
 }
 
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null  // obfuscated, with shadowed stuff
+    classifier null
 }
 
-assemble.dependsOn remapJar
+task renameJarForPublication(type: Zip, dependsOn: remapJar) {
+    from remapJar.archiveFile.map { zipTree(it) }
+    extension "jar"
+    metadataCharset "UTF-8"
+    destinationDirectory = base.libsDirectory
+    classifier project.name
+}
+
+assemble.dependsOn renameJarForPublication
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}

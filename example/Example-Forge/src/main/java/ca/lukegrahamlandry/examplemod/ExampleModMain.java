@@ -9,6 +9,7 @@ import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.map.PlayerDataWrapper;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.tslat.smartbrainlib.api.core.SmartBrain;
 
 import java.util.function.Supplier;
@@ -22,6 +23,6 @@ public class ExampleModMain {
 
     public ExampleModMain(){
         System.out.println("helloworld " + SmartBrain.class.getName());
-        EventWrapper.get().forEach(IEventCallbacks::onInit);
+        if (FMLLoader.isProduction()) EventWrapper.get().forEach(IEventCallbacks::onInit);
     }
 }

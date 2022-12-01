@@ -25,7 +25,8 @@ public class NetworkWrapper {
     private static final INetworkHelper NETWORK = Services.load(INetworkHelper.class);
 
     public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
-    public static Map<String, BiConsumer<ServerPlayer, Object>> HANDLERS = new HashMap<>();
+    public static Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
+    public static Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
 
     public static <T> void sendToClient(ServerPlayer player, T message){
         NETWORK.sendToClient(player, new GenericHolder<>(message));
@@ -40,16 +41,16 @@ public class NetworkWrapper {
     }
 
     public static <T> void registerClientHandler(Class<T> clazz, Consumer<T> handler){
-        HANDLERS.put(clazz.getName(), (sender, msg) -> handler.accept((T) msg));
+        CLIENT_BOUND_HANDLERS.put(clazz.getName(), handler);
     }
 
     public static <T> void registerServerHandler(Class<T> clazz, BiConsumer<ServerPlayer, T> handler){
-        HANDLERS.put(clazz.getName(), (sender, msg) -> handler.accept(sender, (T) msg));
+        SERVER_BOUND_HANDLERS.put(clazz.getName(), handler);
     }
 
     public static <T> Consumer<T> getClientHandler(Class<T> clazz){
-        if (HANDLERS.containsKey(clazz.getName())){
-            return (msg) -> HANDLERS.get(clazz.getName()).accept(null, msg);
+        if (CLIENT_BOUND_HANDLERS.containsKey(clazz.getName())){
+            return (Consumer<T>) CLIENT_BOUND_HANDLERS.get(clazz.getName());
         }
 
         if (ClientboundHandler.class.isAssignableFrom(clazz)){
@@ -61,8 +62,8 @@ public class NetworkWrapper {
     }
 
     public static <T> BiConsumer<ServerPlayer, T> getServerHandler(Class<T> clazz){
-        if (HANDLERS.containsKey(clazz.getName())){
-            return (sender, msg) -> HANDLERS.get(clazz.getName()).accept(sender, msg);
+        if (SERVER_BOUND_HANDLERS.containsKey(clazz.getName())){
+            return (BiConsumer<ServerPlayer, T>) SERVER_BOUND_HANDLERS.get(clazz.getName());
         }
 
         if (ServerboundHandler.class.isAssignableFrom(clazz)){

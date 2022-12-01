@@ -57,11 +57,13 @@ public abstract class DataWrapper<T> {
 
     public <W extends DataWrapper<T>> W named(String name){
         this.name = name.toLowerCase(Locale.ROOT).replace(":", "-").replace(" ", "-");
+        this.createLogger();
         return (W) this;
     }
 
     public <W extends DataWrapper<T>> W dir(String subDirectory){
         this.subDirectory = subDirectory;
+        this.createLogger();
         return (W) this;
     }
 
@@ -101,20 +103,23 @@ public abstract class DataWrapper<T> {
     protected boolean shouldSync = false;
     protected boolean isLoaded = false;
     protected boolean isDirty = false;
-    protected final Logger logger;
+    protected Logger logger;
     private Gson gson;
 
     protected DataWrapper(Class<T> clazz){
         this.clazz = clazz;
         this.named(defaultName(clazz));
-        String id = "LukeGrahamLandry/WrapperLib Data:" + this.name;
-        this.logger = LoggerFactory.getLogger(id);
         this.useGson(JsonHelper.GSON);
         this.createDefaultInstance();
         ALL.add(this);
     }
 
     ////// IMPL //////
+
+    protected void createLogger(){
+        String id = this.getSubDirectory() == null ? "LukeGrahamLandry/WrapperLib Data:" + this.getName() : "LukeGrahamLandry/WrapperLib Data:" + this.getSubDirectory() + "/" + this.getName();
+        this.logger = LoggerFactory.getLogger(id);
+    }
 
     public String getName() {
         return this.name;
@@ -145,8 +150,7 @@ public abstract class DataWrapper<T> {
 
     /**
      * Used to check if other modules are available.
-     * It is safe to include only this file in your mod if you have simple needs.
-     * My extra type adapters and syncing packets will only be used if their class is found by this method.
+     * My syncing packets will only be used if their class is found by this method.
      */
     protected static boolean canFindClass(String className){
         try {

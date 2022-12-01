@@ -86,7 +86,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
             return;
         }
         if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
-            this.logger.error("called ConfigWrapper#sync but WrapperLib-Packets module is missing");
+            this.logger.error("called DataWrapper#sync but WrapperLib Network module is missing");
             return;
         }
 

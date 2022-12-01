@@ -12,7 +12,7 @@ if (JavaVersion.current().ordinal() + 1 < 17) {
 }
 
 include(":Common", ":Forge", ":Fabric"
-        // , ":example:Example-Forge"
+        , ":example:Example-Forge"
 )
 
 rootProject.name = 'WrapperLib'
