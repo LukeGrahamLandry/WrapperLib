@@ -13,16 +13,15 @@ import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
-public class RegistryPlatformImpl {
+public class RegistryWrapperImpl {
     public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<T> constructor) {
         Registry.register(registry, rl, constructor.get());
     }
 
     /**
-     * Fabric doesn't aggressively fuck with registries so this does nothing and vanilla handles everything
+     * Fabric doesn't aggressively fuck with registries so this does nothing and vanilla handles everything later.
      */
     public static <T> void init(RegistryWrapper<T> wrapper) {
 

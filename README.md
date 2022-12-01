@@ -12,6 +12,7 @@ Supported Mod Loaders: Forge, Fabric, ~~Quilt~~
 Supported Versions: 1.19, ~~1.18, 1.16, 1.12~~  
 API Objects: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper  
 
+
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
 
 - test servers
@@ -155,7 +156,25 @@ look at how 4.0 does it? i think they have some helpers
 ## Registries
 
 - [X] provide an implementation like Forge's DeferredRegister that can be used from common code
+- [ ] handle block items automatically
 
+Alternatives:
+
+https://github.com/architectury/architectury-api
+They provide a `Registrar` with almost the same api as my `RegistryWrapper` but a much more complex implementation (compare their 780 line [forge RegistriesImpl](https://github.com/architectury/architectury-api/blob/1.19.2/forge/src/main/java/dev/architectury/registry/registries/forge/RegistriesImpl.java) to my 50 line [forge RegistryPlatformImpl](https://github.com/LukeGrahamLandry/WrapperLib/blob/1.19/Forge/src/main/java/ca/lukegrahamlandry/lib/registry/forge/RegistryPlatformImpl.java))
+They also do a lot of work properly reimplementing deferred registers in common code for fabric projects to use (see [thier package](https://github.com/architectury/architectury-api/tree/1.19.2/common/src/main/java/dev/architectury/registry/registries) vs [my class](https://github.com/LukeGrahamLandry/WrapperLib/blob/1.19/Common/src/main/java/ca/lukegrahamlandry/lib/registry/RegistryWrapper.java)).
+My approach is to notice as early as possible if you're running on fabric and just pass it on to vanilla's code.
+My registry stuff is tiny enough that it can reasonably be shadowed.
+
+
+https://github.com/VazkiiMods/AutoRegLib
+- they also provide basic versions of a lot of registry objects you might want to extend for your own. Mine just has the minimum required for handling the actual registration. 
+- more complex
+
+https://github.com/lukebemish/mcdevutils
+- gradle plugin that automatically generates platform specific registry code at build time based on magic annotations 
+- i have much respect for the cleverness of this but am personally intimidated by the prospect of adding complexity that would take a long time to understand if it broke. 
+- WrapperLib focuses on providing the simplest possible cross-platform registry api so even if something breaks, you have only two of my classes to look through to find the problem. 
 
 ## Entity
 
