@@ -10,10 +10,19 @@
 package ca.lukegrahamlandry.lib.registry;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.function.Supplier;
 
 public class RegistryPlatform {
     @ExpectPlatform
-    public static <T> void init(RegistryWrapper<T> wrapper){
+    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<T> itemConstructor) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static <T> void init(RegistryWrapper<T> wrapper) {
         throw new AssertionError();
     }
 }

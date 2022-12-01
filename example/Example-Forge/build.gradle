@@ -30,8 +30,13 @@ dependencies {
 
     implementation project(path: ":Forge", configuration: "namedElements")
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
-    shadowCommon project(path: ":Common", configuration: "namedElements")
+
+    // transformProductionForge is after is does the @ExpectPlatform injections
+    // does not exist on :Forge of course because that's not the direction it goes in
+    // namedElements on :Common would throw assertion errors on the platform classes
+    shadowCommon project(path: ":Common", configuration: "transformProductionForge")
     shadowCommon project(path: ":Forge", configuration: "namedElements")
+
 
     modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
 }
@@ -45,7 +50,7 @@ processResources {
 
 shadowJar {
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    classifier "dev-shadow"  // not obfuscated, with shadowed stuff
 
     exclude 'ca/lukegrahamlandry/lib/forge/mod/**'
     relocate 'ca.lukegrahamlandry.lib', 'ca.lukegrahamlandry.examplemod.shadow.wrapperlib'
@@ -55,7 +60,7 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    classifier null  // obfuscated, with shadowed stuff
 }
 
 task renameJarForPublication(type: Zip, dependsOn: remapJar) {

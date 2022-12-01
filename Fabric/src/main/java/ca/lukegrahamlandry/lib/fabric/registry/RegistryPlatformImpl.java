@@ -7,7 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.registry.fabric;
+package ca.lukegrahamlandry.lib.fabric.registry;
 
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.core.Registry;
@@ -17,9 +17,14 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class RegistryPlatformImpl {
-    public static <T> void init(RegistryWrapper<T> wrapper){
-        for (Map.Entry<String, Supplier<T>> entry : wrapper.entrySet()){
-            Registry.register(wrapper.registry, new ResourceLocation(wrapper.modid, entry.getKey()), entry.getValue().get());
-        }
+    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<T> constructor) {
+        Registry.register(registry, rl, constructor.get());
+    }
+
+    /**
+     * Fabric doesn't aggressively fuck with registries so this does nothing and vanilla handles everything
+     */
+    public static <T> void init(RegistryWrapper<T> wrapper) {
+
     }
 }

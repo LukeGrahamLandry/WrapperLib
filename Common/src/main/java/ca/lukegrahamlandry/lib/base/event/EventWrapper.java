@@ -41,7 +41,7 @@ public class EventWrapper {
         add("ca.lukegrahamlandry.lib.fabric.network.FabricEventCallbacks");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.registry.EventCallbacks");
+        add("ca.lukegrahamlandry.lib.forge.registry.RegistryPlatformImpl");
     }
 
     public static List<IEventCallbacks> get(){
