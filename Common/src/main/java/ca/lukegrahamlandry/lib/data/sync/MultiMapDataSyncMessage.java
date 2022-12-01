@@ -11,12 +11,12 @@ package ca.lukegrahamlandry.lib.data.sync;
 
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.map.MapDataWrapper;
-import ca.lukegrahamlandry.lib.network.ClientboundHandler;
+import ca.lukegrahamlandry.lib.network.ClientSideHandler;
 import com.google.gson.JsonObject;
 
 import java.util.Objects;
 
-public class MultiMapDataSyncMessage implements ClientboundHandler {
+public class MultiMapDataSyncMessage implements ClientSideHandler {
     String value;
     String name;
     String dir;

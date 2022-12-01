@@ -9,8 +9,9 @@
 
 package ca.lukegrahamlandry.lib.network;
 
-import net.minecraft.server.level.ServerPlayer;
-
-public interface ServerboundHandler {
-    void handle(ServerPlayer player);
+public interface ClientSideHandler {
+    /**
+     * The method to be called when an object of this type is received, through the network, on the client.
+     */
+    void handle();
 }

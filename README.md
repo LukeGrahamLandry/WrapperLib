@@ -10,18 +10,18 @@ A collection of multi-platform implementations of common tasks for developing Mi
 
 Supported Mod Loaders: Forge, Fabric, ~~Quilt~~  
 Supported Versions: 1.19, ~~1.18, 1.16, 1.12~~  
-API Objects: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper  
+
+API Objects: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper, EntityHelper  
 
 
 haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
 
 - test servers
-- test quilt
-- fabric impl
-- fabric test mod
+- fabric impl & test mod
+- quilt test mod
 - config reloading
 - data for item stacks, entities, tile entities
-- test RegistryWrapper
+- test RegistryWrapper & EntityHelper
 - add maven to publish.gradle
 - wiki
 - packet version handshake
@@ -78,10 +78,8 @@ look at architectury's thing, they seem to have some sort of combiner code
 - [X] generate default config file with comments
 - [X] json format for good support of nested map data structures
 - [X] server checks global folder so modpacks can ship defaults
-- [X] shadow so no external dependencies
-- [ ] cross platform: forge, fabric, quilt
-- [X] lightweight: no extra bloat increasing your jar size
 - [X] no boilerplate: just write a data class
+- [X] provided json serializers for ResourceLocation, CompoundTag, ItemStack
 - [ ] automatic integration with config screen api
 - [ ] generate english lang file for screens based on comment annotations
 - [ ] min and max values for numbers with annotations
@@ -92,7 +90,6 @@ look at architectury's thing, they seem to have some sort of combiner code
 - [ ] update with default values of new fields 
 - [ ] array or map of registry objects that removes missing ones
 - [ ] could be wrapped in data.RegistryObjectGroup or data.RegistryObjectMap that can accept tags as well?
-- [X] provided json serializers for ResourceLocation, CompoundTag, ItemStack
 - [ ] subdirectory support in case you want lots of config files without risk of conflicting with other mods
 
 TODO: chart with comparison to other config libraries
@@ -111,7 +108,6 @@ TODO: chart with comparison to other config libraries
 Replaces `SimpleImpl` on Forge or `*PlayNetworking` on Fabric.
 
 - [X] automatically serialize your data class (to json to bytebuffer)
-- [ ] cross platform: forge, fabric, quilt
 - [X] send options: client -> server, server -> client, server -> all clients
 - [ ] handshake system to know that server and client are on the same version
 
@@ -127,31 +123,10 @@ World data is just a file with a json object (perhaps multiple files if stored s
 - [X] store data in a json file instead of nbt for easy editing
 - [X] automatically serialize your data class
 - [X] sync data to clients
-- [ ] cross platform: forge, fabric, quilt
 - [X] store data linked to each server or world or player
 - [ ] system for loading data packs to a Map<ResourceLocation, Object>
 - [ ] ItemStackDataWrapper since you cant have fields on an item, dont even need the json file stuff, just save to nbt. i think it syncs automatically 
 - [ ] store data linked to any entity or tile entity. maybe just go to nbt there as well 
-
-
-## Geckolib Animation Managers
-
-- [ ] use geckolib in common code 1.16/1.18 (fix official mappings fabric)
-- [ ] looped animations with conditions for triggering (ie idle, walk, swim, fly)
-- [ ] jump animations
-- [ ] attack animations
-- [ ] death animations
-
-look at how 4.0 does it? i think they have some helpers
-
-## Energy
-
-- uniform api for making items / tile entities consume energy
-- let each machine choose what types of energy it accepts
-- let each machine choose conversion rates for each type of energy with reasonable defaults 
-- on forge wrap an RF capability 
-- botania mana: items absorb from or give to pools, tiles can be selected with living wand
-- compat with whatever fabric tech mods have
 
 ## Registries
 
@@ -178,8 +153,28 @@ https://github.com/lukebemish/mcdevutils
 
 ## Entity
 
-- `AttributeHelper#register`: register an entity's attributes from common code
+- `EntityHelper#attributes`: register an entity's attributes from common code
 - replacement for NetworkHooks#getEntitySpawningPacket
+
+## Geckolib Animation Managers
+
+- [ ] use geckolib in common code 1.16/1.18 (fix official mappings fabric)
+- [ ] looped animations with conditions for triggering (ie idle, walk, swim, fly)
+- [ ] jump animations
+- [ ] attack animations
+- [ ] death animations
+
+look at how 4.0 does it? i think they have some helpers
+
+## Energy
+
+- uniform api for making items / tile entities consume energy
+- let each machine choose what types of energy it accepts
+- let each machine choose conversion rates for each type of energy with reasonable defaults
+- on forge wrap an RF capability
+- botania mana: items absorb from or give to pools, tiles can be selected with living wand
+- compat with whatever fabric tech mods have
+
 
 ## Example Mod
 

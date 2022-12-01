@@ -9,11 +9,11 @@
 
 package ca.lukegrahamlandry.lib.config;
 
-import ca.lukegrahamlandry.lib.network.ClientboundHandler;
+import ca.lukegrahamlandry.lib.network.ClientSideHandler;
 
 // TODO: check against subDirectory
 
-public class ConfigSyncMessage implements ClientboundHandler {
+public class ConfigSyncMessage implements ClientSideHandler {
     String value;
     String name;
 

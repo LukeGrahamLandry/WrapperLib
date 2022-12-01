@@ -79,12 +79,6 @@ public abstract class DataWrapper<T> {
 
     ////// API //////
 
-    public abstract void save();
-
-    public abstract void load();
-
-    public abstract void sync();
-
     public void setDirty(){
         this.isDirty = true;
         if (this.shouldSync) this.sync();
@@ -115,6 +109,12 @@ public abstract class DataWrapper<T> {
     }
 
     ////// IMPL //////
+
+    public abstract void save();
+
+    public abstract void load();
+
+    public abstract void sync();
 
     protected void createLogger(){
         String id = this.getSubDirectory() == null ? "LukeGrahamLandry/WrapperLib Data:" + this.getName() : "LukeGrahamLandry/WrapperLib Data:" + this.getSubDirectory() + "/" + this.getName();

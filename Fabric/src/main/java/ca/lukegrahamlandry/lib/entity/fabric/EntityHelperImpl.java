@@ -5,8 +5,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 
-public class AttributeHelperImpl {
-    public static void register(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
+public class EntityHelperImpl {
+    public static void attributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
         FabricDefaultAttributeRegistry.register(type, builder);
     }
 }

@@ -9,11 +9,12 @@
 
 package ca.lukegrahamlandry.lib.network;
 
-import ca.lukegrahamlandry.lib.base.GenericHolder;
 import net.minecraft.server.level.ServerPlayer;
 
-public interface INetworkHelper {
-    void sendToClient(ServerPlayer player, GenericHolder<?> message);
-    void sendToServer(GenericHolder<?> message);
-    void sendToAllClients(GenericHolder<?> message);
+public interface ServerSideHandler {
+    /**
+     * The method to be called when an object of this type is received, through the network, on the server.
+     * @param player the player whose client sent the packet
+     */
+    void handle(ServerPlayer player);
 }

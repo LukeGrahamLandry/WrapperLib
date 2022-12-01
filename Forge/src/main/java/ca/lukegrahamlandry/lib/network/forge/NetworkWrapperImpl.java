@@ -10,13 +10,16 @@
 package ca.lukegrahamlandry.lib.network.forge;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
+import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.JsonElement;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.Locale;
@@ -24,35 +27,38 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ForgePacketRegistry {
+public class NetworkWrapperImpl implements IEventCallbacks {
+    // SETUP
+    @Override
+    public void onInit(){
+        registerPacketChannel();
+    }
+
     public static SimpleChannel channel;
     static int i = 0;
 
     public static void registerPacketChannel(){
         if (channel != null){
-            NetworkWrapper.LOGGER.error("ForgePacketRegistry#registerPacketChannel called twice");
+            NetworkWrapper.LOGGER.error("forge.NetworkWrapperImpl#registerPacketChannel called twice");
             return;
         }
-        channel = NetworkRegistry.newSimpleChannel(new ResourceLocation("wrapperlib", ForgePacketRegistry.class.getName().toLowerCase(Locale.US)), () -> "1.0", s -> true, s -> true);
-        ForgePacketRegistry packet = new ForgePacketRegistry();
-        channel.registerMessage(i++, GenericHolder.class, packet::encode, packet::decode, packet::handle);
+        channel = NetworkRegistry.newSimpleChannel(new ResourceLocation("wrapperlib", NetworkWrapper.class.getName().toLowerCase(Locale.US)), () -> "1.0", s -> true, s -> true);
+        channel.registerMessage(i++, GenericHolder.class, NetworkWrapperImpl::encode, NetworkWrapperImpl::decode, NetworkWrapperImpl::handle);
     }
 
-    // TODO: remove log spam before release
+    // HANDLING
 
-    public void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
+    public static void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
         JsonElement data = JsonHelper.GSON.toJsonTree(message);
-        if (NetworkWrapper.DEBUG) NetworkWrapper.LOGGER.debug("encode " + data);
         buffer.writeUtf(data.toString());
     }
 
-    public GenericHolder<?> decode(FriendlyByteBuf buffer){
+    public static GenericHolder<?> decode(FriendlyByteBuf buffer){
         String data = buffer.readUtf();
-        if (NetworkWrapper.DEBUG) NetworkWrapper.LOGGER.debug("decode " + data);
         return JsonHelper.GSON.fromJson(data, GenericHolder.class);
     }
 
-    public void handle(GenericHolder<?> message, Supplier<NetworkEvent.Context> context){
+    public static void handle(GenericHolder<?> message, Supplier<NetworkEvent.Context> context){
         context.get().enqueueWork(() -> {
             if (context.get().getSender() == null) {
                 Consumer action = NetworkWrapper.getClientHandler(message.clazz);
@@ -64,5 +70,19 @@ public class ForgePacketRegistry {
             }
         });
         context.get().setPacketHandled(true);
+    }
+
+    // SENDING
+
+    public static <T> void sendToClient(ServerPlayer player, T message){
+        channel.send(PacketDistributor.PLAYER.with(() -> player), new GenericHolder<>(message));
+    }
+
+    public static <T> void sendToServer(T message){
+        NetworkWrapperImpl.channel.sendToServer(new GenericHolder<>(message));
+    }
+
+    public static <T> void sendToAllClients(T message){
+        NetworkWrapperImpl.channel.send(PacketDistributor.ALL.noArg(), new GenericHolder<>(message));
     }
 }

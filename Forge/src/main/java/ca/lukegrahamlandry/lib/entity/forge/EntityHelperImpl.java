@@ -9,10 +9,10 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(bus= Mod.EventBusSubscriber.Bus.MOD)
-public class AttributeHelperImpl {
+@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+public class EntityHelperImpl {
     public static List<AttributeContainer> attributes;
-    public static void register(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
+    public static void attributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
         attributes.add(new AttributeContainer(type, builder));
     }
 
@@ -21,10 +21,10 @@ public class AttributeHelperImpl {
         attributes.forEach((container) -> event.put(container.type, container.builder.build()));
     }
 
-    public static class AttributeContainer {
+    private static class AttributeContainer {
         EntityType<? extends LivingEntity> type;
         AttributeSupplier.Builder builder;
-        public AttributeContainer(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder){
+        private AttributeContainer(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder){
             this.type = type;
             this.builder = builder;
         }
