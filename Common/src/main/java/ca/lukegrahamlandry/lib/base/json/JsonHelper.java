@@ -27,6 +27,11 @@ public class JsonHelper {
 
     public static Gson GSON = GSON_BUILDER.create();
 
+    /**
+     * When not shadowing, please prefer using ConfigWrapper#withGson or DataWrapper#withGson because that will ensure you do not conflict with other mods.
+     * @param type the type of object that needs custom serialization handling
+     * @param typeAdapter the type adapter that will handle serialization (instanceof TypeAdapter, JsonSerializer, JsonDeserializer, or InstanceCreator)
+     */
     public static void addTypeAdapter(Type type, Object typeAdapter){
         GSON_BUILDER.registerTypeAdapter(type, typeAdapter);
         GSON = GSON_BUILDER.create();

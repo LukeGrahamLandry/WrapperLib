@@ -67,6 +67,8 @@ public class GenericHolder<T> implements Supplier<T> {
     }
 
     /**
+     * Limits the length of the encoded form of your GenericHolder when sending over the network. Defaults to the same as vanilla's default.
+     * This limit applies to packets you manually send as well as automatically synced configs and data.
      * You're able to change this but if you're sending a packet bigger than 32 kb it might be a sign you should reconsider your life choices.
      */
     public static int NETWORK_MAX_CHARS = 2 << 14;

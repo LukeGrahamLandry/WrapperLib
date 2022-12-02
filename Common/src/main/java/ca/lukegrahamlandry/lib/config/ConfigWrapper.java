@@ -9,7 +9,6 @@
 
 package ca.lukegrahamlandry.lib.config;
 
-import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
@@ -94,12 +93,11 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     /**
-     * Set the gson instance that will be used for config serialization/deserialization (to file and network).
-     * Allows you to register your own type adapters.
-     * See JsonHelper for defaults.
+     * Set the gson instance that will be used for config serialization/deserialization when interacting with files or the network.
+     * This allows you to register your own type adapters. See JsonHelper for defaults provided.
      * GsonBuilder#setPrettyPrinting will automatically be called when writing defaults to a file (but not for sending over network).
      */
-    public ConfigWrapper<T> useGson(Gson gson){
+    public ConfigWrapper<T> withGson(Gson gson){
         this.gson = gson;
         return this;
     }
@@ -184,7 +182,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
         }
         this.value = defaultConfig;
-        this.useGson(JsonHelper.GSON);
+        this.withGson(JsonHelper.GSON);
         ALL.add(this);
     }
 

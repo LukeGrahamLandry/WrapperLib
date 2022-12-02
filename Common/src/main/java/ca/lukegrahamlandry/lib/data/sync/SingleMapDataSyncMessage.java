@@ -21,7 +21,7 @@ public class SingleMapDataSyncMessage implements ClientSideHandler {
     String name;
     String dir;
 
-    public <K, I> SingleMapDataSyncMessage(MapDataWrapper<?, I, ?> wrapper, I id) {
+    public <I> SingleMapDataSyncMessage(MapDataWrapper<?, I, ?> wrapper, I id) {
         this.name = wrapper.getName();
         this.dir = wrapper.getSubDirectory();
         this.id = id.toString();
@@ -33,15 +33,16 @@ public class SingleMapDataSyncMessage implements ClientSideHandler {
     }
 
     public void handle() {
+        boolean handled = false;
         for (DataWrapper<?> data : DataWrapper.ALL) {
             if (data instanceof MapDataWrapper<?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
-                Object syncedValue = data.getGson().fromJson(this.value, ((MapDataWrapper<?, ?, ?>) data).clazz);
+                Object syncedValue = data.getGson().fromJson(this.value, data.clazz);
                 Object syncedID = ((MapDataWrapper<?, ?, ?>) data).stringToId(this.id);
                 ((MapDataWrapper<?, ?, ?>) data).set(syncedID, syncedValue);
-                break;
+                handled = true;
             }
         }
 
-        throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

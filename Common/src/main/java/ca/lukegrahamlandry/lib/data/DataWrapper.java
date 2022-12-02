@@ -34,18 +34,33 @@ import java.util.Locale;
  */
 public abstract class DataWrapper<T> {
 
+    /**
+     * Creates a DataWrapper tracking one object per server.
+     * @param clazz the type of object to be saved. Must have a public constructor that takes no parameters to create the default value.
+     */
     public static <T> GlobalDataWrapper<T> global(Class<T> clazz){
         return new GlobalDataWrapper<>(clazz);
     }
 
+    /**
+     * Creates a MapDataWrapper tracking one object per level.
+     * @param clazz the type of object to be saved. Must have a public constructor that takes no parameters to create the default value.
+     */
     public static <T> LevelDataWrapper<T> level(Class<T> clazz){
         return new LevelDataWrapper<>(clazz);
     }
 
+    /**
+     * Creates a MapDataWrapper tracking one object per player.
+     * @param clazz the type of object to be saved. Must have a public constructor that takes no parameters to create the default value.
+     */
     public static <T> PlayerDataWrapper<T> player(Class<T> clazz){
         return new PlayerDataWrapper<>(clazz);
     }
 
+    /**
+     * Mark the DataWrapper to be synced to all clients.
+     */
     public <W extends DataWrapper<T>> W synced(){
         if (!Available.NETWORK.get()){
             this.logger.error("ignoring DataWrapper#synced because WrapperLib Network module is missing");
@@ -55,35 +70,56 @@ public abstract class DataWrapper<T> {
         return (W) this;
     }
 
+    /**
+     * Mark the DataWrapper to be saved to disk with the world.
+     */
     public <W extends DataWrapper<T>> W saved(){
         this.shouldSave = true;
         return (W) this;
     }
 
+    /**
+     * @param name the name of the DataWrapper. This will be used for the filename if saved and for matching instances when syncing.
+     */
     public <W extends DataWrapper<T>> W named(String name){
         this.name = name.toLowerCase(Locale.ROOT).replace(":", "-").replace(" ", "-");
         this.createLogger();
         return (W) this;
     }
 
+    /**
+     * @param subDirectory the category name of the DataWrapper. This will be used as the folder if saved and for matching instances when syncing.
+     */
     public <W extends DataWrapper<T>> W dir(String subDirectory){
         this.subDirectory = subDirectory;
         this.createLogger();
         return (W) this;
     }
 
+    /**
+     * @param fileExtension the file extension to be used when writing to disk.
+     */
     public <W extends DataWrapper<T>> W ext(String fileExtension){
         this.fileExtension = fileExtension;
         return (W) this;
     }
 
-    public <W extends DataWrapper<T>> W useGson(Gson gson){
+    /**
+     * Set the gson instance that will be used for data serialization/deserialization when interacting with files or the network.
+     * This allows you to register your own type adapters. See JsonHelper for defaults provided.
+     * GsonBuilder#setPrettyPrinting will automatically be called when writing defaults to a file (but not for sending over network).
+     * @param gson the serializer to be used
+     */
+    public <W extends DataWrapper<T>> W withGson(Gson gson){
         this.gson = gson;
         return (W) this;
     }
 
     ////// API //////
 
+    /**
+     * Mark the contained data as changed. This will cause it to resync to clients and save to disk when the world unloads.
+     */
     public void setDirty(){
         this.isDirty = true;
         if (this.shouldSync) this.sync();
@@ -108,7 +144,7 @@ public abstract class DataWrapper<T> {
     protected DataWrapper(Class<T> clazz){
         this.clazz = clazz;
         this.named(defaultName(clazz));
-        this.useGson(JsonHelper.GSON);
+        this.withGson(JsonHelper.GSON);
         this.createDefaultInstance();
         ALL.add(this);
     }

@@ -25,16 +25,16 @@ public class ConfigSyncMessage implements ClientSideHandler {
         this.value = wrapper.getGson().toJson(wrapper.get());
     }
 
-
     public void handle(){
+        boolean handled = false;
         for (ConfigWrapper<?> config : ConfigWrapper.ALL){
             if (config.name.equals(this.name) && config.side == ConfigWrapper.Side.SYNCED) {
                 Object syncedValue = config.getGson().fromJson(this.value, config.clazz);
                 config.set(syncedValue);
-                break;
+                handled = true;
             }
         }
 
-        throw new RuntimeException("received config sync for unknown name: " + this.name);
+        if (!handled) throw new RuntimeException("received config sync for unknown name: " + this.name);
     }
 }

@@ -32,14 +32,15 @@ public class MultiMapDataSyncMessage implements ClientSideHandler {
     }
 
     public void handle() {
+        boolean handled = false;
         for (DataWrapper<?> data : DataWrapper.ALL) {
             if (data instanceof MapDataWrapper<?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
                 JsonObject syncedValue = data.getGson().fromJson(this.value, JsonObject.class);
                 ((MapDataWrapper<?, ?, ?>) data).loadFromMap(syncedValue);
-                break;
+                handled = true;
             }
         }
 
-        throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }
