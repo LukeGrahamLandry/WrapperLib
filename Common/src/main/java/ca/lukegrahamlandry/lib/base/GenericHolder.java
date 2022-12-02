@@ -15,10 +15,12 @@ import com.google.gson.*;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Type;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
  * Wraps an object and saves its exact class name, so it can be serialized and retain type information.
+ * When serialized, any fields of the object that are subclasses of the field's type will be recreated as instances of the base class. You can get around this by nesting GenericHolders
  * @param <T> the type of object
  */
 public class GenericHolder<T> implements Supplier<T> {
@@ -55,12 +57,22 @@ public class GenericHolder<T> implements Supplier<T> {
         }
     }
 
+    /**
+     * Writes this object to a byte buffer to be sent over the network.
+     * @param buffer The existing buffer to write the object to.
+     * @return The same buffer object that was passed in.
+     */
     public FriendlyByteBuf encodeBytes(FriendlyByteBuf buffer) {
-        JsonElement data = JsonHelper.GSON.toJsonTree(this);
+        JsonObject data = JsonHelper.GSON.toJsonTree(this).getAsJsonObject();
         buffer.writeUtf(data.toString(), NETWORK_MAX_CHARS);
         return buffer;
     }
 
+    /**
+     * Reads an object from a byte buffer. Constructs the same object that was passed in to encodeBytes.
+     * @param buffer The buffer to read an object from.
+     * @return The GenericHolder object
+     */
     public static GenericHolder<?> decodeBytes(FriendlyByteBuf buffer) {
         String data = buffer.readUtf(NETWORK_MAX_CHARS);
         return JsonHelper.GSON.fromJson(data, GenericHolder.class);

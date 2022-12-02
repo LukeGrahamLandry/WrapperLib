@@ -16,10 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * A platform independent network implementation that allows sending objects between the client and the server without manually writing byte buffer serialization code.
@@ -79,6 +79,36 @@ public class NetworkWrapper {
      */
     public static <T> void registerServerHandler(Class<T> clazz, BiConsumer<ServerPlayer, T> handler){
         SERVER_BOUND_HANDLERS.put(clazz.getName(), handler);
+    }
+
+    /**
+     * Allow WrapperLib to confirm that the client and server are running compatible versions of your mod.
+     * This will be checked when a client joins a server. It will only be checked if the mod is present on both sides.
+     * The client will be disconnected if either checkVersion predicate returns false.
+     *
+     * @param modid a unique identifier for your mod.
+     * @param version your network protocol version.
+     * @param clientCheckVersion called when a HandshakeMessage is received on the client. The parameter is the server's version.
+     * @param serverCheckVersion called when a HandshakeMessage is received on the server. The parameter is the client's version.
+     */
+    public static void handshake(String modid, String version, Predicate<String> clientCheckVersion, Predicate<String> serverCheckVersion){
+        HandshakeHelper.add(new HandshakeHelper.ModProtocol(modid, version));
+        HandshakeHelper.CLIENT_VERSION_CHECKERS.put(modid, clientCheckVersion);
+        HandshakeHelper.SERVER_VERSION_CHECKERS.put(modid, serverCheckVersion);
+    }
+
+    /**
+     * Register the active version of your mod's network protocol.
+     * Clients will only be allowed to connect to servers with equal versions.
+     * You should change your version whenever you make a breaking change to objects that will be passed over the network.
+     * For example, if you rename one of your message classes, trying to communicate with an old version will fail.
+     * This method allows you to fail quickly with a clear error message rather than only when the changed packet gets sent.
+     *
+     * @param modid a unique identifier for your mod.
+     * @param version your current network protocol version.
+     */
+    public static void handshake(String modid, String version){
+        handshake(modid, version, version::equals, version::equals);
     }
 
     // IMPL

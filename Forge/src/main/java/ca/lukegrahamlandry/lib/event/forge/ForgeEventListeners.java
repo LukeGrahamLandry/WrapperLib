@@ -35,8 +35,9 @@ public class ForgeEventListeners {
         EventWrapper.get().forEach((handler) -> handler.onLevelSave(event.getLevel()));
     }
 
+    // server side only it seems
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
-        EventWrapper.get().forEach((handler) -> handler.onPlayerLogin(event.getEntity()));
+        EventWrapper.get().forEach((handler) -> handler.onPlayerLoginServer(event.getEntity()));
     }
 }

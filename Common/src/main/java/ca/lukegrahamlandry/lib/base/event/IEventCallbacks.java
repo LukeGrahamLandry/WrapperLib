@@ -20,7 +20,7 @@ public interface IEventCallbacks {
 
     default void onLevelSave(LevelAccessor level) {}
 
-    default void onPlayerLogin(Player player) {}
+    default void onPlayerLoginServer(Player player) {}
 
     default void onClientSetup() {}
 

@@ -49,6 +49,7 @@ public class EventWrapper {
         add("ca.lukegrahamlandry.lib.network.fabric.NetworkWrapperImpl");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
+        add("ca.lukegrahamlandry.lib.network.HandshakeHelper");
     }
 
     public static List<IEventCallbacks> get(){

@@ -8,26 +8,30 @@ A collection of multi-platform implementations of common tasks for developing Mi
 - Each api concept is exposed as a Builder like class with no additional setup required.
 - Extensive documentation (wiki & javadocs).
 
-Supported Mod Loaders: Forge, Fabric, ~~Quilt~~  
+Supported Mod Loaders: Forge, Fabric, ~~Quilt~~   
 Supported Versions: 1.19, ~~1.18, 1.16, 1.12~~  
 
-API Objects: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper, EntityHelper  
+## See [wiki](https://github.com/LukeGrahamLandry/WrapperLib/wiki) for more info. 
 
+- NetworkWrapper
+- ConfigWrapper
+- DataWrapper
+- RegistryWrapper
+- EntityHelper
 
-haven't tested on servers yet. its possible syncing doesn't actually work cause currently objects might be on the same thread
+before release: 
 
-- test servers
-- fabric impl & test mod
+- test servers & production
+- fabric test mod
 - quilt test mod
-- config reloading
-- data for item stacks, entities, tile entities
 - test RegistryWrapper & EntityHelper
-- add maven to publish.gradle
 - wiki
-- packet version handshake
-- config / data version adapters
 
 the sources platform jar doesn't include common classes. might be a problem for maven finding it on single loader projects
+
+network test
+get rid of register listener methods
+can call client specific code in handle interface because method wont get called so no class loading happens
 
 ## Official Sources
 
@@ -55,20 +59,15 @@ dependencies {
 ## Shadowing 
 
 - **You must relocate my packages when using the shadow plugin, or you will conflict with other mods.**
-- On Fabric, you need to add my mod and client init classes to your entry points.
-- On Forge, you need to call `EventWrapper.triggerInit()` from your mod constructor. 
+- On Fabric, you must call all my events. See `WrapperLibModInitializer` and `WrapperLibClientInitializer`.
+- On Forge, you must exclude `WrapperLibModMain`.
+- On Forge, you must call my onInit event. See `WrapperLibModMain`.
 
 ```groovy
 shadowJar {
     relocate 'ca.lukegrahamlandry.lib', "${project.group}.shadow.wrapperlib"
 }
 ```
-
-note: 
-i cant just append fabric accesswideners cause they have version info at the top. 
-they get added to fabric.mod.json but doesnt support giving a list
-write my own Transformer and make sure to always use the same aw version/mappings
-look at architectury's thing, they seem to have some sort of combiner code
 
 ## Config
 
@@ -86,11 +85,13 @@ look at architectury's thing, they seem to have some sort of combiner code
 - [ ] validator annotation 
 - [ ] watch file for changes and reload config
 - [ ] reload configs with reload command
+- [ ] reload configs on file change
 - [ ] comment translations
 - [ ] update with default values of new fields 
 - [ ] array or map of registry objects that removes missing ones
 - [ ] could be wrapped in data.RegistryObjectGroup or data.RegistryObjectMap that can accept tags as well?
 - [ ] subdirectory support in case you want lots of config files without risk of conflicting with other mods
+- [ ] version adapters
 
 TODO: chart with comparison to other config libraries
 - Forge Config & Fuzss/forgeconfigapiport-fabric (verbose)
@@ -109,9 +110,14 @@ Replaces `SimpleImpl` on Forge or `*PlayNetworking` on Fabric.
 
 - [X] automatically serialize your data class (to json to bytebuffer)
 - [X] send options: client -> server, server -> client, server -> all clients
-- [ ] handshake system to know that server and client are on the same version
+- [X] optional handshake system to check if server and client are running compatible same versions of your mod.
 
 CompressedNetworkWrapper that does reflection whatever to just write field values in order because the other side already knows what their names are
+
+your data class can be a record. 
+none of the ones WrapperLib uses internally are 
+because i want to support 1.16.5 so i dont use any language features beyond java 8 
+but that limitation does not extend to you and with records you can have even less verbose code. 
 
 ## Saved Data
 
@@ -127,6 +133,7 @@ World data is just a file with a json object (perhaps multiple files if stored s
 - [ ] system for loading data packs to a Map<ResourceLocation, Object>
 - [ ] ItemStackDataWrapper since you cant have fields on an item, dont even need the json file stuff, just save to nbt. i think it syncs automatically 
 - [ ] store data linked to any entity or tile entity. maybe just go to nbt there as well 
+- [ ] version adapters
 
 ## Registries
 
@@ -153,8 +160,8 @@ https://github.com/lukebemish/mcdevutils
 
 ## Entity
 
-- `EntityHelper#attributes`: register an entity's attributes from common code
-- replacement for NetworkHooks#getEntitySpawningPacket
+- [X] `EntityHelper#attributes`: register an entity's attributes from common code
+- [ ] replacement for NetworkHooks#getEntitySpawningPacket
 
 ## Geckolib Animation Managers
 
@@ -195,13 +202,19 @@ make a quilt version to make sure everything works
 - [X] canFindClass helpers for each module
 
 implementing config and data on bukkit would give me a good starting place in case someone offered to pay a lot for a plugin 
-even packets would work. just only meaningful if theres a client mod to accept them
+even packets would work. just only meaningful if there's a client mod to accept them
 
 name adapter map in case they want to change the name of config files or data files
 register(context, oldname, newname, old dir, new dir, transformer)
 transformer is a function JsonElement -> JsonElement that maps the old data format to the new data format
 system for data_format_version numbers in the json that trigger adapters in the same way
 context is like config or PlayerDataWrapper or whatever. make an enum
+
+## Keybinds
+
+- [ ] register from common code
+- [ ] callback on press (client or server)
+- [ ] track whether currently pressed (synced)
 
 ## Make Shading Work
 
@@ -218,11 +231,11 @@ context is like config or PlayerDataWrapper or whatever. make an enum
 ## my mods plan
 
 mod - definitely improvement (might rewrite but effort)
-torcherino - config, (packets)
-mimic - config
+torcherino - config, (packets, registry)
+mimic - config, registry
 simple xp config - config
 cosmetology - packets
-staff of travelling - config, (packets)
+staff of travelling - registry, config, (packets)
 find my friends - (config, packets) if i do fabric port
 rain events - data, datapacks
 
@@ -247,10 +260,13 @@ Contributing
 
 - WrapperLib is available under the MPL 2.0 License as seen in the LICENSE file. This summary is not a substitute for the full license text.
 - You may distribute a Larger Work containing official versions of WrapperLib (ie by shading it into your mods). 
-  - You must prominently link to WrapperLib's Source Code Form (this repo).
+  - You must prominently link to WrapperLib's Source Code Form and license, (this repo).
   - Your Larger Work may be under any license you like.
 - You may create and distribute modified versions of WrapperLib. 
-  - You must prominently link to the Source Code Form of any modified versions of WrapperLib files.
+  - You must prominently link to the Source Code Form, and license, of any modified versions of WrapperLib files.
   - Modified versions of WrapperLib files must be available under the MPL 2.0.
   - The rest of your modified version may be under any license you like.
 - You may not remove license notices from any WrapperLib files. 
+
+As long as you're following the terms of the license you don't have to bother asking me for permission for stuff. 
+If you make improvements to the library I encourage submitting a PR so more people can benefit from them. 

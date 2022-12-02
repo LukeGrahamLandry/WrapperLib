@@ -3,19 +3,23 @@
   "id": "wrapperlib",
   "version": "${version}",
   "name": "WrapperLib",
-  "description": "Provides a uniform api across mod loaders and minecraft versions. Implements: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper",
+  "description": "Provides a uniform api across mod loaders and minecraft versions. Implements: ConfigWrapper, NetworkWrapper, DataWrapper, RegistryWrapper, EntityHelper",
   "authors": [
     "LukeGrahamLandry"
   ],
   "contact": {
-    "homepage": "https://github.com/LukeGrahamLandry/WrapperLib",
+    "homepage": "https://github.com/LukeGrahamLandry/WrapperLib/wiki",
     "sources": "https://github.com/LukeGrahamLandry/WrapperLib",
-    "issues": "https://github.com/LukeGrahamLandry/WrapperLib/issues"
+    "issues": "https://github.com/LukeGrahamLandry/WrapperLib/issues",
+    "discord": "http://moddingtutorials.org/discord"
   },
   "license": "MPL 2.0",
   "entrypoints": {
     "main": [
-
+      "ca.lukegrahamlandry.lib.event.fabric.WrapperLibModInitializer"
+    ],
+    "client": [
+      "ca.lukegrahamlandry.lib.event.fabric.WrapperLibClientInitializer"
     ]
   },
   "depends": {

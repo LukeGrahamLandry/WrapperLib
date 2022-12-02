@@ -33,11 +33,9 @@ public class NetworkWrapperImpl implements IEventCallbacks {
 
     @Override
     public void onInit(){
-        if (channel != null){
-            NetworkWrapper.LOGGER.error("forge.NetworkWrapperImpl#registerPacketChannel called twice");
-            return;
-        }
-        channel = NetworkRegistry.newSimpleChannel(NetworkWrapper.ID, () -> "1.0", s -> true, s -> true);
+        if (channel != null) return;
+                                                // remember to increment this when I switch to EfficientNetworkSerializer
+        channel = NetworkRegistry.newSimpleChannel(NetworkWrapper.ID, () -> "1.0", "1.0"::equals, "1.0"::equals);
         channel.registerMessage(i++, GenericHolder.class, GenericHolder::encodeBytes, GenericHolder::decodeBytes, NetworkWrapperImpl::handle);
     }
 

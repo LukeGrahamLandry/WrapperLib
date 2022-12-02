@@ -1,8 +1,16 @@
+/*
+ * This file is part of WrapperLib
+ * Copyright 2022 LukeGrahamLandry
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package ca.lukegrahamlandry.lib.event.fabric;
 
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -19,6 +27,6 @@ public class WrapperLibModInitializer implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> EventWrapper.get().forEach((event) -> event.onServerStart(server)));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> EventWrapper.get().forEach((event) -> event.onServerStop(server)));
         ServerWorldEvents.UNLOAD.register((server, world) -> EventWrapper.get().forEach((event) -> event.onLevelSave(world)));
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> EventWrapper.get().forEach((event) -> event.onPlayerLogin(handler.getPlayer())));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> EventWrapper.get().forEach((event) -> event.onPlayerLoginServer(handler.getPlayer())));
     }
 }

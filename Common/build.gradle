@@ -17,7 +17,7 @@ dependencies {
 publishing {
     publications {
         mavencommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name.replace("-", "-Common-")
+            artifactId = rootProject.archives_base_name + "-Common"
             from components.java
             version "${rootProject.mod_version}"
         }

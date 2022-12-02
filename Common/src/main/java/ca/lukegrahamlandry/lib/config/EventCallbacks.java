@@ -27,7 +27,7 @@ public class EventCallbacks implements IEventCallbacks {
     }
 
     @Override
-    public void onPlayerLogin(Player player){
+    public void onPlayerLoginServer(Player player){
         if (player.level.isClientSide()) return;
 
         ConfigWrapper.ALL.forEach((config) -> {
