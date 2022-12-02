@@ -9,11 +9,18 @@
 
 package ca.lukegrahamlandry.lib.base;
 
+import ca.lukegrahamlandry.lib.base.json.JsonHelper;
+import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.*;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
 
+/**
+ * Wraps an object and saves its exact class name, so it can be serialized and retain type information.
+ * @param <T> the type of object
+ */
 public class GenericHolder<T> implements Supplier<T> {
     public final Class<T> clazz;
     public final T value;
@@ -47,4 +54,20 @@ public class GenericHolder<T> implements Supplier<T> {
             return out;
         }
     }
+
+    public FriendlyByteBuf encodeBytes(FriendlyByteBuf buffer) {
+        JsonElement data = JsonHelper.GSON.toJsonTree(this);
+        buffer.writeUtf(data.toString(), NETWORK_MAX_CHARS);
+        return buffer;
+    }
+
+    public static GenericHolder<?> decodeBytes(FriendlyByteBuf buffer) {
+        String data = buffer.readUtf(NETWORK_MAX_CHARS);
+        return JsonHelper.GSON.fromJson(data, GenericHolder.class);
+    }
+
+    /**
+     * You're able to change this but if you're sending a packet bigger than 32 kb it might be a sign you should reconsider your life choices.
+     */
+    public static int NETWORK_MAX_CHARS = 2 << 14;
 }

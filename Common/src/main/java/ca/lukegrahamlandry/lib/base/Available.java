@@ -9,21 +9,21 @@
 
 package ca.lukegrahamlandry.lib.base;
 
-public class ModuleAvailable {
-    public static boolean packets(){
-        return canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper");
+public enum Available {
+    NETWORK("ca.lukegrahamlandry.lib.network.NetworkWrapper"),
+    DATA("ca.lukegrahamlandry.lib.data.DataWrapper"),
+    CONFIG("ca.lukegrahamlandry.lib.config.ConfigWrapper"),
+    ENTITY("ca.lukegrahamlandry.lib.entity.EntityHelper"),
+    REGISTRY("ca.lukegrahamlandry.lib.registry.RegistryWrapper");
+
+    private final String clazz;
+
+    Available(String clazz){
+        this.clazz = clazz;
     }
 
-    public static boolean data(){
-        return canFindClass("ca.lukegrahamlandry.lib.data.DataWrapper");
-    }
-
-    public static boolean config(){
-        return canFindClass("ca.lukegrahamlandry.lib.config.ConfigWrapper");
-    }
-
-    public static boolean commentedJson(){
-        return canFindClass("ca.lukegrahamlandry.lib.config.GenerateComments");
+    public boolean get(){
+        return canFindClass(this.clazz);
     }
 
     public static boolean canFindClass(String className){
@@ -34,4 +34,5 @@ public class ModuleAvailable {
             return false;
         }
     }
+
 }

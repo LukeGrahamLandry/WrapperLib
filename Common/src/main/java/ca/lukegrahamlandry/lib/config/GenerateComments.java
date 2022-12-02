@@ -31,7 +31,7 @@ public class GenerateComments {
         return commentedJson(instance, gson.newBuilder().setPrettyPrinting().create(), 1);
     }
 
-    public static <T> String commentedJson(T instance, Gson gson, int level){
+    private static <T> String commentedJson(T instance, Gson gson, int level){
         int comments = 0;
         for (Field field : instance.getClass().getFields()){
             Comment annotation = field.getAnnotation(Comment.class);

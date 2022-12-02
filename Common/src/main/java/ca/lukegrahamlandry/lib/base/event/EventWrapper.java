@@ -20,6 +20,15 @@ public class EventWrapper {
         HANDLERS.add(handler);
     }
 
+    /**
+     * I've just reinvented services for myself.
+     * Having a file in META-INF with these class names doesn't solve my problem
+     * because I want them to be optional. So if someone excluded the package with the class, it should just be ignored.
+     * I could do this by having multiple gradle projects building multiple jars. Then people can just depend on the ones they want.
+     * I did that for a while, but it just makes dealing with the project so much more complex for little benefit.
+     * Only real disadvantage of this is that intellij doesn't auto handle it when I move or rename a class. The shadowJar relocate works fine tho.
+     * Could also make an annotation processor to generate the list, but I don't want to deal with it right now.
+     */
     public static void add(String handlerClassName){
         try {
             Class<?> clazz = Class.forName(handlerClassName);

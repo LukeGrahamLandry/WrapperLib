@@ -28,7 +28,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class NetworkWrapperImpl implements IEventCallbacks {
-    public static final ResourceLocation ID = new ResourceLocation("wrapperlib", NetworkWrapper.class.getName().toLowerCase(Locale.US));
     public static SimpleChannel channel;
     static int i = 0;
 
@@ -38,22 +37,11 @@ public class NetworkWrapperImpl implements IEventCallbacks {
             NetworkWrapper.LOGGER.error("forge.NetworkWrapperImpl#registerPacketChannel called twice");
             return;
         }
-        channel = NetworkRegistry.newSimpleChannel(ID, () -> "1.0", s -> true, s -> true);
-        channel.registerMessage(i++, GenericHolder.class, NetworkWrapperImpl::encode, NetworkWrapperImpl::decode, NetworkWrapperImpl::handle);
-
+        channel = NetworkRegistry.newSimpleChannel(NetworkWrapper.ID, () -> "1.0", s -> true, s -> true);
+        channel.registerMessage(i++, GenericHolder.class, GenericHolder::encodeBytes, GenericHolder::decodeBytes, NetworkWrapperImpl::handle);
     }
 
-    // ENCODING & HANDLING
-
-    public static void encode(GenericHolder<?> message, FriendlyByteBuf buffer){
-        JsonElement data = JsonHelper.GSON.toJsonTree(message);
-        buffer.writeUtf(data.toString(), NetworkWrapper.MAX_CHARS);
-    }
-
-    public static GenericHolder<?> decode(FriendlyByteBuf buffer){
-        String data = buffer.readUtf(NetworkWrapper.MAX_CHARS);
-        return JsonHelper.GSON.fromJson(data, GenericHolder.class);
-    }
+    // HANDLING
 
     public static void handle(GenericHolder<?> message, Supplier<NetworkEvent.Context> context){
         context.get().enqueueWork(() -> {

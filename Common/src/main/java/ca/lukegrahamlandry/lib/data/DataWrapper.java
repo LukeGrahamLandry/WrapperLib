@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.data;
 
+import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.map.LevelDataWrapper;
@@ -46,6 +47,10 @@ public abstract class DataWrapper<T> {
     }
 
     public <W extends DataWrapper<T>> W synced(){
+        if (!Available.NETWORK.get()){
+            this.logger.error("ignoring DataWrapper#synced because WrapperLib Network module is missing");
+            return (W) this;
+        }
         this.shouldSync = true;
         return (W) this;
     }
@@ -146,19 +151,6 @@ public abstract class DataWrapper<T> {
 
     public Gson getGson(){
         return this.gson;
-    }
-
-    /**
-     * Used to check if other modules are available.
-     * My syncing packets will only be used if their class is found by this method.
-     */
-    protected static boolean canFindClass(String className){
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 
     protected static String forDisplay(Path path){

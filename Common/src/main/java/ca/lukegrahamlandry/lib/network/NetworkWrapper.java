@@ -109,11 +109,14 @@ public class NetworkWrapper {
         return null;
     }
 
-    /**
-     * You're able to change this but if you're sending a packet bigger than 64 kb it might be a sign you should reconsider your life choices.
-     */
-    public static int MAX_CHARS = 2 << 15;
     public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
     public static Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
     public static Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
+
+    /**
+     * If WrapperLib is shadowed, there will be multiple versions of this class and its Impl that try to register packet handlers.
+     * I need to use a different id for each and the package name will be unique because people must relocate into their package.
+     * This way each mod's version of this class will receive only the packets it sent.
+     */
+    public static final ResourceLocation ID = new ResourceLocation("wrapperlib", NetworkWrapper.class.getPackageName());
 }

@@ -7,11 +7,12 @@ import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class EntityHelperImpl {
-    public static List<AttributeContainer> attributes;
+    public static final List<AttributeContainer> attributes = new ArrayList<>();
     public static void attributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
         attributes.add(new AttributeContainer(type, builder));
     }

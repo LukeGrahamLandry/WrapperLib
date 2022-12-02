@@ -9,7 +9,7 @@
 
 package ca.lukegrahamlandry.lib.config;
 
-import ca.lukegrahamlandry.lib.base.ModuleAvailable;
+import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
@@ -125,10 +125,6 @@ public class ConfigWrapper<T> implements Supplier<T> {
             this.logger.error("called ConfigWrapper#sync but side=" + this.side);
             return;
         }
-        if (!ModuleAvailable.packets()){
-            this.logger.error("called ConfigWrapper#sync but WrapperLib Network module is missing");
-            return;
-        }
         NetworkWrapper.sendToAllClients(new ConfigSyncMessage(this));
     }
 
@@ -222,12 +218,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         }
 
         try {
-            String configData;
-            if (ModuleAvailable.commentedJson()){
-                configData = GenerateComments.commentedJson(this.defaultConfig, this.getGson());
-            } else {
-                configData = this.getGson().newBuilder().setPrettyPrinting().create().toJson(this.defaultConfig);
-            }
+            String configData = GenerateComments.commentedJson(this.defaultConfig, this.getGson());
             Files.write(this.getFilePath(), configData.getBytes());
             this.logger.debug("wrote default config to " + this.displayPath());
         } catch (IOException e){

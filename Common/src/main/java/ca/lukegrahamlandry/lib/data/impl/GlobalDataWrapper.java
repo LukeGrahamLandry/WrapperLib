@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
+import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
@@ -83,10 +84,6 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
     public void sync() {
         if (!this.shouldSync) {
             this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-        if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
-            this.logger.error("called DataWrapper#sync but WrapperLib Network module is missing");
             return;
         }
 

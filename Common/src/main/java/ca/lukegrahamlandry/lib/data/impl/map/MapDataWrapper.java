@@ -27,12 +27,12 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: only load nessisary if this.useMultipleFiles
+// TODO: switch this.useMultipleFiles to .lazyLoaded() and only load nessaisary if
 // TODO: a MapDataWrapper with useMultipleFiles=false is really a GlobalDataWrapper it just so happens that im writting a map in there instead
 
 // TODO: split into an interface!
-// SingleMapDataWrapper<K, I, V> extends GlobalDataWrapper<Map<String, V>> implements MapDataWrapper
-// MultiMapDataWrapper<K, I, V> extends DataWrapper implements DataWrapper
+// SingleMapDataWrapper<K, I, V> extends GlobalDataWrapper<Map<String, V>> implements MapDataWrapper<K, I, V>
+// MultiMapDataWrapper<K, I, V> extends DataWrapper implements DataWrapper implements MapDataWrapper<K, I, V>
 
 /**
  * @param <K> the user facing key object. ie. player or world
@@ -202,10 +202,6 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             this.logger.error("called DataWrapper#sync but shouldSync=false");
             return;
         }
-        if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
-            this.logger.error("called ConfigWrapper#sync but WrapperLib Network module is missing");
-            return;
-        }
 
         NetworkWrapper.sendToAllClients(new MultiMapDataSyncMessage(this));
     }
@@ -213,10 +209,6 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     public void sync(K key) {
         if (!this.shouldSync) {
             this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-        if (!canFindClass("ca.lukegrahamlandry.lib.network.NetworkWrapper")){
-            this.logger.error("called DataWrapper#sync but WrapperLib Network module is missing");
             return;
         }
 
