@@ -11,12 +11,14 @@ package ca.lukegrahamlandry.lib.network;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class HandshakeHelper implements IEventCallbacks {
@@ -59,28 +61,35 @@ public class HandshakeHelper implements IEventCallbacks {
 
         @Override
         public void handle() {
-            for (ModProtocol protocol : mods){
-                String versionOnServer = protocol.version;
-                boolean accepted = CLIENT_VERSION_CHECKERS.getOrDefault(protocol.modid, (s) -> true).test(versionOnServer);
-                if (!accepted) {
-                    Minecraft.getInstance().player.connection.getConnection().disconnect(error(protocol, "client"));
-                    return;
-                }
+            boolean accepted = this.validate(CLIENT_VERSION_CHECKERS, (msg) -> Minecraft.getInstance().player.connection.getConnection().disconnect(msg), "client");
+            if (accepted){
+                NetworkWrapper.LOGGER.info("client accepts server's mod protocol versions");
+                NetworkWrapper.sendToServer(new HandshakeMessage(ACTIVE_VERSIONS.values()));
             }
-
-            NetworkWrapper.LOGGER.info("client accepts server's mod protocol versions");
-            NetworkWrapper.sendToServer(new HandshakeMessage(ACTIVE_VERSIONS.values()));
         }
 
         @Override
         public void handle(ServerPlayer player) {
+            this.validate(SERVER_VERSION_CHECKERS, (msg) -> player.connection.disconnect(msg), "server");
+        }
+
+        private boolean validate(HashMap<String, Predicate<String>> sidedVersionCheckers, Consumer<Component> sendDisconnect, String side){
             for (ModProtocol protocol : mods){
-                String versionOnClient = protocol.version;
-                boolean accepted = SERVER_VERSION_CHECKERS.getOrDefault(protocol.modid, (s) -> true).test(versionOnClient);
+                String otherSideVersion = protocol.version;
+
+                boolean accepted;
+                try {
+                    accepted = sidedVersionCheckers.getOrDefault(protocol.modid, (s) -> true).test(otherSideVersion);
+                } catch (Exception e){
+                    accepted = false;
+                }
+
                 if (!accepted) {
-                    player.connection.disconnect(error(protocol, "server"));
+                    sendDisconnect.accept(error(protocol, side));
+                    return false;
                 }
             }
+            return true;
         }
 
         private static Component error(ModProtocol protocol, String side){

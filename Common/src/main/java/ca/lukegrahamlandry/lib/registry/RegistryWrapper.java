@@ -30,8 +30,8 @@ public class RegistryWrapper<T> {
     /**
      * Enqueue an object to be registered.
      * @param name The location to register the object.
-     * @param constructor A supplier for your object. You cannot use a direct item instance because Forge is weird.
-     * @return A supplier for your object that will only resolve after registration has been handled.
+     * @param constructor A supplier for your object. You cannot use a direct instance because Forge is weird.
+     * @return A supplier for your object that will only resolve after registration has been handled (which is immediately on fabric).
      */
     public Supplier<T> register(String name, Supplier<T> constructor){
         ResourceLocation rl = new ResourceLocation(this.modid, name);
