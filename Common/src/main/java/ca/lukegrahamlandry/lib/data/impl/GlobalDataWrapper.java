@@ -9,7 +9,6 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
-import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;

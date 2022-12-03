@@ -20,20 +20,22 @@ import ca.lukegrahamlandry.lib.data.impl.map.PlayerDataWrapper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.tslat.smartbrainlib.api.core.SmartBrain;
 
 import java.util.function.Supplier;
 
-@Mod("wrapperlibexamplemod")
+@Mod(ExampleModMain.MOD_ID)
 public class ExampleModMain {
-    public static Supplier<ExampleConfig> config = ConfigWrapper.synced(ExampleConfig.class).named("wrapperlib-example");
-    public static Supplier<ExampleClientConfig> clientConfig = ConfigWrapper.client(ExampleClientConfig.class);
+    public static final String MOD_ID = "wrapperlibexamplemod";
+    public static final Supplier<ExampleConfig> config = ConfigWrapper.synced(ExampleConfig.class).named("wrapperlib-example");
+    public static final Supplier<ExampleClientConfig> clientConfig = ConfigWrapper.client(ExampleClientConfig.class);
 
-    public static PlayerDataWrapper<KillTracker> kills = DataWrapper.player(KillTracker.class).synced().saved().dir("wrapperlib-examplemod").named("kills");
+    public static final PlayerDataWrapper<KillTracker> kills = DataWrapper.player(KillTracker.class).synced().saved().dir(MOD_ID).named("kills");
 
     public ExampleModMain(){
-        System.out.println("helloworld " + SmartBrain.class.getName());
         if (FMLLoader.isProduction()) EventWrapper.get().forEach(IEventCallbacks::onInit);
-        NetworkWrapper.handshake("wrapperlib-example", "1");
+        NetworkWrapper.handshake(MOD_ID, "1");
+
+        // ensure RegistryTest is class loaded
+        RegistryTest.ITEMS.init();
     }
 }

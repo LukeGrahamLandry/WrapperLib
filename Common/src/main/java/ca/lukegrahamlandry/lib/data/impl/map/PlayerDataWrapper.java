@@ -20,8 +20,6 @@ import java.util.UUID;
  * Data is saved per uuid not per player entity so data is maintained between deaths and dimension changes.
  */
 public class PlayerDataWrapper<T> extends MapDataWrapper<Player, UUID, T> {
-    ///// IMPL /////
-
     public PlayerDataWrapper(Class<T> clazz) {
         super(UUID.class, clazz);
     }

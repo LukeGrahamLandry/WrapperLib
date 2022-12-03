@@ -12,6 +12,7 @@ package ca.lukegrahamlandry.lib.network;
 public interface ClientSideHandler {
     /**
      * The method to be called when an object of this type is received, through the network, on the client.
+     * It is safe to call client only code here. Although the object will be initialized on the server, this method will never be called there so client classes referenced here will not be loaded.
      */
     void handle();
 }

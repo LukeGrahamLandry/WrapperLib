@@ -32,8 +32,8 @@ public class EntityHelperImpl {
     }
 
     private static class AttributeContainer {
-        EntityType<? extends LivingEntity> type;
-        AttributeSupplier.Builder builder;
+        final EntityType<? extends LivingEntity> type;
+        final AttributeSupplier.Builder builder;
         private AttributeContainer(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder){
             this.type = type;
             this.builder = builder;

@@ -11,9 +11,7 @@ package ca.lukegrahamlandry.lib.event.forge;
 
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
-import ca.lukegrahamlandry.lib.config.EventCallbacks;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

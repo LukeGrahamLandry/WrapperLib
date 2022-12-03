@@ -144,7 +144,7 @@ public abstract class DataWrapper<T> {
     protected DataWrapper(Class<T> clazz){
         this.clazz = clazz;
         this.named(defaultName(clazz));
-        this.withGson(JsonHelper.GSON);
+        this.withGson(JsonHelper.get());
         this.createDefaultInstance();
         ALL.add(this);
     }

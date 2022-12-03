@@ -109,7 +109,10 @@ public class ConfigWrapper<T> implements Supplier<T> {
      */
     @Override
     public T get() {
-        if (!this.loaded) this.logger.debug("reading config before calling ConfigWrapper#load, default values will be used for now");
+        if (!this.loaded) {
+            if (this.side == Side.CLIENT) this.load();
+            else this.logger.debug("reading config before calling ConfigWrapper#load, default values will be used for now");
+        }
         return this.value;
     }
 
@@ -182,7 +185,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
         }
         this.value = defaultConfig;
-        this.withGson(JsonHelper.GSON);
+        this.withGson(JsonHelper.get());
         ALL.add(this);
     }
 
@@ -193,7 +196,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     protected void parse(Reader reader){
-        this.value = (T) this.getGson().fromJson(reader, this.clazz);
+        this.value = this.getGson().fromJson(reader, this.clazz);
     }
 
     void set(Object v){

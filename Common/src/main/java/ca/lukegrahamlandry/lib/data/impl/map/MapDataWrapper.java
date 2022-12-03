@@ -226,7 +226,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
         if (this.useMultipleFiles){
             path = path.resolve(this.name);
-            if (id != null) path = path.resolve(id.toString() + "." + this.fileExtension);
+            if (id != null) path = path.resolve(id + "." + this.fileExtension);
         } else {
             path = path.resolve(this.name + "." + this.fileExtension);
         }

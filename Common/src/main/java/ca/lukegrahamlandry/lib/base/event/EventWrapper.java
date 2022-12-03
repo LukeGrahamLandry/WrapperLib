@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventWrapper {
-    private static List<IEventCallbacks> HANDLERS = new ArrayList<>();
+    private static final List<IEventCallbacks> HANDLERS = new ArrayList<>();
 
     public static void add(IEventCallbacks handler){
         HANDLERS.add(handler);
@@ -47,9 +47,9 @@ public class EventWrapper {
     static {
         add("ca.lukegrahamlandry.lib.network.forge.NetworkWrapperImpl");
         add("ca.lukegrahamlandry.lib.network.fabric.NetworkWrapperImpl");
+        add("ca.lukegrahamlandry.lib.network.HandshakeHelper");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.network.HandshakeHelper");
     }
 
     public static List<IEventCallbacks> get(){

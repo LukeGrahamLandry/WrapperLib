@@ -51,7 +51,7 @@ public class NetworkWrapper {
     /**
      * Send a packet from the server to all connected clients.
      * @param message the data to send to the client.
-     * @param <T> the message class. It must either be registered with NetworkWrapper#registerClientHandler or implement ClientSideHandler
+     * @param <T> the message class. It must either implement ClientSideHandler or be registered with NetworkWrapper#registerClientHandler
      */
     @ExpectPlatform
     public static <T> void sendToAllClients(T message){
@@ -61,8 +61,7 @@ public class NetworkWrapper {
     // MANUALLY REGISTERED HANDLERS
 
     /**
-     * This MUST be used if your handler uses code from the net.minecraft.client package.
-     * If you DO NOT use ANY client specific classes, your packet message object may implement ClientSideHandler instead.
+     * Using this is completely optional. Your packet message object may implement ClientSideHandler instead.
      * @param clazz the message class. The handler will be called when an object of this type is received through the network. The handler will only match EXACTLY this class name, no subtypes may be sent over the network.
      * @param handler the function to call when an object of type clazz is received on the client
      * @param <T> the message class
@@ -139,9 +138,9 @@ public class NetworkWrapper {
         return null;
     }
 
-    public static Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
-    public static Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
-    public static Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
+    public static final Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
+    public static final Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
+    public static final Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
 
     /**
      * If WrapperLib is shadowed, there will be multiple versions of this class and its Impl that try to register packet handlers.

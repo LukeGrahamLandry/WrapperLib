@@ -21,10 +21,6 @@ configurations {
     developmentForge.extendsFrom common
 }
 
-repositories {
-    maven { url = "https://maven.lukegrahamlandry.ca" }
-}
-
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
 
@@ -36,9 +32,6 @@ dependencies {
     // namedElements on :Common would throw assertion errors on the platform classes
     shadowCommon project(path: ":Common", configuration: "transformProductionForge")
     shadowCommon project(path: ":Forge", configuration: "namedElements")
-
-
-    modImplementation ("net.tslat.smartbrainlib:SmartBrainLib-Forge:1.4+1.19") {transitive=false}
 }
 
 processResources {

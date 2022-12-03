@@ -25,7 +25,7 @@ public class GlobalDataSyncMessage implements ClientSideHandler {
         this.name = wrapper.getName();
         this.dir = wrapper.getSubDirectory();
 
-        // encode here using ConfigWrapper#getGson instead of allowing the object to be encoded by the packet module's gson instance
+        // encode here using DataWrapper#getGson instead of allowing the object to be encoded by the packet module's gson instance
         // this allows adding type adapters to your ConfigWrapper and still having syncing
         this.value = wrapper.getGson().toJson(new GenericHolder<>(wrapper.get()));
     }

@@ -10,12 +10,10 @@
 package ca.lukegrahamlandry.lib.base;
 
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
-import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.*;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Type;
-import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -63,7 +61,7 @@ public class GenericHolder<T> implements Supplier<T> {
      * @return The same buffer object that was passed in.
      */
     public FriendlyByteBuf encodeBytes(FriendlyByteBuf buffer) {
-        JsonObject data = JsonHelper.GSON.toJsonTree(this).getAsJsonObject();
+        JsonObject data = JsonHelper.get().toJsonTree(this).getAsJsonObject();
         buffer.writeUtf(data.toString(), NETWORK_MAX_CHARS);
         return buffer;
     }
@@ -75,7 +73,7 @@ public class GenericHolder<T> implements Supplier<T> {
      */
     public static GenericHolder<?> decodeBytes(FriendlyByteBuf buffer) {
         String data = buffer.readUtf(NETWORK_MAX_CHARS);
-        return JsonHelper.GSON.fromJson(data, GenericHolder.class);
+        return JsonHelper.get().fromJson(data, GenericHolder.class);
     }
 
     /**

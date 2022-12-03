@@ -7,17 +7,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.base.json;
+package ca.lukegrahamlandry.lib.network;
 
+import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.*;
 
 import static ca.lukegrahamlandry.lib.base.GenericHolder.NETWORK_MAX_CHARS;
-import static ca.lukegrahamlandry.lib.base.json.JsonHelper.GSON;
 
 /**
  * WIP. unused
@@ -39,8 +40,14 @@ public class EfficientNetworkSerializer {
             for (JsonElement entry : array){
                 recurseEncode(buffer, entry);
             }
-        } else {
-            buffer.writeUtf(data.toString(), NETWORK_MAX_CHARS);
+        } else if (data.isJsonPrimitive()) {
+
+        }else {
+            if (((JsonPrimitive) data).isString()){
+                buffer.writeUtf(data.getAsString(), NETWORK_MAX_CHARS);
+            } else {
+                buffer.writeUtf(data.toString(), NETWORK_MAX_CHARS);
+            }
         }
     }
 
@@ -52,7 +59,7 @@ public class EfficientNetworkSerializer {
         // 3. primitive or string
         // 4. object with fields
         if (clazz == String.class || clazz.isPrimitive()){
-            return GSON.fromJson(buffer.readUtf(), JsonElement.class);
+            return JsonHelper.get().fromJson(buffer.readUtf(), JsonElement.class);
         }
         if (clazz.isArray()){
             int length = buffer.readInt();
