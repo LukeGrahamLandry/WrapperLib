@@ -15,7 +15,6 @@ import ca.lukegrahamlandry.lib.data.impl.file.SingleFileHandler;
 import ca.lukegrahamlandry.lib.data.impl.file.SplitFileHandler;
 import ca.lukegrahamlandry.lib.data.sync.SplitMapDataSyncMessage;
 import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
-import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -32,8 +31,6 @@ import java.util.Map;
  * @param <V> the value to be stored
  */
 public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
-    ///// INIT
-
     /**
      * Save in dir/name/id.etx {data} instead of dir/name.etx {id: data}
      */
@@ -42,7 +39,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
         return (W) this;
     }
 
-    ///// API
+    // API
 
     public V get(K key){
         return this.getById(this.keyToId(key));
@@ -59,7 +56,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     }
 
 
-    ///// IMPL
+    // IMPL
 
     public Map<I, V> data = new HashMap<>();
     private final Class<I> idClazz; // for json deserialization
@@ -128,7 +125,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             return;
         }
 
-        NetworkWrapper.sendToAllClients(new SplitMapDataSyncMessage(this));
+        new SplitMapDataSyncMessage(this).sendToAllClients();
     }
 
     public void sync(K key) {
@@ -137,7 +134,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             return;
         }
 
-        NetworkWrapper.sendToAllClients(new SingleMapDataSyncMessage(this, this.keyToId(key)));
+        new SingleMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
     }
 
     // NEVER CALL THIS

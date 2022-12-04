@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class EventCallbacks implements IEventCallbacks {
     @Override
-    public void onServerStart(MinecraftServer server){
+    public void onServerStarting(MinecraftServer server){
         ConfigWrapper.server = server;
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side.inWorldDir){

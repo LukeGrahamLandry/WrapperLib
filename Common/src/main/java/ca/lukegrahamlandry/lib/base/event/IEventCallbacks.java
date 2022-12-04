@@ -14,9 +14,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 
 public interface IEventCallbacks {
-    default void onServerStart(MinecraftServer server) {}
+    default void onServerStarting(MinecraftServer server) {}
 
-    default void onServerStop(MinecraftServer server) {}
+    default void onServerStopped(MinecraftServer server) {}
 
     default void onLevelSave(LevelAccessor level) {}
 

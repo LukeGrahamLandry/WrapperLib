@@ -17,4 +17,8 @@ public interface ServerSideHandler {
      * @param player the player whose client sent the packet
      */
     void handle(ServerPlayer player);
+
+    default void sendToServer(){
+        NetworkWrapper.sendToServer(this);
+    }
 }

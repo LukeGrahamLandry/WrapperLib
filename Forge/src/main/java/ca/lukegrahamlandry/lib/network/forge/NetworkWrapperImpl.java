@@ -40,12 +40,12 @@ public class NetworkWrapperImpl implements IEventCallbacks {
         context.get().setPacketHandled(true);
     }
 
-    public static <T> void sendToClient(ServerPlayer player, T message){
-        channel.send(PacketDistributor.PLAYER.with(() -> player), new GenericHolder<>(message));
-    }
-
     public static <T> void sendToServer(T message){
         NetworkWrapperImpl.channel.sendToServer(new GenericHolder<>(message));
+    }
+
+    public static <T> void sendToClient(ServerPlayer player, T message){
+        channel.send(PacketDistributor.PLAYER.with(() -> player), new GenericHolder<>(message));
     }
 
     public static <T> void sendToAllClients(T message){

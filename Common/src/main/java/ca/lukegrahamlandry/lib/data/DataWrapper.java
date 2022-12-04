@@ -124,7 +124,7 @@ public abstract class DataWrapper<T> {
         return (W) this;
     }
 
-    ////// API //////
+    // API
 
     /**
      * Mark the contained data as changed. This will cause it to resync to clients and save to disk when the world unloads.
@@ -134,7 +134,7 @@ public abstract class DataWrapper<T> {
         if (this.shouldSync) this.sync();
     }
 
-    ////// CONSTRUCTION //////
+    // IMPL
 
     public static List<DataWrapper<?>> ALL = new ArrayList<>();
     public static MinecraftServer server;
@@ -157,8 +157,6 @@ public abstract class DataWrapper<T> {
         this.createDefaultInstance();
         ALL.add(this);
     }
-
-    ////// IMPL //////
 
     public abstract void save();
 

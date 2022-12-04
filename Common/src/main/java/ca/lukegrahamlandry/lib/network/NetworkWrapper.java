@@ -27,6 +27,16 @@ import java.util.function.Predicate;
  */
 public class NetworkWrapper {
     /**
+     * Send a packet from the client to the server.
+     * @param message the data to send to the sever.
+     * @param <T> the message class. It must either implement ServerSideHandler or be registered with NetworkWrapper#registerServerHandler
+     */
+    @ExpectPlatform
+    public static <T> void sendToServer(T message){
+        throw new AssertionError();
+    }
+
+    /**
      * Send a packet from the server to a specific player's client.
      * @param player the player to send a packet to
      * @param message the data to send to the client.
@@ -34,16 +44,6 @@ public class NetworkWrapper {
      */
     @ExpectPlatform
     public static <T> void sendToClient(ServerPlayer player, T message){
-        throw new AssertionError();
-    }
-
-    /**
-     * Send a packet from the client to the server.
-     * @param message the data to send to the sever.
-     * @param <T> the message class. It must either implement ServerSideHandler or be registered with NetworkWrapper#registerServerHandler
-     */
-    @ExpectPlatform
-    public static <T> void sendToServer(T message){
         throw new AssertionError();
     }
 

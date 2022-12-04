@@ -38,21 +38,21 @@ public class NetworkWrapperImpl implements IEventCallbacks {
     }
 
     @Override
-    public void onServerStart(MinecraftServer server) {
+    public void onServerStarting(MinecraftServer server) {
         SERVER = server;
     }
 
     @Override
-    public void onServerStop(MinecraftServer server) {
+    public void onServerStopped(MinecraftServer server) {
         SERVER = null;
-    }
-
-    public static <T> void sendToClient(ServerPlayer player, T message){
-        ServerPlayNetworking.send(player, NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.empty()));
     }
 
     public static <T> void sendToServer(T message){
         ClientPlayNetworking.send(NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.empty()));
+    }
+
+    public static <T> void sendToClient(ServerPlayer player, T message){
+        ServerPlayNetworking.send(player, NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.empty()));
     }
 
     public static <T> void sendToAllClients(T message){

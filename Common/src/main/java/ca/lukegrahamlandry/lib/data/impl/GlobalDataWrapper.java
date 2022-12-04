@@ -11,7 +11,6 @@ package ca.lukegrahamlandry.lib.data.impl;
 
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
-import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.world.level.storage.LevelResource;
@@ -85,7 +84,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
             return;
         }
 
-        NetworkWrapper.sendToAllClients(new GlobalDataSyncMessage(this));
+        new GlobalDataSyncMessage(this).sendToAllClients();
     }
 
     protected Path getFilePath(){

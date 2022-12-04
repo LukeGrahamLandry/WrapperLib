@@ -12,7 +12,7 @@ package ca.lukegrahamlandry.lib.event.forge;
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,13 +21,13 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus= Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventListeners {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onServerStart(ServerStartedEvent event){
-        EventWrapper.get().forEach((handler) -> handler.onServerStart(event.getServer()));
+    public static void onServerStarting(ServerStartingEvent event){
+        EventWrapper.get().forEach((handler) -> handler.onServerStarting(event.getServer()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onServerStop(ServerStoppedEvent event){
-        EventWrapper.get().forEach((handler) -> handler.onServerStop(event.getServer()));
+    public static void onServerStopped(ServerStoppedEvent event){
+        EventWrapper.get().forEach((handler) -> handler.onServerStopped(event.getServer()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

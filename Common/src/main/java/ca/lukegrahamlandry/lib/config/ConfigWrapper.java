@@ -11,8 +11,6 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
-import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -20,7 +18,6 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
@@ -126,10 +123,10 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return this;
     }
 
-    ////// API //////
+    // API
 
     /**
-     * Retrieve the current config values as an instance of
+     * Retrieve the current config values as an instance of T
      */
     @Override
     public T get() {
@@ -139,6 +136,8 @@ public class ConfigWrapper<T> implements Supplier<T> {
         }
         return this.value;
     }
+
+    // IMPL
 
     /**
      * Syncs config data from the server to all clients
@@ -150,7 +149,8 @@ public class ConfigWrapper<T> implements Supplier<T> {
             this.logger.error("called ConfigWrapper#sync but side=" + this.side);
             return;
         }
-        NetworkWrapper.sendToAllClients(new ConfigSyncMessage(this));
+
+        new ConfigSyncMessage(this).sendToAllClients();
     }
 
     /**
@@ -177,8 +177,6 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
         this.loaded = true;
     }
-
-    ////// IMPL //////
 
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();

@@ -16,7 +16,7 @@ import net.minecraft.world.level.LevelAccessor;
 
 public class EventCallbacks implements IEventCallbacks {
     @Override
-    public void onServerStart(MinecraftServer server){
+    public void onServerStarting(MinecraftServer server){
         DataWrapper.server = server;
         DataWrapper.ALL.forEach((data) -> {
             if (data.shouldSave) data.load();
@@ -25,7 +25,7 @@ public class EventCallbacks implements IEventCallbacks {
     }
 
     @Override
-    public void onServerStop(MinecraftServer server){
+    public void onServerStopped(MinecraftServer server){
         DataWrapper.server = null;
     }
 

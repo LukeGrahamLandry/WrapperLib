@@ -40,7 +40,7 @@ public class HandshakeHelper implements IEventCallbacks {
 
     @Override
     public void onPlayerLoginServer(Player player) {
-        NetworkWrapper.sendToClient((ServerPlayer) player, new HandshakeMessage(ACTIVE_VERSIONS.values()));
+        new HandshakeMessage(ACTIVE_VERSIONS.values()).sendToClient((ServerPlayer) player);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class HandshakeHelper implements IEventCallbacks {
     }
 
     @Override
-    public void onServerStart(MinecraftServer server) {
+    public void onServerStarting(MinecraftServer server) {
         logProtocolVersions();
     }
 
@@ -64,7 +64,7 @@ public class HandshakeHelper implements IEventCallbacks {
             boolean accepted = this.validate(CLIENT_VERSION_CHECKERS, (msg) -> Minecraft.getInstance().player.connection.getConnection().disconnect(msg), "client");
             if (accepted){
                 NetworkWrapper.LOGGER.info("client accepts server's mod protocol versions");
-                NetworkWrapper.sendToServer(new HandshakeMessage(ACTIVE_VERSIONS.values()));
+                new HandshakeMessage(ACTIVE_VERSIONS.values()).sendToServer();
             }
         }
 
