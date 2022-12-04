@@ -18,6 +18,8 @@ public interface ServerSideHandler {
      */
     void handle(ServerPlayer player);
 
+    // SENDING HELPER
+
     default void sendToServer(){
         NetworkWrapper.sendToServer(this);
     }

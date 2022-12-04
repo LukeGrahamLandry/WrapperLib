@@ -13,6 +13,7 @@ import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -50,5 +51,9 @@ public class NetworkWrapperImpl implements IEventCallbacks {
 
     public static <T> void sendToAllClients(T message){
         NetworkWrapperImpl.channel.send(PacketDistributor.ALL.noArg(), new GenericHolder<>(message));
+    }
+
+    public static <T> void sendToTrackingClients(Entity entity, T message){
+        channel.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), new GenericHolder<>(message));
     }
 }

@@ -9,7 +9,11 @@
 
 package ca.lukegrahamlandry.lib.network;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public interface ClientSideHandler {
     /**
@@ -18,11 +22,33 @@ public interface ClientSideHandler {
      */
     void handle();
 
+    // SENDING HELPERS
+
+    default void sendToClient(ServerPlayer player){
+        NetworkWrapper.sendToClient(player, this);
+    }
+
     default void sendToAllClients(){
         NetworkWrapper.sendToAllClients(this);
     }
 
-    default void sendToClient(ServerPlayer player){
-        NetworkWrapper.sendToClient(player, this);
+    default void sendToTrackingClients(ServerLevel level){
+        NetworkWrapper.sendToTrackingClients(level, this);
+    }
+
+    default void sendToTrackingClients(ServerLevel world, BlockPos pos){
+        NetworkWrapper.sendToTrackingClients(world, pos, this);
+    }
+
+    default void sendToTrackingClients(BlockEntity tile){
+        NetworkWrapper.sendToTrackingClients(tile, this);
+    }
+
+    default void sendToTrackingClients(Entity entity){
+        NetworkWrapper.sendToTrackingClients(entity, this);
+    }
+
+    default void sendToTrackingClientsAndSelf(ServerPlayer player){
+        NetworkWrapper.sendToTrackingClientsAndSelf(player, this);
     }
 }

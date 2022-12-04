@@ -14,9 +14,11 @@ import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 
 public class NetworkWrapperImpl implements IEventCallbacks {
     private static MinecraftServer SERVER;
@@ -57,5 +59,9 @@ public class NetworkWrapperImpl implements IEventCallbacks {
 
     public static <T> void sendToAllClients(T message){
         SERVER.getPlayerList().getPlayers().forEach((player) -> sendToClient(player, message));
+    }
+
+    public static <T> void sendToTrackingClients(Entity entity, T message){
+        PlayerLookup.tracking(entity).forEach((p) -> sendToClient(p, message));
     }
 }

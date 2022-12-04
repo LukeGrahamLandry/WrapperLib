@@ -11,13 +11,19 @@ package ca.lukegrahamlandry.lib.network;
 
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -55,6 +61,31 @@ public class NetworkWrapper {
     @ExpectPlatform
     public static <T> void sendToAllClients(T message){
         throw new AssertionError();
+    }
+
+    public static <T> void sendToTrackingClients(ServerLevel level, T message){
+        if (Objects.isNull(level)) sendToAllClients(message);
+        level.getPlayers((p) -> true).forEach((p) -> sendToClient(p, message));
+    }
+
+    public static <T> void sendToTrackingClients(ServerLevel level, BlockPos pos, T message){
+        if (Objects.isNull(level) || Objects.isNull(pos)) sendToAllClients(message);
+        else level.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false).forEach((p) -> sendToClient(p, message));
+    }
+
+    public static <T> void sendToTrackingClients(BlockEntity tile, T message){
+        if (Objects.isNull(tile) || !tile.hasLevel() || tile.getLevel().isClientSide()) sendToAllClients(message);
+        else sendToTrackingClients((ServerLevel) tile.getLevel(), tile.getBlockPos(), message);
+    }
+
+    @ExpectPlatform
+    public static <T> void sendToTrackingClients(Entity entity, T message){
+        throw new AssertionError();
+    }
+
+    public static <T> void sendToTrackingClientsAndSelf(ServerPlayer player, T message){
+        sendToTrackingClients(player, message);
+        sendToClient(player, message);
     }
 
     /**
