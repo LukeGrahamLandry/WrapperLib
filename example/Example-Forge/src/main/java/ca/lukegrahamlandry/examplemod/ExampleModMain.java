@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @Mod(ExampleModMain.MOD_ID)
 public class ExampleModMain {
     public static final String MOD_ID = "wrapperlibexamplemod";
-    public static final Supplier<ExampleConfig> config = ConfigWrapper.synced(ExampleConfig.class).named("wrapperlib-example");
+    public static final Supplier<ExampleConfig> config = ConfigWrapper.synced(ExampleConfig.class).named(MOD_ID);
     public static final Supplier<ExampleClientConfig> clientConfig = ConfigWrapper.client(ExampleClientConfig.class);
 
     public static final PlayerDataWrapper<KillTracker> kills = DataWrapper.player(KillTracker.class).synced().saved().dir(MOD_ID).named("kills");

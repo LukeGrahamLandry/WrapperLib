@@ -10,10 +10,15 @@
 package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.network.ClientSideHandler;
+import com.google.gson.JsonSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: check against subDirectory
 
 public class ConfigSyncMessage implements ClientSideHandler {
+    static Logger LOGGER = LoggerFactory.getLogger(ConfigSyncMessage.class.getPackageName());
+
     String value;
     String name;
 
@@ -29,12 +34,18 @@ public class ConfigSyncMessage implements ClientSideHandler {
         boolean handled = false;
         for (ConfigWrapper<?> config : ConfigWrapper.ALL){
             if (config.name.equals(this.name) && config.side == ConfigWrapper.Side.SYNCED) {
-                Object syncedValue = config.getGson().fromJson(this.value, config.clazz);
-                config.set(syncedValue);
+                try {
+                    Object syncedValue = config.getGson().fromJson(this.value, config.clazz);
+                    config.set(syncedValue);
+                } catch (JsonSyntaxException e){
+                    LOGGER.error("Failed to parse synced config " + this.name + " to " + config.clazz);
+                    LOGGER.error("data: " + this.value);
+                    e.printStackTrace();
+                }
                 handled = true;
             }
         }
 
-        if (!handled) throw new RuntimeException("received config sync for unknown name: " + this.name);
+        if (!handled) LOGGER.error("Received config sync for unknown name: " + this.name);
     }
 }

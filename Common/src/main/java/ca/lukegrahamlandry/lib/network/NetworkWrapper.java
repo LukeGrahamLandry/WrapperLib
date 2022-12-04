@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.network;
 
+import ca.lukegrahamlandry.lib.base.GenericHolder;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -121,7 +122,6 @@ public class NetworkWrapper {
             return (obj) -> ((ClientSideHandler) obj).handle();
         }
 
-        LOGGER.error("no clientbound packet handler registered for " + clazz.getName());
         return null;
     }
 
@@ -134,11 +134,46 @@ public class NetworkWrapper {
             return (sender, msg) -> ((ServerSideHandler) msg).handle(sender);
         }
 
-        LOGGER.error("no serverbound packet handler registered for " + clazz.getName());
         return null;
     }
 
-    public static final Logger LOGGER = LoggerFactory.getLogger("LukeGrahamLandry/WrapperLib Network");
+    public static <T> boolean handleServerPacket(ServerPlayer player, GenericHolder<T> message){
+        BiConsumer<ServerPlayer, T> action = NetworkWrapper.getServerHandler(message.clazz);
+        if (action == null) {
+            LOGGER.error("No server bound packet handler registered for " + message.clazz.getName());
+            return false;
+        }
+
+        try {
+            action.accept(player, message.value);
+            return true;
+        } catch (RuntimeException e){
+            LOGGER.error("Failed to handle packet: " + message.clazz);
+            LOGGER.error("data: " + message.value);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static <T> boolean handleClientPacket(GenericHolder<T> message){
+        Consumer<T> action = NetworkWrapper.getClientHandler(message.clazz);
+        if (action == null) {
+            LOGGER.error("No client bound packet handler registered for " + message.clazz.getName());
+            return false;
+        }
+
+        try {
+            action.accept(message.value);
+            return true;
+        } catch (RuntimeException e){
+            LOGGER.error("Failed to handle packet: " + message.clazz);
+            LOGGER.error("data: " + message.value);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(NetworkWrapper.class.getPackageName());
     public static final Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
     public static final Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
 

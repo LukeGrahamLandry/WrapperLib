@@ -13,7 +13,7 @@ import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.file.MapFileHandler;
 import ca.lukegrahamlandry.lib.data.impl.file.SingleFileHandler;
 import ca.lukegrahamlandry.lib.data.impl.file.SplitFileHandler;
-import ca.lukegrahamlandry.lib.data.sync.MultiMapDataSyncMessage;
+import ca.lukegrahamlandry.lib.data.sync.SplitMapDataSyncMessage;
 import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.JsonElement;
@@ -115,7 +115,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
                 V value = this.getGson().fromJson(entry.getValue(), this.clazz);
                 this.data.put(id, value);
             } catch (JsonSyntaxException e){
-                this.logger.error("failed to parse json data " + entry.getValue() + " ignoring key " + entry.getKey());
+                this.logger.error("Ignoring key " + entry.getKey() + "; Failed to parse json data: " + entry.getValue());
                 e.printStackTrace();
             }
         }
@@ -128,7 +128,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
             return;
         }
 
-        NetworkWrapper.sendToAllClients(new MultiMapDataSyncMessage(this));
+        NetworkWrapper.sendToAllClients(new SplitMapDataSyncMessage(this));
     }
 
     public void sync(K key) {

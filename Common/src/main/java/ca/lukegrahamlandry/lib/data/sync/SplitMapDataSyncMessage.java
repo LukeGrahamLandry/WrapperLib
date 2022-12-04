@@ -16,12 +16,12 @@ import com.google.gson.JsonObject;
 
 import java.util.Objects;
 
-public class MultiMapDataSyncMessage implements ClientSideHandler {
+public class SplitMapDataSyncMessage implements ClientSideHandler {
     String value;
     String name;
     String dir;
 
-    public MultiMapDataSyncMessage(MapDataWrapper<?, ?, ?> wrapper) {
+    public SplitMapDataSyncMessage(MapDataWrapper<?, ?, ?> wrapper) {
         this.name = wrapper.getName();
         this.dir = wrapper.getSubDirectory();
 
@@ -41,6 +41,6 @@ public class MultiMapDataSyncMessage implements ClientSideHandler {
             }
         }
 
-        if (!handled) throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) DataWrapper.LOGGER.error("SplitMap. Received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

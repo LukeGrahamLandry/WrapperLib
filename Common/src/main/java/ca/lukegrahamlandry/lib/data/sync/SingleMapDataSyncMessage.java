@@ -9,9 +9,12 @@
 
 package ca.lukegrahamlandry.lib.data.sync;
 
+import ca.lukegrahamlandry.lib.config.ConfigSyncMessage;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.MapDataWrapper;
 import ca.lukegrahamlandry.lib.network.ClientSideHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -43,6 +46,6 @@ public class SingleMapDataSyncMessage implements ClientSideHandler {
             }
         }
 
-        if (!handled) throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) DataWrapper.LOGGER.error("SingleMap. Received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

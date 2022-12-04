@@ -40,6 +40,6 @@ public class GlobalDataSyncMessage implements ClientSideHandler {
             }
         }
 
-        if (!handled) throw new RuntimeException("received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) DataWrapper.LOGGER.error("Global. Received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

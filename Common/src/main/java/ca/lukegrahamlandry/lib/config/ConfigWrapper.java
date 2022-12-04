@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.config;
 
+import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * If the file is missing we check ./config before using default values.
      */
     public static <T> ConfigWrapper<T> synced(Class<T> clazz){
+        if (!Available.NETWORK.get()) throw new RuntimeException("Called ConfigWrapper#synced but WrapperLib Network module is missing.");
         return new ConfigWrapper<>(clazz, defaultName(clazz), Side.SYNCED, "json5", true);
     }
 
@@ -142,7 +144,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
         try {
             Reader reader = Files.newBufferedReader(this.getFilePath());
-            this.parse(reader);
+            this.value = this.getGson().fromJson(reader, this.clazz);
             reader.close();
             this.logger.debug("config loaded from " + this.displayPath());
         } catch (IOException e) {
@@ -154,7 +156,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.loaded = true;
     }
 
-    ////// CONSTRUCTION //////
+    ////// IMPL //////
 
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
@@ -175,8 +177,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.side = side;
         this.fileExtension = fileExtension;
         this.reloadable = reloadable;
-        String id = "LukeGrahamLandry/WrapperLib Config:" + this.name + "-" + side.name();
-        this.logger = LoggerFactory.getLogger(id);
+        this.logger = LoggerFactory.getLogger(ConfigWrapper.class.getPackageName() + ": " + this.name + "-" + side.name());
 
         try {
             this.defaultConfig = clazz.getConstructor().newInstance();
@@ -189,14 +190,8 @@ public class ConfigWrapper<T> implements Supplier<T> {
         ALL.add(this);
     }
 
-    ////// IMPL //////
-
     private static String defaultName(Class<?> clazz){
         return clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
-    }
-
-    protected void parse(Reader reader){
-        this.value = this.getGson().fromJson(reader, this.clazz);
     }
 
     void set(Object v){

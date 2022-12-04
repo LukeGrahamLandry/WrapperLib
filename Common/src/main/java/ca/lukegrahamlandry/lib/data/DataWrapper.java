@@ -11,9 +11,12 @@ package ca.lukegrahamlandry.lib.data;
 
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
+import ca.lukegrahamlandry.lib.config.ConfigSyncMessage;
+import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.LevelDataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
+import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
 import com.google.gson.Gson;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
@@ -62,10 +65,7 @@ public abstract class DataWrapper<T> {
      * Mark the DataWrapper to be synced to all clients.
      */
     public <W extends DataWrapper<T>> W synced(){
-        if (!Available.NETWORK.get()){
-            this.logger.error("ignoring DataWrapper#synced because WrapperLib Network module is missing");
-            return (W) this;
-        }
+        if (!Available.NETWORK.get()) throw new RuntimeException("Called DataWrapper#synced but WrapperLib Network module is missing.");
         this.shouldSync = true;
         return (W) this;
     }
@@ -182,8 +182,12 @@ public abstract class DataWrapper<T> {
         }
     }
 
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(DataWrapper.class.getPackageName());
     protected void createLogger(){
-        String id = this.getSubDirectory() == null ? "LukeGrahamLandry/WrapperLib Data:" + this.getName() : "LukeGrahamLandry/WrapperLib Data:" + this.getSubDirectory() + "/" + this.getName();
+        String id = DataWrapper.class.getPackageName() + ": ";
+        if (this.getSubDirectory() != null) id = id + this.getSubDirectory() + "/";
+        id += this.getName();
         this.logger = LoggerFactory.getLogger(id);
     }
 
