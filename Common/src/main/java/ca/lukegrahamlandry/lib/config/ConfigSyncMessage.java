@@ -14,16 +14,18 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: check against subDirectory
+import java.util.Objects;
 
 public class ConfigSyncMessage implements ClientSideHandler {
     static Logger LOGGER = LoggerFactory.getLogger(ConfigSyncMessage.class.getPackageName());
 
     String value;
     String name;
+    String dir;
 
     public ConfigSyncMessage(ConfigWrapper<?> wrapper){
-        this.name = wrapper.name;
+        this.name = wrapper.getName();
+        this.dir = wrapper.getSubDirectory();
 
         // encode here using ConfigWrapper#getGson instead of allowing the object to be encoded by the packet module's gson instance
         // this allows adding type adapters to your ConfigWrapper and still having syncing
@@ -33,7 +35,7 @@ public class ConfigSyncMessage implements ClientSideHandler {
     public void handle(){
         boolean handled = false;
         for (ConfigWrapper<?> config : ConfigWrapper.ALL){
-            if (config.name.equals(this.name) && config.side == ConfigWrapper.Side.SYNCED) {
+            if (config.side == ConfigWrapper.Side.SYNCED && Objects.equals(this.name, config.getName()) && Objects.equals(this.dir, config.getSubDirectory())) {
                 try {
                     Object syncedValue = config.getGson().fromJson(this.value, config.clazz);
                     config.set(syncedValue);
@@ -46,6 +48,6 @@ public class ConfigSyncMessage implements ClientSideHandler {
             }
         }
 
-        if (!handled) LOGGER.error("Received config sync for unknown name: " + this.name);
+        if (!handled) LOGGER.error("Received config sync for unknown  unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

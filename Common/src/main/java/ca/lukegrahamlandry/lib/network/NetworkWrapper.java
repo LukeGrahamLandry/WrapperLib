@@ -23,16 +23,14 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * A platform independent network implementation that allows sending objects between the client and the server without manually writing byte buffer serialization code.
+ * A platform independent network implementation that allows sending data between the client and the server without manually writing byte buffer serialization code.
  */
 public class NetworkWrapper {
-    // SENDING
-
     /**
      * Send a packet from the server to a specific player's client.
      * @param player the player to send a packet to
      * @param message the data to send to the client.
-     * @param <T> the message class. It must either be registered with NetworkWrapper#registerClientHandler or implement ClientSideHandler
+     * @param <T> the message class. It must either implement ClientSideHandler or be registered with NetworkWrapper#registerClientHandler
      */
     @ExpectPlatform
     public static <T> void sendToClient(ServerPlayer player, T message){
@@ -58,8 +56,6 @@ public class NetworkWrapper {
     public static <T> void sendToAllClients(T message){
         throw new AssertionError();
     }
-
-    // MANUALLY REGISTERED HANDLERS
 
     /**
      * Using this is completely optional. Your packet message object may implement ClientSideHandler instead.

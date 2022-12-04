@@ -11,13 +11,12 @@ package ca.lukegrahamlandry.lib.data;
 
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
-import ca.lukegrahamlandry.lib.config.ConfigSyncMessage;
 import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.LevelDataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
-import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
 import com.google.gson.Gson;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +78,20 @@ public abstract class DataWrapper<T> {
     }
 
     /**
+     * Set the location to be used for your data file.
+     * If saved, the file will be [namespace]/[path]-[side].[ext]
+     */
+    public <W extends DataWrapper<T>> W named(ResourceLocation name){
+        this.dir(name.getNamespace());
+        this.named(name.getPath());
+        return (W) this;
+    }
+
+    /**
      * @param name the name of the DataWrapper. This will be used for the filename if saved and for matching instances when syncing.
      */
     public <W extends DataWrapper<T>> W named(String name){
-        this.name = name.toLowerCase(Locale.ROOT).replace(":", "-").replace(" ", "-");
+        this.name = JsonHelper.safeFileName(name);
         this.createLogger();
         return (W) this;
     }
@@ -91,7 +100,7 @@ public abstract class DataWrapper<T> {
      * @param subDirectory the category name of the DataWrapper. This will be used as the folder if saved and for matching instances when syncing.
      */
     public <W extends DataWrapper<T>> W dir(String subDirectory){
-        this.subDirectory = subDirectory;
+        this.subDirectory = JsonHelper.safeFileName(subDirectory);
         this.createLogger();
         return (W) this;
     }

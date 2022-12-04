@@ -15,13 +15,15 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
-
+/**
+ * A platform independent wrapper around Minecraft's registry system.
+ * @param <T> the type of object that will be registered
+ */
 public class RegistryWrapper<T> {
     /**
      * @param vanillaRegistry where objects will be registered. Registry.OBJECT_TYPE
      * @param modid will be used as the path of your object's registry name.
      * @return a RegistryWrapper that allows you to register new game objects.
-     * @param <T> the type of object that will be registered.
      */
     public static <T> RegistryWrapper<T> of(Registry<T> vanillaRegistry, String modid){
         return new RegistryWrapper<>(vanillaRegistry, modid);
@@ -46,6 +48,8 @@ public class RegistryWrapper<T> {
     public void init(){
 
     }
+
+    // IMPL
 
     public final Registry<T> registry;
     public final String modid;

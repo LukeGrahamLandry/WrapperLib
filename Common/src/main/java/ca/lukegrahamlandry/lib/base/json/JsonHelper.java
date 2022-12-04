@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 public class JsonHelper {
     private static final GsonBuilder GSON_BUILDER = new GsonBuilder().setLenient()
@@ -52,5 +53,11 @@ public class JsonHelper {
 
     private static void init(){
         GSON = GSON_BUILDER.create();
+    }
+
+    public static String safeFileName(String s){
+        return s.toLowerCase(Locale.ROOT)
+                .replace(":", "-")
+                .replace(" ", "-");
     }
 }

@@ -11,13 +11,16 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
+import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.google.gson.Gson;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
@@ -28,9 +31,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Supplier;
 
-// TODO: support subdirectories
 public class ConfigWrapper<T> implements Supplier<T> {
     /**
      * Creates a new config object for reading settings from player editable files.
@@ -40,7 +43,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      */
     public static <T> ConfigWrapper<T> synced(Class<T> clazz){
         if (!Available.NETWORK.get()) throw new RuntimeException("Called ConfigWrapper#synced but WrapperLib Network module is missing.");
-        return new ConfigWrapper<>(clazz, defaultName(clazz), Side.SYNCED, "json5", true);
+        return new ConfigWrapper<>(clazz, Side.SYNCED);
     }
 
     /**
@@ -49,7 +52,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * The config will be loaded from ./config
      */
     public static <T> ConfigWrapper<T> client(Class<T> clazz){
-        return new ConfigWrapper<>(clazz, defaultName(clazz), Side.CLIENT, "json5",true);
+        return new ConfigWrapper<>(clazz, Side.CLIENT);
     }
 
     /**
@@ -59,7 +62,17 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * If the file is missing we check ./config before using default values.
      */
     public static <T> ConfigWrapper<T> server(Class<T> clazz){
-        return new ConfigWrapper<>(clazz, defaultName(clazz), Side.SERVER_ONLY, "json5",true);
+        return new ConfigWrapper<>(clazz, Side.SERVER);
+    }
+
+    /**
+     * Set the location to be used for your config file.
+     * The file will be [namespace]/[path]-[side].[ext]
+     */
+    public ConfigWrapper<T> named(ResourceLocation name){
+        this.dir(name.getNamespace());
+        this.named(name.getPath());
+        return this;
     }
 
     /**
@@ -67,8 +80,18 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * The file will be [name]-[side].[ext]
      */
     public ConfigWrapper<T> named(String name){
-        ALL.remove(this);
-        return new ConfigWrapper<>(this.clazz, name, this.side, this.fileExtension, this.reloadable);
+        this.name = JsonHelper.safeFileName(name);
+        this.createLogger();
+        return this;
+    }
+
+    /**
+     * @param subDirectory the category name of the ConfigWrapper. This will be used as the folder and for matching instances when syncing.
+     */
+    public ConfigWrapper<T> dir(String subDirectory){
+        this.subDirectory = JsonHelper.safeFileName(subDirectory);
+        this.createLogger();
+        return this;
     }
 
     /**
@@ -77,21 +100,20 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * The file will be [name]-[side].[ext]
      * Defaults to json5, other reasonable options might be json, cfg, data, config
      */
-    public ConfigWrapper<T> ext(String ext){
-        ALL.remove(this);
-        return new ConfigWrapper<>(this.clazz, name, this.side, ext, this.reloadable);
+    public ConfigWrapper<T> ext(String fileExtension){
+        this.fileExtension = fileExtension;
+        return this;
     }
 
     /**
      * By default, the config may reload while the game is running.
-     * If this method is called:
-     * The config will be loaded once during client/server setup and then the data will never change.
+     * If this method is called, the config will be loaded once during client/server setup and then the data will never change.
      * Use this for values that are used during setup where it would be strange if they changed without fully restarting the game.
      * Calling this has the same effect as caching the object returned by ConfigWrapper#get
      */
     public ConfigWrapper<T> noReload(){
-        ALL.remove(this);
-        return new ConfigWrapper<>(this.clazz, this.name, this.side, this.fileExtension, false);
+        this.reloadable = false;
+        return this;
     }
 
     /**
@@ -161,23 +183,23 @@ public class ConfigWrapper<T> implements Supplier<T> {
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
     private final T defaultConfig;
-    public final String name;
+    private String name;
     public final Side side;
-    public final boolean reloadable;
+    private boolean reloadable;
     public final Class<T> clazz;
     protected T value;
-    private final Logger logger;
+    private Logger logger;
     private boolean loaded = false;
-    private final String fileExtension;
+    private String fileExtension;
     private Gson gson;
+    private String subDirectory = null;
 
-    public ConfigWrapper(Class<T> clazz, String name, Side side, String fileExtension, boolean reloadable){
+    public ConfigWrapper(Class<T> clazz, Side side){
         this.clazz = clazz;
-        this.name = name;
+        this.named(defaultName(clazz));
         this.side = side;
-        this.fileExtension = fileExtension;
-        this.reloadable = reloadable;
-        this.logger = LoggerFactory.getLogger(ConfigWrapper.class.getPackageName() + ": " + this.name + "-" + side.name());
+        this.fileExtension = "json5";
+        this.reloadable = false;
 
         try {
             this.defaultConfig = clazz.getConstructor().newInstance();
@@ -199,8 +221,12 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     protected void writeDefaultFile() {
+        this.getFolderPath().toFile().mkdirs();
+
         if (this.side.inWorldDir){
-            Path globalDefaultLocation = Paths.get("config").resolve(this.getFilename());
+            Path globalDefaultLocation = Paths.get("config");
+            if (this.subDirectory != null) globalDefaultLocation = globalDefaultLocation.resolve(this.subDirectory);
+            globalDefaultLocation = globalDefaultLocation.resolve(this.getFilename());
             if (Files.exists(globalDefaultLocation)){
                 try {
                     Files.copy(globalDefaultLocation, this.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
@@ -224,18 +250,20 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     protected String getFilename(){
-        return this.name.toLowerCase(Locale.ROOT) + "-" + this.side.name().toLowerCase(Locale.ROOT) + ".json5";
+        return this.name + "-" + this.side.name().toLowerCase(Locale.ROOT) + "." + this.fileExtension;
+    }
+
+    private Path getFolderPath(){
+        Path path;
+        if (this.side.inWorldDir) path = server.getWorldPath(LevelResource.ROOT).resolve("serverconfig");
+        else path = Paths.get("config");
+
+        if (this.subDirectory != null) path = path.resolve(this.subDirectory);
+        return path;
     }
 
     protected Path getFilePath(){
-        switch (this.side){
-            case SYNCED:
-                return server.getWorldPath(LevelResource.ROOT).resolve("serverconfig").resolve(this.getFilename());
-            case CLIENT:
-                return Paths.get("config").resolve(this.getFilename());
-            default:
-                return null;
-        }
+        return this.getFolderPath().resolve(this.getFilename());
     }
 
     /**
@@ -253,10 +281,32 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return this.gson;
     }
 
+    private void createLogger(){
+        String id = ConfigWrapper.class.getPackageName() + ": ";
+        if (this.getSubDirectory() != null) id = id + this.getSubDirectory() + "/";
+        id += this.getName() + "-" + side.name();
+        this.logger = LoggerFactory.getLogger(id);
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getSubDirectory() {
+        return this.subDirectory;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ConfigWrapper<?>)) return false;
+        ConfigWrapper<?> wrapper = (ConfigWrapper<?>) obj;
+        return this.side.equals(wrapper.side) && Objects.equals(this.name, wrapper.name) && Objects.equals(this.subDirectory, wrapper.subDirectory);
+    }
+
     public enum Side {
         CLIENT(false),
         SYNCED(true),
-        SERVER_ONLY(true);
+        SERVER(true);
 
         public final boolean inWorldDir;
 
