@@ -137,6 +137,15 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return this.value;
     }
 
+    /**
+     * Calling this is optional.
+     * This method does nothing but serves as a reminder and semantically pleasing way to class load your config wrapper class.
+     * For example, if you static init this in your config data class, you must ensure it gets class loaded during your mod initialization, so the config file will be loaded. So you may choose to call this method from your mod initializer.
+     */
+    public void init(){
+
+    }
+
     // IMPL
 
     /**

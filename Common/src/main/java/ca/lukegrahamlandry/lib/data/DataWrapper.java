@@ -134,6 +134,15 @@ public abstract class DataWrapper<T> {
         if (this.shouldSync) this.sync();
     }
 
+    /**
+     * Calling this is optional.
+     * This method does nothing but serves as a reminder and semantically pleasing way to class load your data wrapper class.
+     * For example, if you static init this in your data class, you must ensure it gets class loaded during your mod initialization, so the data will be loaded. So you may choose to call this method from your mod initializer.
+     */
+    public void init(){
+
+    }
+
     // IMPL
 
     public static List<DataWrapper<?>> ALL = new ArrayList<>();

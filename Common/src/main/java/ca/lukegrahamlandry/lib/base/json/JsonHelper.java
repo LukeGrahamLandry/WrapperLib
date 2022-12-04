@@ -25,7 +25,8 @@ public class JsonHelper {
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
             .registerTypeAdapter(GenericHolder.class, new GenericHolder.TypeAdapter())
             .registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter())
-            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter());
+            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
+            .registerTypeAdapterFactory(new RegistryObjectTypeAdapterFactory());
 
     private static Gson GSON = GSON_BUILDER.create();
 

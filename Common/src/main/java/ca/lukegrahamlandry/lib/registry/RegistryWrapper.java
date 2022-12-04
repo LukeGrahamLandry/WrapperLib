@@ -42,6 +42,7 @@ public class RegistryWrapper<T> {
     }
 
     /**
+     * Calling this is optional.
      * This method does nothing but serves as a reminder and semantically pleasing way to class load your registry class.
      * For example, if you static init this in your ItemInit class, you must ensure it gets class loaded during your mod initialization so your items are registered in time. So you may choose to call this method from your mod initializer.
      */
