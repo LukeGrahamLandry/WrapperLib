@@ -2,15 +2,9 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-loom {
-    forge {
-        // mixinConfig "modid.mixins.json"
-    }
-}
-
 architectury {
     platformSetupLoomIde()
-    forge()
+    fabric()
 }
 
 configurations {
@@ -22,35 +16,34 @@ configurations {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     common(project(path: ":example:Example-Common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":example:Example-Common", configuration: "transformProductionForge")) { transitive false }
+    shadowCommon(project(path: ":example:Example-Common", configuration: "transformProductionFabric")) { transitive false }
 
-    implementation project(path: ":Forge", configuration: "namedElements")
-    common(project(path: ":Common", configuration: "transformProductionForge")) { transitive false }
+    implementation project(path: ":Fabric", configuration: "namedElements")
+    common(project(path: ":Common", configuration: "transformProductionFabric")) { transitive false }
 
     // transformProductionForge is after is does the @ExpectPlatform injections
     // does not exist on :Forge of course because that's not the direction it goes in
     // namedElements on :Common would throw assertion errors on the platform classes
-    shadowCommon project(path: ":Common", configuration: "transformProductionForge")
-    shadowCommon project(path: ":Forge", configuration: "namedElements")
+    shadowCommon project(path: ":Common", configuration: "transformProductionFabric")
+    shadowCommon project(path: ":Fabric", configuration: "namedElements")
 }
 
 processResources {
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
-    inputs.property "META-INF/mods.toml", project.version
+    inputs.property "fabric.mod.json", project.version
 }
 
 shadowJar {
     configurations = [project.configurations.shadowCommon]
     classifier "dev-shadow"  // not obfuscated, with shadowed stuff
 
-    exclude 'ca/lukegrahamlandry/lib/event/forge/WrapperLibModMain.class'
     relocate 'ca.lukegrahamlandry.lib', 'ca.lukegrahamlandry.examplemod.shadow.wrapperlib'
-
 }
 
 remapJar {

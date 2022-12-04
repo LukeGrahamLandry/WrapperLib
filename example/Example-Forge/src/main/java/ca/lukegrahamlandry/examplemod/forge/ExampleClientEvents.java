@@ -7,8 +7,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.examplemod;
+package ca.lukegrahamlandry.examplemod.forge;
 
+import ca.lukegrahamlandry.examplemod.ExampleCommonMain;
+import ca.lukegrahamlandry.examplemod.ExampleEventHandlers;
 import ca.lukegrahamlandry.examplemod.model.KillTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,10 +23,8 @@ import net.minecraftforge.fml.common.Mod;
 public class ExampleClientEvents {
     @SubscribeEvent
     public static void drawHud(RenderGuiOverlayEvent.Post event) {
-        if (event.getOverlay() == VanillaGuiOverlay.CROSSHAIR.type()){
-            KillTracker kills = ExampleModMain.kills.get(Minecraft.getInstance().player);
-            Minecraft.getInstance().font.draw(event.getPoseStack(), "Player Kills: " + kills.players, 20, 20, ExampleModMain.clientConfig.get().uiColour);
-            Minecraft.getInstance().font.draw(event.getPoseStack(), "Mob Kills: " + kills.mobs, 20, 40, ExampleModMain.clientConfig.get().uiColour);
+        if (event.getOverlay() == VanillaGuiOverlay.CROSSHAIR.type()) {
+            ExampleEventHandlers.drawOverlay(event.getPoseStack());
         }
     }
 }

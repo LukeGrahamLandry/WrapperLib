@@ -1,0 +1,25 @@
+loom {
+    // accessWidenerPath = file("src/main/resources/modid.accessWidener")
+}
+
+architectury {
+    common(rootProject.platforms.split(","))
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations
+    // Do NOT use other classes from fabric loader
+    // also if you dont have this you will get
+    // - cannot find class org.web  .asm.MethodNode
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    common(project(path: ":Common", configuration: "namedElements")) { transitive false }
+}

@@ -203,10 +203,10 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
     public ConfigWrapper(Class<T> clazz, Side side){
         this.clazz = clazz;
-        this.named(defaultName(clazz));
         this.side = side;
         this.fileExtension = "json5";
         this.reloadable = false;
+        this.named(defaultName(clazz));
 
         try {
             this.defaultConfig = clazz.getConstructor().newInstance();

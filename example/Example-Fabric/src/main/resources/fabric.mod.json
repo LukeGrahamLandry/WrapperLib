@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "wrapperlibexamplemod",
+  "version": "${version}",
+  "name": "Example Mod",
+  "description": "WrapperLib demo.",
+  "authors": [
+    "LukeGrahamLandry"
+  ],
+  "contact": {
+    "homepage": "https://github.com/LukeGrahamLandry/WrapperLib/wiki",
+    "sources": "https://github.com/LukeGrahamLandry/WrapperLib",
+    "issues": "https://github.com/LukeGrahamLandry/WrapperLib/issues",
+    "discord": "http://moddingtutorials.org/discord"
+  },
+  "license": "MPL 2.0",
+  "entrypoints": {
+    "main": [
+      "ca.lukegrahamlandry.examplemod.fabric.ExampleModInit"
+    ],
+    "client": [
+      "ca.lukegrahamlandry.examplemod.fabric.ExampleClientInit"
+    ]
+  },
+  "mixins": [
+    "wrapperlibexamplemod.mixins.json"
+  ],
+  "depends": {
+    "fabric": ">=0.62.0+1.19.2",
+    "fabricloader": ">=0.11.3",
+    "minecraft": ">=1.19"
+  }
+}

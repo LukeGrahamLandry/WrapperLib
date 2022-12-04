@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ca.lukegrahamlandry.examplemod.fabric.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "LivingMixin"
+  ],
+  "client": [
+
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

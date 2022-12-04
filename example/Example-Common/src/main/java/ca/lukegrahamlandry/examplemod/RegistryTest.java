@@ -16,7 +16,7 @@ import net.minecraft.world.item.Item;
 import java.util.function.Supplier;
 
 public class RegistryTest {
-    public static final RegistryWrapper<Item> ITEMS = RegistryWrapper.of(Registry.ITEM, ExampleModMain.MOD_ID);
+    public static final RegistryWrapper<Item> ITEMS = RegistryWrapper.of(Registry.ITEM, ExampleCommonMain.MOD_ID);
 
     public static final Supplier<Item> SMILE = ITEMS.register("smiley_face", () -> new Item(new Item.Properties().fireResistant()));
 }

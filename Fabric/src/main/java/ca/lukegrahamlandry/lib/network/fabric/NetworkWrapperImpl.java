@@ -50,11 +50,11 @@ public class NetworkWrapperImpl implements IEventCallbacks {
     }
 
     public static <T> void sendToServer(T message){
-        ClientPlayNetworking.send(NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.empty()));
+        ClientPlayNetworking.send(NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.create()));
     }
 
     public static <T> void sendToClient(ServerPlayer player, T message){
-        ServerPlayNetworking.send(player, NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.empty()));
+        ServerPlayNetworking.send(player, NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.create()));
     }
 
     public static <T> void sendToAllClients(T message){
