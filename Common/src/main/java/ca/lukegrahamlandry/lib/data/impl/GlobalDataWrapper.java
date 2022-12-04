@@ -60,7 +60,6 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
             String msg = "failed to load data from " + forDisplay(this.getFilePath());
             this.logger.error(msg);
             e.printStackTrace();
-            throw new RuntimeException(msg);
         }
 
         this.isLoaded = true;
@@ -91,8 +90,8 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
 
     protected Path getFilePath(){
         Path path = server.getWorldPath(LevelResource.ROOT).resolve("data");
-        if (this.subDirectory != null) path = path.resolve(this.subDirectory);
-        path = path.resolve(this.name + "." + this.fileExtension);
+        if (this.getSubDirectory() != null) path = path.resolve(this.getSubDirectory());
+        path = path.resolve(this.getName() + "." + this.fileExtension);
         return path;
     }
 

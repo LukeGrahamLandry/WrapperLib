@@ -16,7 +16,7 @@ import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.impl.map.PlayerDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;

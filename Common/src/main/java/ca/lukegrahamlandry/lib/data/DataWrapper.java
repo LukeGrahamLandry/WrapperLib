@@ -12,8 +12,8 @@ package ca.lukegrahamlandry.lib.data;
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
-import ca.lukegrahamlandry.lib.data.impl.map.LevelDataWrapper;
-import ca.lukegrahamlandry.lib.data.impl.map.PlayerDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.LevelDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
 import com.google.gson.Gson;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
@@ -131,14 +131,14 @@ public abstract class DataWrapper<T> {
     public static MinecraftServer server;
 
     public final Class<T> clazz;
-    protected String name;
-    protected String fileExtension = "json";
+    private String name;
+    public String fileExtension = "json";
     protected String subDirectory = null;
     boolean shouldSave = false;
     protected boolean shouldSync = false;
     protected boolean isLoaded = false;
     protected boolean isDirty = false;
-    protected Logger logger;
+    public Logger logger;
     private Gson gson;
 
     protected DataWrapper(Class<T> clazz){
@@ -157,11 +157,6 @@ public abstract class DataWrapper<T> {
 
     public abstract void sync();
 
-    protected void createLogger(){
-        String id = this.getSubDirectory() == null ? "LukeGrahamLandry/WrapperLib Data:" + this.getName() : "LukeGrahamLandry/WrapperLib Data:" + this.getSubDirectory() + "/" + this.getName();
-        this.logger = LoggerFactory.getLogger(id);
-    }
-
     public String getName() {
         return this.name;
     }
@@ -170,13 +165,15 @@ public abstract class DataWrapper<T> {
         return this.subDirectory;
     }
 
-    protected abstract Path getFilePath();
+    public Gson getGson(){
+        return this.gson;
+    }
 
     private static String defaultName(Class<?> clazz){
         return clazz.getSimpleName().toLowerCase(Locale.ROOT);
     }
 
-    protected T createDefaultInstance() {
+    public T createDefaultInstance() {
         try {
             return clazz.getConstructor().newInstance();
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
@@ -185,11 +182,12 @@ public abstract class DataWrapper<T> {
         }
     }
 
-    public Gson getGson(){
-        return this.gson;
+    protected void createLogger(){
+        String id = this.getSubDirectory() == null ? "LukeGrahamLandry/WrapperLib Data:" + this.getName() : "LukeGrahamLandry/WrapperLib Data:" + this.getSubDirectory() + "/" + this.getName();
+        this.logger = LoggerFactory.getLogger(id);
     }
 
-    protected static String forDisplay(Path path){
+    public static String forDisplay(Path path){
         try {
             return path.toAbsolutePath().toFile().getCanonicalPath();
         } catch (IOException e) {

@@ -10,7 +10,7 @@
 package ca.lukegrahamlandry.lib.data.sync;
 
 import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.impl.map.MapDataWrapper;
+import ca.lukegrahamlandry.lib.data.impl.MapDataWrapper;
 import ca.lukegrahamlandry.lib.network.ClientSideHandler;
 import com.google.gson.JsonObject;
 

@@ -7,7 +7,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.data.impl.map;
+package ca.lukegrahamlandry.lib.data.impl;
 
 import net.minecraft.world.entity.player.Player;
 
