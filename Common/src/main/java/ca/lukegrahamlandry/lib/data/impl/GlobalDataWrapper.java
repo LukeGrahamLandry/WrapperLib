@@ -37,6 +37,14 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
         return this.value;
     }
 
+    /**
+     * Resets the data to default values.
+     */
+    public void clear(){
+        this.value = this.createDefaultInstance();
+        this.setDirty();
+    }
+
     @Override
     public void load() {
         if (server == null) {

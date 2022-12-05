@@ -21,6 +21,7 @@ import com.google.gson.JsonSyntaxException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @param <K> the user facing key object. ie. player or world
@@ -55,6 +56,14 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
         if (this.shouldSync) this.sync(key);
     }
 
+
+    /**
+     * Resets the data for one entry to default values.
+     */
+    public void clear(K key){
+        this.data.remove(this.keyToId(key));
+        this.setDirty(key);
+    }
 
     // IMPL
 
