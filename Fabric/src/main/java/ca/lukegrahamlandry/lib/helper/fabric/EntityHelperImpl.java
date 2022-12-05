@@ -9,7 +9,10 @@
 
 package ca.lukegrahamlandry.lib.helper.fabric;
 
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -19,5 +22,9 @@ import java.util.function.Supplier;
 public class EntityHelperImpl {
     public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, Supplier<AttributeSupplier.Builder> builder) {
         FabricDefaultAttributeRegistry.register(type.get(), builder.get());
+    }
+
+    public static <E extends Entity> void renderer(Supplier<EntityType<? extends E>> type, EntityRendererProvider<E> renderer) {
+        EntityRendererRegistry.register(type.get(), renderer);
     }
 }

@@ -71,7 +71,7 @@ public class RegistryThing<T, O> implements Supplier<O> {
             LOGGER.error("Cannot call RegistryThing#withAttributes for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;
         }
-        if (!Available.NETWORK.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper module is missing.");
+        if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper module is missing.");
 
         EntityHelper.attributes(() -> (EntityType<? extends LivingEntity>) this.get(), builder);
         return this;

@@ -29,5 +29,7 @@ public class RegistryTest {
     public static final Supplier<Block> TEST = BLOCKS.register("test", () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT))).withItem();
 
     public static final RegistryWrapper<EntityType<?>> ENTITY = RegistryWrapper.create(Registry.ENTITY_TYPE, ExampleCommonMain.MOD_ID);
-    public static final Supplier<EntityType<Drowned>> SOMETHING = ENTITY.register("thing", EntityType.Builder.of(Drowned::new, MobCategory.MONSTER)).withAttributes(Drowned::createMonsterAttributes);
+    public static final Supplier<EntityType<Test>> SOMETHING = ENTITY
+            .register("thing", EntityType.Builder.of(Test::new, MobCategory.MONSTER))
+            .withAttributes(Drowned::createAttributes);
 }
