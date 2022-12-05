@@ -20,7 +20,6 @@ public class EventCallbacks implements IEventCallbacks {
         DataWrapper.server = server;
         DataWrapper.ALL.forEach((data) -> {
             if (data.shouldSave) data.load();
-            if (data.shouldSync) data.sync();
         });
     }
 

@@ -20,7 +20,6 @@ public class EventCallbacks implements IEventCallbacks {
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side.inWorldDir){
                 config.load();
-                config.sync();
             }
         });
     }

@@ -1,6 +1,5 @@
 package ca.lukegrahamlandry.examplemod.fabric;
 
-import ca.lukegrahamlandry.examplemod.ExampleClientMain;
 import ca.lukegrahamlandry.examplemod.ExampleEventHandlers;
 import ca.lukegrahamlandry.lib.event.fabric.WrapperLibClientInitializer;
 import net.fabricmc.api.ClientModInitializer;
@@ -11,6 +10,5 @@ public class ExampleClientInit implements ClientModInitializer {
     public void onInitializeClient() {
         new WrapperLibClientInitializer().onInitializeClient();
         HudRenderCallback.EVENT.register((matrixStack, tickDelta) -> ExampleEventHandlers.drawOverlay(matrixStack));
-        ExampleClientMain.init();
     }
 }

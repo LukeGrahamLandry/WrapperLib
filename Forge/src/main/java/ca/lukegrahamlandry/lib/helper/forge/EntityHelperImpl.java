@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class EntityHelperImpl {
     // REGISTER ATTRIBUTES IMPL
 
@@ -34,10 +33,14 @@ public class EntityHelperImpl {
         attributes.add(new AttributeContainer(type, builder));
     }
 
-    @SubscribeEvent
-    public static void handleAttributeEvent(EntityAttributeCreationEvent event){
-        attributes.forEach((container) -> event.put(container.type.get(), container.builder.get().build()));
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    public static class CommonEvent {
+        @SubscribeEvent
+        public static void handleAttributeEvent(EntityAttributeCreationEvent event){
+            attributes.forEach((container) -> event.put(container.type.get(), container.builder.get().build()));
+        }
     }
+
 
     private static class AttributeContainer {
         final Supplier<EntityType<? extends LivingEntity>> type;
@@ -68,11 +71,12 @@ public class EntityHelperImpl {
         }
     }
 
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, value=Dist.CLIENT)
-    public static class Client {
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, value= Dist.CLIENT)
+    public static class ClientEvent {
         @SubscribeEvent
         public static void onClientSetup(EntityRenderersEvent.RegisterRenderers event) {
             renderers.forEach((container) -> container.call(event::registerEntityRenderer));
         }
     }
+
 }

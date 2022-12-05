@@ -10,6 +10,7 @@
 package ca.lukegrahamlandry.examplemod;
 
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
+import net.minecraft.client.renderer.entity.DrownedRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -31,5 +32,6 @@ public class RegistryTest {
     public static final RegistryWrapper<EntityType<?>> ENTITY = RegistryWrapper.create(Registry.ENTITY_TYPE, ExampleCommonMain.MOD_ID);
     public static final Supplier<EntityType<Test>> SOMETHING = ENTITY
             .register("thing", EntityType.Builder.of(Test::new, MobCategory.MONSTER))
-            .withAttributes(Drowned::createAttributes);
+            .withAttributes(Drowned::createAttributes)
+            .withRenderer(() -> DrownedRenderer::new);
 }

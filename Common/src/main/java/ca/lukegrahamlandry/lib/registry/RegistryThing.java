@@ -1,11 +1,14 @@
 package ca.lukegrahamlandry.lib.registry;
 
 import ca.lukegrahamlandry.lib.base.Available;
+import ca.lukegrahamlandry.lib.base.PlatformHelper;
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -74,6 +77,19 @@ public class RegistryThing<T, O> implements Supplier<O> {
         if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper module is missing.");
 
         EntityHelper.attributes(() -> (EntityType<? extends LivingEntity>) this.get(), builder);
+        return this;
+    }
+
+    // https://www.youtube.com/watch?v=tXCuV_9naVI
+    public <E extends Entity, A, B> RegistryThing<T, O> withRenderer(SideSafeRenderProvider<A, B> renderer){
+        if (this.registry != Registry.ENTITY_TYPE){
+            LOGGER.error("Cannot call RegistryThing#withRenderer for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
+            return this;
+        }
+        if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper module is missing.");
+
+        if (PlatformHelper.isDedicatedServer()) return this;
+        EntityHelper.renderer(() -> (EntityType<? extends E>) this.get(), (ctx) -> (EntityRenderer<E>) renderer.get().apply((A) ctx));
         return this;
     }
 }
