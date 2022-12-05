@@ -11,12 +11,24 @@ package ca.lukegrahamlandry.examplemod;
 
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.core.Registry;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import java.util.function.Supplier;
 
 public class RegistryTest {
-    public static final RegistryWrapper<Item> ITEMS = RegistryWrapper.of(Registry.ITEM, ExampleCommonMain.MOD_ID);
+    public static final RegistryWrapper<Item> ITEMS = RegistryWrapper.create(Registry.ITEM, ExampleCommonMain.MOD_ID);
 
-    public static final Supplier<Item> SMILE = ITEMS.register("smiley_face", () -> new Item(new Item.Properties().fireResistant()));
+    public static final Supplier<TestItem> SMILE = ITEMS.register("smiley_face", () -> new TestItem(new Item.Properties().fireResistant()));
+
+    public static final RegistryWrapper<Block> BLOCKS = RegistryWrapper.create(Registry.BLOCK, ExampleCommonMain.MOD_ID);
+    public static final Supplier<Block> TEST = BLOCKS.register("test", () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT))).withItem();
+
+    public static final RegistryWrapper<EntityType<?>> ENTITY = RegistryWrapper.create(Registry.ENTITY_TYPE, ExampleCommonMain.MOD_ID);
+    public static final Supplier<EntityType<Drowned>> SOMETHING = ENTITY.register("thing", EntityType.Builder.of(Drowned::new, MobCategory.MONSTER)).withAttributes(Drowned.createMonsterAttributes());
 }

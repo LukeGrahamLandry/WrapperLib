@@ -14,6 +14,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 
+import java.util.function.Supplier;
+
 public class EntityHelper {
     /**
      * Registers attributes for a custom living entity.
@@ -21,7 +23,7 @@ public class EntityHelper {
      * @param builder the attributes to be registered.
      */
     @ExpectPlatform
-    public static void attributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
+    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder) {
         throw new AssertionError();
     }
 }

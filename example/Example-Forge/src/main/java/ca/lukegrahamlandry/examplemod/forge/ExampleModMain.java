@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @Mod(ExampleCommonMain.MOD_ID)
 public class ExampleModMain {
     public ExampleModMain(){
-        if (FMLLoader.isProduction()) EventWrapper.get().forEach(IEventCallbacks::onInit);
+        if (FMLLoader.isProduction()) EventWrapper.init();
         ExampleCommonMain.init();
     }
 }

@@ -22,7 +22,7 @@ public class WrapperLibModInitializer implements ModInitializer {
      */
     @Override
     public void onInitialize() {
-        EventWrapper.get().forEach(IEventCallbacks::onInit);
+        EventWrapper.init();
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> EventWrapper.get().forEach((event) -> event.onServerStarting(server)));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> EventWrapper.get().forEach((event) -> event.onServerStopped(server)));

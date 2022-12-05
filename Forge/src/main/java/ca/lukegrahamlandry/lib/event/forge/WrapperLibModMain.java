@@ -14,12 +14,12 @@ import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * If you shadow WrapperLib you must exclude this class and manually call my onInit event.
+ * If you shadow WrapperLib you must exclude this class and manually call EventWrapper#init
  * Forge gets confused if there are extra classes in your jar with the @Mod annotation.
  */
 @Mod("wrapperlib")
 public class WrapperLibModMain {
     public WrapperLibModMain(){
-        EventWrapper.get().forEach(IEventCallbacks::onInit);
+        EventWrapper.init();
     }
 }

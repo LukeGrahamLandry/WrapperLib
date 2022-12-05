@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class RegistryWrapperImpl {
-    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<T> constructor) {
+    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
         RegistryContainer.of(registry, rl.getNamespace()).deferred.register(rl.getPath(), constructor);
     }
 

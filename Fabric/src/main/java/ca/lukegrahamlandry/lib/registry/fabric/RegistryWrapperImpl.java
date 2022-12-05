@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.function.Supplier;
 
 public class RegistryWrapperImpl {
-    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<T> constructor) {
+    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
         Registry.register(registry, rl, constructor.get());
     }
 

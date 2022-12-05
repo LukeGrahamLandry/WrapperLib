@@ -12,6 +12,8 @@ package ca.lukegrahamlandry.lib.registry;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 
 import java.util.function.Supplier;
 
@@ -25,7 +27,7 @@ public class RegistryWrapper<T> {
      * @param modid will be used as the path of your object's registry name.
      * @return a RegistryWrapper that allows you to register new game objects.
      */
-    public static <T> RegistryWrapper<T> of(Registry<T> vanillaRegistry, String modid){
+    public static <T> RegistryWrapper<T> create(Registry<T> vanillaRegistry, String modid){
         return new RegistryWrapper<>(vanillaRegistry, modid);
     }
 
@@ -35,10 +37,10 @@ public class RegistryWrapper<T> {
      * @param constructor A supplier for your object. You cannot use a direct instance because Forge is weird.
      * @return A supplier for your object that will only resolve after registration has been handled (which is immediately on fabric).
      */
-    public Supplier<T> register(String name, Supplier<T> constructor){
+    public <O extends T> RegistryThing<T, O> register(String name, Supplier<O> constructor){
         ResourceLocation rl = new ResourceLocation(this.modid, name);
         register(this.registry, rl, constructor);
-        return () -> this.registry.get(rl);
+        return new RegistryThing<>(this.registry, rl);
     }
 
     /**
@@ -48,6 +50,17 @@ public class RegistryWrapper<T> {
      */
     public void init(){
 
+    }
+
+    // HELPER
+
+    /**
+     * Register a new entity type without manually calling EntityType.Builder#build
+     */
+    public <E extends Entity> RegistryThing<T, EntityType<E>> register(String name, EntityType.Builder<E> entityBuilder){
+        ResourceLocation rl = new ResourceLocation(this.modid, name);
+        register(this.registry, rl, () -> (T) entityBuilder.build(name));
+        return new RegistryThing<>(this.registry, rl);
     }
 
     // IMPL
@@ -65,7 +78,7 @@ public class RegistryWrapper<T> {
      * You never need to call this manually.
      */
     @ExpectPlatform
-    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<T> itemConstructor) {
+    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
         throw new AssertionError();
     }
 

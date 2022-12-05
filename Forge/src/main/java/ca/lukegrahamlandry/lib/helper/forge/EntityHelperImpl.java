@@ -18,23 +18,24 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class EntityHelperImpl {
     public static final List<AttributeContainer> attributes = new ArrayList<>();
-    public static void attributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
+    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder) {
         attributes.add(new AttributeContainer(type, builder));
     }
 
     @SubscribeEvent
     public static void handleAttributeEvent(EntityAttributeCreationEvent event){
-        attributes.forEach((container) -> event.put(container.type, container.builder.build()));
+        attributes.forEach((container) -> event.put(container.type.get(), container.builder.build()));
     }
 
     private static class AttributeContainer {
-        final EntityType<? extends LivingEntity> type;
+        final Supplier<EntityType<? extends LivingEntity>> type;
         final AttributeSupplier.Builder builder;
-        private AttributeContainer(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder){
+        private AttributeContainer(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder){
             this.type = type;
             this.builder = builder;
         }

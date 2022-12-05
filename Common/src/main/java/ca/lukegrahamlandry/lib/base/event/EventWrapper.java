@@ -55,4 +55,8 @@ public class EventWrapper {
     public static List<IEventCallbacks> get(){
         return HANDLERS;
     }
+
+    public static void init(){
+        get().forEach(IEventCallbacks::onInit);
+    }
 }
