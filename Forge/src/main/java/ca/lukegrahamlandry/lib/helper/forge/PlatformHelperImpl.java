@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.base.forge;
+package ca.lukegrahamlandry.lib.helper.forge;
 
 
 import net.minecraftforge.api.distmarker.Dist;

@@ -1,11 +1,11 @@
-package ca.lukegrahamlandry.examplemod;
+package ca.lukegrahamlandry.examplemod.obj;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.level.Level;
 
-public class Test extends Drowned {
-    public Test(EntityType<? extends Drowned> entityType, Level level) {
+public class TestEntity extends Drowned {
+    public TestEntity(EntityType<? extends Drowned> entityType, Level level) {
         super(entityType, level);
     }
 }

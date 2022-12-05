@@ -33,7 +33,7 @@ public class EntityHelper {
 
     /**
      * This may ONLY be called on the CLIENT.
-     * @param type the entity type that
+     * @param type the entity type that will be bound to
      * @param renderer the constructor of your EntityRenderer class
      */
     @ExpectPlatform

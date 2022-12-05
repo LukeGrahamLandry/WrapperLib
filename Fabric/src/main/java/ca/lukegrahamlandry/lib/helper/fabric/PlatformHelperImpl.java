@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.fabric;
+package ca.lukegrahamlandry.lib.helper.fabric;
 
 
 import net.fabricmc.api.EnvType;

@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.lib.base;
+package ca.lukegrahamlandry.lib.helper;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 

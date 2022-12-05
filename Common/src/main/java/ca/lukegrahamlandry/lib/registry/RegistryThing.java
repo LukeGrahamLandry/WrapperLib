@@ -1,9 +1,10 @@
 package ca.lukegrahamlandry.lib.registry;
 
 import ca.lukegrahamlandry.lib.base.Available;
-import ca.lukegrahamlandry.lib.base.PlatformHelper;
+import ca.lukegrahamlandry.lib.helper.PlatformHelper;
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -52,14 +53,23 @@ public class RegistryThing<T, O> implements Supplier<O> {
 
     // HELPERS
 
+    /**
+     * Creates a BlockItem for your Block.
+     */
     public RegistryThing<T, O> withItem(){
         return this.withItem(() -> new BlockItem((Block) this.get(), new Item.Properties().tab(CreativeModeTab.TAB_SEARCH)));
     }
 
+    /**
+     * Creates a BlockItem for your Block.
+     */
     public RegistryThing<T, O> withItem(Function<Block, BlockItem> constructor){
         return this.withItem(() -> constructor.apply((Block) this.get()));
     }
 
+    /**
+     * Creates a BlockItem for your Block.
+     */
     public RegistryThing<T, O> withItem(Supplier<BlockItem> constructor){
         if (this.registry != Registry.BLOCK){
             LOGGER.error("Cannot call RegistryThing#withItem for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be block)");
@@ -69,6 +79,9 @@ public class RegistryThing<T, O> implements Supplier<O> {
         return this;
     }
 
+    /**
+     * Binds attributes to your EntityType. May only be called if the entity extends LivingEntity.
+     */
     public RegistryThing<T, O> withAttributes(Supplier<AttributeSupplier.Builder> builder){
         if (this.registry != Registry.ENTITY_TYPE){
             LOGGER.error("Cannot call RegistryThing#withAttributes for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
@@ -81,7 +94,13 @@ public class RegistryThing<T, O> implements Supplier<O> {
     }
 
     // https://www.youtube.com/watch?v=tXCuV_9naVI
-    public <E extends Entity, A, B> RegistryThing<T, O> withRenderer(SideSafeRenderProvider<A, B> renderer){
+    /**
+     * Binds a renderer to your EntityType.
+     * This can safely be called on the dedicated server because it checks before actually calling your supplier (and thus class loading the renderer).
+     * @param provider {@code Supplier<EntityRendererProvider<O>>}, a supplier for your EntityRenderer constructor
+     * @param <E> the type of entity we are
+     */
+    public <E extends Entity> RegistryThing<T, O> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> provider){
         if (this.registry != Registry.ENTITY_TYPE){
             LOGGER.error("Cannot call RegistryThing#withRenderer for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;
@@ -89,7 +108,7 @@ public class RegistryThing<T, O> implements Supplier<O> {
         if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper module is missing.");
 
         if (PlatformHelper.isDedicatedServer()) return this;
-        EntityHelper.renderer(() -> (EntityType<? extends E>) this.get(), (ctx) -> (EntityRenderer<E>) renderer.get().apply((A) ctx));
+        EntityHelper.renderer(() -> (EntityType<? extends E>) this.get(), (ctx) -> provider.get().apply(ctx));
         return this;
     }
 }

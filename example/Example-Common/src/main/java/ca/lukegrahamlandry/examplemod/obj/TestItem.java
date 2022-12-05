@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.examplemod;
+package ca.lukegrahamlandry.examplemod.obj;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

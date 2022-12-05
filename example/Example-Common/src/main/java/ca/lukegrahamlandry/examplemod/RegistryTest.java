@@ -9,6 +9,8 @@
 
 package ca.lukegrahamlandry.examplemod;
 
+import ca.lukegrahamlandry.examplemod.obj.TestEntity;
+import ca.lukegrahamlandry.examplemod.obj.TestItem;
 import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.client.renderer.entity.DrownedRenderer;
 import net.minecraft.core.Registry;
@@ -30,8 +32,8 @@ public class RegistryTest {
     public static final Supplier<Block> TEST = BLOCKS.register("test", () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT))).withItem();
 
     public static final RegistryWrapper<EntityType<?>> ENTITY = RegistryWrapper.create(Registry.ENTITY_TYPE, ExampleCommonMain.MOD_ID);
-    public static final Supplier<EntityType<Test>> SOMETHING = ENTITY
-            .register("thing", EntityType.Builder.of(Test::new, MobCategory.MONSTER))
+    public static final Supplier<EntityType<TestEntity>> SOMETHING = ENTITY
+            .register("thing", EntityType.Builder.of(TestEntity::new, MobCategory.MONSTER))
             .withAttributes(Drowned::createAttributes)
             .withRenderer(() -> DrownedRenderer::new);
 }
