@@ -9,7 +9,6 @@
 
 package ca.lukegrahamlandry.lib.registry.forge;
 
-import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -30,28 +29,19 @@ public class RegistryWrapperImpl {
         RegistryContainer.of(registry, rl.getNamespace()).deferred.register(rl.getPath(), constructor);
     }
 
-    public static <T> void init(RegistryWrapper<T> wrapper) {
-        RegistryContainer.of(wrapper.registry, wrapper.modid).init();
-    }
-
     private static class RegistryContainer<T> {
         final DeferredRegister<T> deferred;
         final String modid;
         private RegistryContainer(Registry<T> registry, String modid){
-            this.deferred = DeferredRegister.create(RegistryManager.ACTIVE.getRegistry(registry.key()), modid);
             this.modid = modid;
-        }
-
-        public void init(){
+            this.deferred = DeferredRegister.create(RegistryManager.ACTIVE.getRegistry(registry.key()), modid);
             this.deferred.register(this.getModEventBus());
         }
 
         private static final Map<String, RegistryContainer<?>> registries = new HashMap<>();
         private static <T> RegistryContainer<T> of(Registry<T> registry, String modid){
             String descriptor = modid + "-" + registry.key().location();
-            if (!registries.containsKey(descriptor)) {
-                registries.put(descriptor, new RegistryContainer<T>(registry, modid));
-            }
+            if (!registries.containsKey(descriptor)) registries.put(descriptor, new RegistryContainer<>(registry, modid));
             return (RegistryContainer<T>) registries.get(descriptor);
         }
 

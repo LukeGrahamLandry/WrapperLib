@@ -1,5 +1,6 @@
 package ca.lukegrahamlandry.lib.registry;
 
+import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -58,18 +59,20 @@ public class RegistryThing<T, O> implements Supplier<O> {
 
     public RegistryThing<T, O> withItem(Supplier<BlockItem> constructor){
         if (this.registry != Registry.BLOCK){
-            LOGGER.error("Cannot call RegistryThing#withItem for " + this.rl + " (" + this.registry.key().location().getPath() + ")");
+            LOGGER.error("Cannot call RegistryThing#withItem for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be block)");
             return this;
         }
         RegistryWrapper.register(Registry.ITEM, this.rl, constructor);
         return this;
     }
 
-    public RegistryThing<T, O> withAttributes(AttributeSupplier.Builder builder){
+    public RegistryThing<T, O> withAttributes(Supplier<AttributeSupplier.Builder> builder){
         if (this.registry != Registry.ENTITY_TYPE){
-            LOGGER.error("Cannot call RegistryThing#withAttributes for " + this.rl + " (" + this.registry.key().location().getPath() + ")");
+            LOGGER.error("Cannot call RegistryThing#withAttributes for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;
         }
+        if (!Available.NETWORK.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper module is missing.");
+
         EntityHelper.attributes(() -> (EntityType<? extends LivingEntity>) this.get(), builder);
         return this;
     }

@@ -14,7 +14,8 @@ public enum Available {
     DATA("ca.lukegrahamlandry.lib.data.DataWrapper"),
     CONFIG("ca.lukegrahamlandry.lib.config.ConfigWrapper"),
     ENTITY("ca.lukegrahamlandry.lib.entity.EntityHelper"),
-    REGISTRY("ca.lukegrahamlandry.lib.registry.RegistryWrapper");
+    REGISTRY("ca.lukegrahamlandry.lib.registry.RegistryWrapper"),
+    ENTITY_HELPER("ca.lukegrahamlandry.lib.helper.EntityHelper");
 
     private final String clazz;
 

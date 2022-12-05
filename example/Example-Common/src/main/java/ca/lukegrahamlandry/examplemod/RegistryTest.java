@@ -23,12 +23,11 @@ import java.util.function.Supplier;
 
 public class RegistryTest {
     public static final RegistryWrapper<Item> ITEMS = RegistryWrapper.create(Registry.ITEM, ExampleCommonMain.MOD_ID);
-
     public static final Supplier<TestItem> SMILE = ITEMS.register("smiley_face", () -> new TestItem(new Item.Properties().fireResistant()));
 
     public static final RegistryWrapper<Block> BLOCKS = RegistryWrapper.create(Registry.BLOCK, ExampleCommonMain.MOD_ID);
     public static final Supplier<Block> TEST = BLOCKS.register("test", () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT))).withItem();
 
     public static final RegistryWrapper<EntityType<?>> ENTITY = RegistryWrapper.create(Registry.ENTITY_TYPE, ExampleCommonMain.MOD_ID);
-    public static final Supplier<EntityType<Drowned>> SOMETHING = ENTITY.register("thing", EntityType.Builder.of(Drowned::new, MobCategory.MONSTER)).withAttributes(Drowned.createMonsterAttributes());
+    public static final Supplier<EntityType<Drowned>> SOMETHING = ENTITY.register("thing", EntityType.Builder.of(Drowned::new, MobCategory.MONSTER)).withAttributes(Drowned::createMonsterAttributes);
 }

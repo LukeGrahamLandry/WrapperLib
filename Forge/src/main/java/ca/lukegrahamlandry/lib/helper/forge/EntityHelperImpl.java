@@ -23,19 +23,19 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class EntityHelperImpl {
     public static final List<AttributeContainer> attributes = new ArrayList<>();
-    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder) {
+    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, Supplier<AttributeSupplier.Builder> builder) {
         attributes.add(new AttributeContainer(type, builder));
     }
 
     @SubscribeEvent
     public static void handleAttributeEvent(EntityAttributeCreationEvent event){
-        attributes.forEach((container) -> event.put(container.type.get(), container.builder.build()));
+        attributes.forEach((container) -> event.put(container.type.get(), container.builder.get().build()));
     }
 
     private static class AttributeContainer {
         final Supplier<EntityType<? extends LivingEntity>> type;
-        final AttributeSupplier.Builder builder;
-        private AttributeContainer(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder){
+        final Supplier<AttributeSupplier.Builder> builder;
+        private AttributeContainer(Supplier<EntityType<? extends LivingEntity>> type, Supplier<AttributeSupplier.Builder> builder){
             this.type = type;
             this.builder = builder;
         }

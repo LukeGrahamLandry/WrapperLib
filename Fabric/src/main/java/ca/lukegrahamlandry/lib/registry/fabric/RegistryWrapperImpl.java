@@ -9,7 +9,6 @@
 
 package ca.lukegrahamlandry.lib.registry.fabric;
 
-import ca.lukegrahamlandry.lib.registry.RegistryWrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
@@ -18,12 +17,5 @@ import java.util.function.Supplier;
 public class RegistryWrapperImpl {
     public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
         Registry.register(registry, rl, constructor.get());
-    }
-
-    /**
-     * Fabric doesn't aggressively fuck with registries so this does nothing and vanilla handles everything later.
-     */
-    public static <T> void init(RegistryWrapper<T> wrapper) {
-
     }
 }

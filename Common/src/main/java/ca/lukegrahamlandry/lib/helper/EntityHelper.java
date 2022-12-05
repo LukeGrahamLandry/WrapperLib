@@ -23,7 +23,7 @@ public class EntityHelper {
      * @param builder the attributes to be registered.
      */
     @ExpectPlatform
-    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder) {
+    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, Supplier<AttributeSupplier.Builder> builder) {
         throw new AssertionError();
     }
 }

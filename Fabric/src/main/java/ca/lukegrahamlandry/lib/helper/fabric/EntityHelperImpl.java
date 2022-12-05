@@ -17,7 +17,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import java.util.function.Supplier;
 
 public class EntityHelperImpl {
-    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, AttributeSupplier.Builder builder) {
-        FabricDefaultAttributeRegistry.register(type.get(), builder);
+    public static void attributes(Supplier<EntityType<? extends LivingEntity>> type, Supplier<AttributeSupplier.Builder> builder) {
+        FabricDefaultAttributeRegistry.register(type.get(), builder.get());
     }
 }
