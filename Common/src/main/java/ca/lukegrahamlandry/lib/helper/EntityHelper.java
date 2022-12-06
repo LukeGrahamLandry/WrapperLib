@@ -11,10 +11,14 @@ package ca.lukegrahamlandry.lib.helper;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -39,5 +43,14 @@ public class EntityHelper {
     @ExpectPlatform
     public static <E extends Entity> void renderer(Supplier<EntityType<? extends E>> type, EntityRendererProvider<E> renderer) {
         throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static ModdedSpawnEggFactory getSpawnEggConstructor() {
+        throw new AssertionError();
+    }
+
+    public interface ModdedSpawnEggFactory {
+        SpawnEggItem create(Supplier<EntityType<? extends Mob>> type, int colourA, int colourB, Item.Properties props);
     }
 }

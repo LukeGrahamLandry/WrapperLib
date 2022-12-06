@@ -212,7 +212,7 @@ public class NetworkWrapper {
         }
     }
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(NetworkWrapper.class.getPackageName());
+    public static final Logger LOGGER = LoggerFactory.getLogger(NetworkWrapper.class);
     public static final Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
     public static final Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
 

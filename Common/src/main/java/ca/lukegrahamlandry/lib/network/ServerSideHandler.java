@@ -10,6 +10,7 @@
 package ca.lukegrahamlandry.lib.network;
 
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.server.level.ServerPlayer;
 
 public interface ServerSideHandler {
@@ -25,7 +26,7 @@ public interface ServerSideHandler {
         NetworkWrapper.sendToServer(this);
     }
 
-    default Packet<?> toVanillaPacket(){
-        return NetworkWrapper.toVanillaPacket(this, false);
+    default Packet<ServerGamePacketListener> toVanillaServerBound(){
+        return (Packet<ServerGamePacketListener>) NetworkWrapper.toVanillaPacket(this, false);
     }
 }

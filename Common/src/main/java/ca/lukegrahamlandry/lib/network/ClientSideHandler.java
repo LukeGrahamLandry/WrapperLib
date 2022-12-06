@@ -11,6 +11,7 @@ package ca.lukegrahamlandry.lib.network;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -52,8 +53,8 @@ public interface ClientSideHandler {
     default void sendToTrackingClientsAndSelf(ServerPlayer player){
         NetworkWrapper.sendToTrackingClientsAndSelf(player, this);
     }
-    
-    default Packet<?> toVanillaPacket(){
-        return NetworkWrapper.toVanillaPacket(this, true);
+
+    default Packet<ClientGamePacketListener> toVanillaClientBound(){
+        return (Packet<ClientGamePacketListener>) NetworkWrapper.toVanillaPacket(this, true);
     }
 }

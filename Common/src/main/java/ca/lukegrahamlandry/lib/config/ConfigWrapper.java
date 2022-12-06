@@ -132,7 +132,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     public T get() {
         if (!this.loaded) {
             if (this.side == Side.CLIENT) this.load();
-            else this.logger.debug("reading config before calling ConfigWrapper#load, default values will be used for now");
+            else this.logger.info("reading config before calling ConfigWrapper#load, default values will be used for now");
         }
         return this.value;
     }
@@ -177,7 +177,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
             Reader reader = Files.newBufferedReader(this.getFilePath());
             this.value = this.getGson().fromJson(reader, this.clazz);
             reader.close();
-            this.logger.debug("config loaded from " + this.displayPath());
+            this.logger.info("config loaded from " + this.displayPath());
         } catch (IOException e) {
             this.logger.error("failed to load config from " + this.displayPath());
             e.printStackTrace();
@@ -231,13 +231,13 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.getFolderPath().toFile().mkdirs();
 
         if (this.side.inWorldDir){
-            Path globalDefaultLocation = Paths.get("config");
+            Path globalDefaultLocation = Paths.get("defaultconfigs");
             if (this.subDirectory != null) globalDefaultLocation = globalDefaultLocation.resolve(this.subDirectory);
             globalDefaultLocation = globalDefaultLocation.resolve(this.getFilename());
             if (Files.exists(globalDefaultLocation)){
                 try {
                     Files.copy(globalDefaultLocation, this.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
-                    this.logger.debug("loaded global default config " + globalDefaultLocation.toAbsolutePath().toFile().getCanonicalPath());
+                    this.logger.info("loaded global default config " + globalDefaultLocation.toAbsolutePath().toFile().getCanonicalPath());
                     return;
                 } catch (IOException e){
                     this.logger.error("global instance config file existed but could not be copied. generating default");
@@ -249,7 +249,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         try {
             String configData = GenerateComments.commentedJson(this.defaultConfig, this.getGson());
             Files.write(this.getFilePath(), configData.getBytes());
-            this.logger.debug("wrote default config to " + this.displayPath());
+            this.logger.info("wrote default config to " + this.displayPath());
         } catch (IOException e){
             this.logger.error("failed to write default config to " + this.displayPath());
             e.printStackTrace();
@@ -289,7 +289,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     private void createLogger(){
-        String id = ConfigWrapper.class.getPackageName() + ": ";
+        String id = ConfigWrapper.class.getName() + ": ";
         if (this.getSubDirectory() != null) id = id + this.getSubDirectory() + "/";
         id += this.getName() + "-" + side.name();
         this.logger = LoggerFactory.getLogger(id);

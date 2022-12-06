@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 public class ConfigSyncMessage implements ClientSideHandler {
-    static Logger LOGGER = LoggerFactory.getLogger(ConfigSyncMessage.class.getPackageName());
+    static Logger LOGGER = LoggerFactory.getLogger(ConfigSyncMessage.class);
 
     String value;
     String name;

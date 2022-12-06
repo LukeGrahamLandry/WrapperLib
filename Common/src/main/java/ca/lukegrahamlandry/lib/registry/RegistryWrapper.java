@@ -37,7 +37,7 @@ public class RegistryWrapper<T> {
      * @param constructor A supplier for your object. You cannot use a direct instance because Forge is weird.
      * @return A supplier for your object that will only resolve after registration has been handled (which is immediately on fabric).
      */
-    public <O extends T> RegistryThing<T, O> register(String name, Supplier<O> constructor){
+    public <O extends T> RegistryThing<O> register(String name, Supplier<O> constructor){
         ResourceLocation rl = new ResourceLocation(this.modid, name);
         register(this.registry, rl, constructor);
         return new RegistryThing<>(this.registry, rl);
@@ -55,7 +55,7 @@ public class RegistryWrapper<T> {
     /**
      * Register a new entity type without manually calling EntityType.Builder#build
      */
-    public <E extends Entity> RegistryThing<T, EntityType<E>> register(String name, EntityType.Builder<E> entityBuilder){
+    public <E extends Entity> RegistryThing<EntityType<E>> register(String name, EntityType.Builder<E> entityBuilder){
         ResourceLocation rl = new ResourceLocation(this.modid, name);
         register(this.registry, rl, () -> (T) entityBuilder.build(name));
         return new RegistryThing<>(this.registry, rl);

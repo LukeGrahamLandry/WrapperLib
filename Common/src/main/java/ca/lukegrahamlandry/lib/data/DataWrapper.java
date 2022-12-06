@@ -199,9 +199,9 @@ public abstract class DataWrapper<T> {
     }
 
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DataWrapper.class.getPackageName());
+    public static final Logger LOGGER = LoggerFactory.getLogger(DataWrapper.class);
     protected void createLogger(){
-        String id = DataWrapper.class.getPackageName() + ": ";
+        String id = DataWrapper.class.getName() + ": ";
         if (this.getSubDirectory() != null) id = id + this.getSubDirectory() + "/";
         id += this.getName();
         this.logger = LoggerFactory.getLogger(id);
