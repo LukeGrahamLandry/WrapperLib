@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.network;
 
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 
 public interface ServerSideHandler {
@@ -18,9 +19,13 @@ public interface ServerSideHandler {
      */
     void handle(ServerPlayer player);
 
-    // SENDING HELPER
+    // HELPERS
 
     default void sendToServer(){
         NetworkWrapper.sendToServer(this);
+    }
+
+    default Packet<?> toVanillaPacket(){
+        return NetworkWrapper.toVanillaPacket(this, false);
     }
 }

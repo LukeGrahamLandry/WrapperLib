@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -63,5 +64,10 @@ public class NetworkWrapperImpl implements IEventCallbacks {
 
     public static <T> void sendToTrackingClients(Entity entity, T message){
         PlayerLookup.tracking(entity).forEach((p) -> sendToClient(p, message));
+    }
+
+    public static <T> Packet<?> toVanillaPacket(T message, boolean isClientBound){
+        if (isClientBound) return ServerPlayNetworking.createS2CPacket(NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.create()));
+        else return ClientPlayNetworking.createC2SPacket(NetworkWrapper.ID, new GenericHolder<>(message).encodeBytes(PacketByteBufs.create()));
     }
 }

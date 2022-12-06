@@ -12,8 +12,10 @@ package ca.lukegrahamlandry.lib.network.forge;
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -55,5 +57,9 @@ public class NetworkWrapperImpl implements IEventCallbacks {
 
     public static <T> void sendToTrackingClients(Entity entity, T message){
         channel.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), new GenericHolder<>(message));
+    }
+
+    public static <T> Packet<?> toVanillaPacket(T message, boolean isClientBound){
+        return channel.toVanillaPacket(new GenericHolder<>(message), isClientBound ? NetworkDirection.PLAY_TO_CLIENT : NetworkDirection.PLAY_TO_SERVER);
     }
 }

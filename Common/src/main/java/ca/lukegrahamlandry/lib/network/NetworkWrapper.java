@@ -12,6 +12,7 @@ package ca.lukegrahamlandry.lib.network;
 import ca.lukegrahamlandry.lib.base.GenericHolder;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -136,6 +137,17 @@ public class NetworkWrapper {
      */
     public static void handshake(String modid, String version){
         handshake(modid, version, version::equals, version::equals);
+    }
+
+    /**
+     * Can be used with Entity#getAddEntityPacket or BlockEntity#getUpdatePacket
+     * @param message the packet object
+     * @param isClientBound which direction is the packet going
+     * @return a packet that can be passed to vanilla code
+     */
+    @ExpectPlatform
+    public static <T> Packet<?> toVanillaPacket(T message, boolean isClientBound){
+        throw new AssertionError();
     }
 
     // IMPL
