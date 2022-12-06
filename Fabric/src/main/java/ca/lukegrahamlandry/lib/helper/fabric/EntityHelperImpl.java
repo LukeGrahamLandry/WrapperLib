@@ -30,7 +30,6 @@ public class EntityHelperImpl {
         EntityRendererRegistry.register(type.get(), renderer);
     }
 
-
     public static EntityHelper.ModdedSpawnEggFactory getSpawnEggConstructor() {
         return ModdedSpawnEggItem::new;
     }

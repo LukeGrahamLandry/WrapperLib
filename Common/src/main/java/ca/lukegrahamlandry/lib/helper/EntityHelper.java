@@ -51,6 +51,6 @@ public class EntityHelper {
     }
 
     public interface ModdedSpawnEggFactory {
-        SpawnEggItem create(Supplier<EntityType<? extends Mob>> type, int colourA, int colourB, Item.Properties props);
+        SpawnEggItem create(Supplier<EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Item.Properties props);
     }
 }
