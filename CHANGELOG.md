@@ -7,4 +7,5 @@ Initial Release!
 - RegistryWrapper
 - ConfigWrapper
 - DataWrapper: global, level, player
-- EntityHelper: attributes
+- EntityHelper: attributes, renderer, getSpawnEggConstructor
+- PlatformHelper: isDevelopmentEnvironment, isDedicatedServer

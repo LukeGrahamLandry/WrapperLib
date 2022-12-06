@@ -29,7 +29,10 @@ public class NetworkWrapperImpl implements IEventCallbacks {
 
     @Override
     public void onInit(){
-        if (channel != null) return;
+        if (channel != null) {
+            NetworkWrapper.LOGGER.error("onInit called twice");
+            return;
+        }
                                                 // remember to increment this when I switch to EfficientNetworkSerializer
         channel = NetworkRegistry.newSimpleChannel(NetworkWrapper.ID, () -> "1.0", "1.0"::equals, "1.0"::equals);
         channel.registerMessage(id++, GenericHolder.class, GenericHolder::encodeBytes, GenericHolder::decodeBytes, NetworkWrapperImpl::handle);
