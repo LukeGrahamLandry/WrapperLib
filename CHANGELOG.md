@@ -1,4 +1,8 @@
 
+## 1.1.0
+
+- ConfigWrapper can load lists
+
 ## 1.0.0
 
 Initial Release!

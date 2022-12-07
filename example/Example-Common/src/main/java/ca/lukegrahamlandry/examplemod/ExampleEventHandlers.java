@@ -28,6 +28,8 @@ public class ExampleEventHandlers {
     public static void onJoin(Player player){
         if (player.level.isClientSide()) return;
         player.addItem(ExampleCommonMain.config.get().sword);
+        System.out.println("This is the configured list.");
+        ExampleCommonMain.list_test.get().forEach(System.out::println);
     }
 
     public static void onDeath(LivingEntity entity, DamageSource source){

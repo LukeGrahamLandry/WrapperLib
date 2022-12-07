@@ -37,10 +37,10 @@ public class ConfigSyncMessage implements ClientSideHandler {
         for (ConfigWrapper<?> config : ConfigWrapper.ALL){
             if (config.side == ConfigWrapper.Side.SYNCED && Objects.equals(this.name, config.getName()) && Objects.equals(this.dir, config.getSubDirectory())) {
                 try {
-                    Object syncedValue = config.getGson().fromJson(this.value, config.clazz);
+                    Object syncedValue = config.getGson().fromJson(this.value, config.actualType);
                     config.set(syncedValue);
                 } catch (JsonSyntaxException e){
-                    LOGGER.error("Failed to parse synced config " + this.name + " to " + config.clazz);
+                    LOGGER.error("Failed to parse synced config " + this.name + " to " + config.actualType.getTypeName());
                     LOGGER.error("data: " + this.value);
                     e.printStackTrace();
                 }

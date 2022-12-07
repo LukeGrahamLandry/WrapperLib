@@ -6,5 +6,11 @@
     "owner": "LukeGrahamLandry",
     "repo": "WrapperLib",
     "branch": "1.19"
+  },
+  "curseforge": {
+    "id": "721810"
+  },
+  "modrinth": {
+    "id": "uZNqdprO"
   }
 }
