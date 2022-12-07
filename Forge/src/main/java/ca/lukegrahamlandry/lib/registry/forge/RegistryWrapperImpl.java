@@ -34,7 +34,7 @@ public class RegistryWrapperImpl {
         final String modid;
         private RegistryContainer(Registry<T> registry, String modid){
             this.modid = modid;
-            this.deferred = DeferredRegister.create(RegistryManager.ACTIVE.getRegistry(registry.key()), modid);
+            this.deferred = DeferredRegister.create(registry.key(), modid);
             this.deferred.register(this.getModEventBus());
         }
 

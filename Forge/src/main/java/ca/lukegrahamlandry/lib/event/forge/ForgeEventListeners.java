@@ -11,9 +11,9 @@ package ca.lukegrahamlandry.lib.event.forge;
 
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -31,13 +31,13 @@ public class ForgeEventListeners {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onLevelSave(LevelEvent.Save event){
-        EventWrapper.get().forEach((handler) -> handler.onLevelSave(event.getLevel()));
+    public static void onLevelSave(WorldEvent.Save event){
+        EventWrapper.get().forEach((handler) -> handler.onLevelSave(event.getWorld()));
     }
 
     // server side only it seems
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
-        EventWrapper.get().forEach((handler) -> handler.onPlayerLoginServer(event.getEntity()));
+        EventWrapper.get().forEach((handler) -> handler.onPlayerLoginServer(event.getPlayer()));
     }
 }

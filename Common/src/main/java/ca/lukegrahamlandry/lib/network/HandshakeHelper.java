@@ -13,6 +13,7 @@ import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -97,7 +98,7 @@ public class HandshakeHelper implements IEventCallbacks {
             String otherSide = side.equals("server") ? "client" : "server";
             String v = protocol.modid + "'s active protocol versions are (" + side + ": " + currentSideVersion + ", " + otherSide + ": " + protocol.version + ")";
             NetworkWrapper.LOGGER.info(v);
-            return Component.literal("Mod (" + protocol.modid + ") network protocol not accepted by " + side + ". Ensure client and server have same mod version. " + v);
+            return new TextComponent("Mod (" + protocol.modid + ") network protocol not accepted by " + side + ". Ensure client and server have same mod version. " + v);
         }
     }
 

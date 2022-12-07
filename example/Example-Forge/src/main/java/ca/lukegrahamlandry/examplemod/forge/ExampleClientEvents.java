@@ -9,22 +9,18 @@
 
 package ca.lukegrahamlandry.examplemod.forge;
 
-import ca.lukegrahamlandry.examplemod.ExampleCommonMain;
 import ca.lukegrahamlandry.examplemod.ExampleEventHandlers;
-import ca.lukegrahamlandry.examplemod.model.KillTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ExampleClientEvents {
     @SubscribeEvent
-    public static void drawHud(RenderGuiOverlayEvent.Post event) {
-        if (event.getOverlay() == VanillaGuiOverlay.CROSSHAIR.type()) {
-            ExampleEventHandlers.drawOverlay(event.getPoseStack());
+    public static void drawHud(RenderGameOverlayEvent event) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+            ExampleEventHandlers.drawOverlay(event.getMatrixStack());
         }
     }
 }

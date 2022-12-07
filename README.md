@@ -9,7 +9,7 @@ A collection of multi-platform implementations of common tasks for developing Mi
 - Extensive documentation (wiki & javadocs).
 
 Supported Mod Loaders: Forge, Fabric, ~~Quilt~~   
-Supported Versions: 1.19, ~~1.18, 1.16, 1.12~~  
+Supported Versions: 1.19, 1.18, ~~1.16, 1.12~~  
 
 ## See [wiki](https://github.com/LukeGrahamLandry/WrapperLib/wiki) for more info. 
 
@@ -17,7 +17,7 @@ Supported Versions: 1.19, ~~1.18, 1.16, 1.12~~
 - [ConfigWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Config): allow players to configure mod features by editing json files.
 - [DataWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Saved-Data): save extra information with world data.
 - [RegistryWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Registry): an api like Forge's deferred register that can be called from common code.
-- [EntityHelper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Entity-Helper): register entity attributes from common code.
+- [Helpers](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Helpers): simple utilities for multi-platform mods.
 
 ## Official Downloads
 

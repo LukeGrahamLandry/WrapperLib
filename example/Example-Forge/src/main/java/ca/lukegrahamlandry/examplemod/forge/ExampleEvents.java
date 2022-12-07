@@ -20,16 +20,16 @@ import net.minecraftforge.fml.common.Mod;
 public class ExampleEvents {
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event){
-        ExampleEventHandlers.onJump(event.getEntity());
+        ExampleEventHandlers.onJump(event.getEntityLiving());
     }
 
     @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent event){
-        ExampleEventHandlers.onJoin(event.getEntity());
+        ExampleEventHandlers.onJoin(event.getPlayer());
     }
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event){
-        ExampleEventHandlers.onDeath(event.getEntity(), event.getSource());
+        ExampleEventHandlers.onDeath(event.getEntityLiving(), event.getSource());
     }
 }
