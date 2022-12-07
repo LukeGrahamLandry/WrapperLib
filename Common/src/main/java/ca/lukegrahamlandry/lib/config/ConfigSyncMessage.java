@@ -48,6 +48,6 @@ public class ConfigSyncMessage implements ClientSideHandler {
             }
         }
 
-        if (!handled) LOGGER.error("Received config sync for unknown  unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) LOGGER.error("Received config sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

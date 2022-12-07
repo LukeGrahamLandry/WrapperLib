@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
+import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,8 +138,8 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * The default value will always be automatically set to the parameterless constructor of T (and initialization will fail if such a constructor is not available).
      * This method allows you to call ConfigWrapper#listOf but not default to an empty list.
      */
-    public ConfigWrapper<T> setDefaultValue(T v){
-        this.defaultConfig = v;
+    public ConfigWrapper<T> setDefaultValue(Supplier<T> v){
+        this.defaultValue = v;
         return this;
     }
 
@@ -200,7 +201,6 @@ public class ConfigWrapper<T> implements Supplier<T> {
         } catch (IOException e) {
             this.logger.error("failed to load config from " + this.displayPath());
             e.printStackTrace();
-            this.value = this.defaultConfig;
         }
 
         this.loaded = true;
@@ -208,7 +208,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
 
     public static MinecraftServer server;
     public static List<ConfigWrapper<?>> ALL = new ArrayList<>();
-    private T defaultConfig;
+    public Supplier<T> defaultValue;
     private String name;
     public final Side side;
     private boolean reloadable;
@@ -219,35 +219,29 @@ public class ConfigWrapper<T> implements Supplier<T> {
     private String fileExtension;
     private Gson gson;
     private String subDirectory = null;
-    public Type actualType;
+    Type actualType;
 
-    private ConfigWrapper(Side sideIn){
-        this.side = sideIn;
+    private ConfigWrapper(Class<T> clazz, Side side){
+        this(TypeToken.get(clazz), side);
+        this.named(defaultName(clazz));
+    }
+
+    private ConfigWrapper(TypeToken<T> type, Side side){
+        this.side = side;
         this.fileExtension = "json5";
         this.reloadable = false;
         this.withGson(JsonHelper.get());
         ALL.add(this);
-    }
 
-    public ConfigWrapper(Class<T> clazz, Side side){
-        this(side);
-        this.clazz = clazz;
-        this.actualType = TypeToken.get(clazz).getType();
-        this.named(defaultName(clazz));
-        this.defaultConfig = getDefaultInstance(clazz);
-        this.value = defaultConfig;
-    }
-
-    public ConfigWrapper(TypeToken<T> type, Side sideIn){
-        this(sideIn);
         this.actualType = type.getType();
         this.clazz = (Class<T>) type.getRawType();
-        this.defaultConfig = getDefaultInstance(this.clazz);
+        this.defaultValue = this::getDefaultInstance;
+        this.value = this.defaultValue.get();
     }
 
-    private <O> O getDefaultInstance(Class<O> clazz){
+    private T getDefaultInstance(){
         try {
-            return clazz.getConstructor().newInstance();
+            return this.clazz.getConstructor().newInstance();
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             this.logger.error(clazz.getName() + " does not have a public parameterless constructor");
             throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
@@ -282,7 +276,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         }
 
         try {
-            String configData = GenerateComments.commentedJson(this.defaultConfig, this.getGson());
+            String configData = GenerateComments.commentedJson(this.defaultValue.get(), this.getGson());
             Files.write(this.getFilePath(), configData.getBytes());
             this.logger.info("wrote default config to " + this.displayPath());
         } catch (IOException e){
@@ -338,20 +332,13 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return this.subDirectory;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof ConfigWrapper<?>)) return false;
-        ConfigWrapper<?> wrapper = (ConfigWrapper<?>) obj;
-        return this.side.equals(wrapper.side) && Objects.equals(this.name, wrapper.name) && Objects.equals(this.subDirectory, wrapper.subDirectory);
-    }
-
     private ConfigWrapper<T> withSettings(ConfigWrapper<?> other){
         this.named(other.getName());
         if (other.getSubDirectory() != null) this.dir(other.getSubDirectory());
         this.ext(other.fileExtension);
         this.withGson(other.getGson());
         this.reloadable = other.reloadable;
-        if (other.clazz == this.clazz) this.setDefaultValue((T) other.defaultConfig);
+        if (other.clazz == this.clazz) this.setDefaultValue((Supplier<T>) other.defaultValue);
         return this;
     }
 

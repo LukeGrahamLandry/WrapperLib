@@ -99,6 +99,7 @@ public class RegistryThing<T> implements Supplier<T> {
             return this;
         }
         if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withRenderer but WrapperLib EntityHelper is missing.");
+        if (!Available.PLATFORM_HELPER.get()) throw new RuntimeException("Called RegistryThing#withRenderer but WrapperLib PlatformHelper is missing.");
 
         if (PlatformHelper.isDedicatedServer()) return this;
         EntityHelper.renderer(() -> (EntityType<? extends E>) this.get(), (ctx) -> provider.get().apply(ctx));
