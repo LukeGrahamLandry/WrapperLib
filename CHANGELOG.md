@@ -1,7 +1,8 @@
 
 ## 1.1.0
 
-- ConfigWrapper can load lists
+- ConfigWrapper can load a List or Map as the top level object
+- KeybindWrapper
 
 ## 1.0.0
 

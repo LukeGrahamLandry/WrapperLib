@@ -26,16 +26,16 @@ public class ExampleConfig {
     public int speedLevel = 2;
     @Comment("this is a number")
     public float something = 2.5F;
-    @Comment("what should i say")
+    @Comment("this is a string")
     public String hello = "world";
 
-    @Comment("monsters to spawn")
+    @Comment("monsters")
     public Map<ResourceLocation, Integer> sizes = new HashMap<>();
 
     @Comment("this is an nbt tag that gets serialized correctly")
     public CompoundTag tag = new CompoundTag();
 
-    @Comment("this is an enchanted sword to give someone")
+    @Comment("this is an enchanted sword to give players when they join the world")
     public ItemStack sword = new ItemStack(Items.DIAMOND_SWORD, 1);
 
     public ExampleConfig(){

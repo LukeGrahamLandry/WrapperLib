@@ -10,6 +10,7 @@
 package ca.lukegrahamlandry.lib.base.event;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 
@@ -25,6 +26,10 @@ public interface IEventCallbacks {
     default void onClientSetup() {}
 
     default void onInit() {}
+
+    default void onServerTick(ServerPlayer player) {}
+
+    default void onClientTick() {}
 
     // TODO. needs mixin?
     // default void onReloadCommand() {}

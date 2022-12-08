@@ -135,6 +135,28 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     /**
+     * Instead of reading one of the specified object from the config file, read a map of strings to objects.
+     * @param <M> {@code Map<String, T>}
+     */
+    public <M extends Map<String, T>> ConfigWrapper<M> mapOf(){
+        return mapOf(String.class);
+    }
+
+    /**
+     * Instead of reading one of the specified object from the config file, read a map.
+     * @param <K> the type for the keys of the map. This must have a toString method that preforms the json serialization.
+     *            The normal type adapter will not be called unless you use Gson#enableComplexMapSerialization (set a Gson instance with ConfigWrapper#withGson).
+     *            Examples that work: numbers, String, UUID, ResourceLocation
+     * @param <M> {@code Map<K, T>}
+     */
+    public <K, M extends Map<K, T>> ConfigWrapper<M> mapOf(Class<K> keyClass){
+        ALL.remove(this);
+        TypeToken<M> type = (TypeToken<M>) TypeToken.getParameterized(HashMap.class, keyClass, this.clazz);
+        ConfigWrapper<M> newWrapper = new ConfigWrapper<>(type, this.side);
+        return newWrapper.withSettings(this);
+    }
+
+    /**
      * The default value will always be automatically set to the parameterless constructor of T (and initialization will fail if such a constructor is not available).
      * This method allows you to call ConfigWrapper#listOf but not default to an empty list.
      */

@@ -10,19 +10,9 @@
 package ca.lukegrahamlandry.examplemod.forge;
 
 import ca.lukegrahamlandry.examplemod.ExampleCommonMain;
-import ca.lukegrahamlandry.examplemod.model.ExampleClientConfig;
-import ca.lukegrahamlandry.examplemod.model.ExampleConfig;
-import ca.lukegrahamlandry.examplemod.model.KillTracker;
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
-import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
-import ca.lukegrahamlandry.lib.config.ConfigWrapper;
-import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
-import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
-
-import java.util.function.Supplier;
 
 @Mod(ExampleCommonMain.MOD_ID)
 public class ExampleModMain {

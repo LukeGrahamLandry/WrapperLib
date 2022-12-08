@@ -1,11 +1,22 @@
+/*
+ * This file is part of WrapperLib
+ * Copyright 2022 LukeGrahamLandry
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package ca.lukegrahamlandry.lib.keybind;
 
+import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-public class KeyEvents {
-    public static void clientTick(){
+public class EventCallbacks implements IEventCallbacks {
+    @Override
+    public void onClientTick(){
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -26,7 +37,8 @@ public class KeyEvents {
         }
     }
 
-    public static void serverTick(ServerPlayer player){
+    @Override
+    public void onServerTick(ServerPlayer player){
         for (KeybindWrapper key : KeybindWrapper.ALL.values()){
             if (key.isPressed(player)){
                 key.onHeldTickAction.accept(player);
