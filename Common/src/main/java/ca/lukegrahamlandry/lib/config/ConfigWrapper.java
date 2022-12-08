@@ -248,7 +248,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.named(defaultName(clazz));
     }
 
-    private ConfigWrapper(TypeToken<T> type, Side side){
+    public ConfigWrapper(TypeToken<T> type, Side side){
         this.side = side;
         this.fileExtension = "json5";
         this.reloadable = false;
@@ -259,6 +259,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.clazz = (Class<T>) type.getRawType();
         this.defaultValue = this::getDefaultInstance;
         this.value = this.defaultValue.get();
+        this.named(type.toString());
     }
 
     private T getDefaultInstance(){

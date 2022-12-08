@@ -50,7 +50,6 @@ public class EventWrapper {
         add("ca.lukegrahamlandry.lib.network.HandshakeHelper");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
-        add("ca.lukegrahamlandry.lib.keybind.EventCallbacks");
     }
 
     public static List<IEventCallbacks> get(){

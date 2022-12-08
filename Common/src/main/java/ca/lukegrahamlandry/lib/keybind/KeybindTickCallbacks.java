@@ -9,14 +9,12 @@
 
 package ca.lukegrahamlandry.lib.keybind;
 
-import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-public class EventCallbacks implements IEventCallbacks {
-    @Override
-    public void onClientTick(){
+public class KeybindTickCallbacks {
+    public static void onClientTick(){
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -37,8 +35,7 @@ public class EventCallbacks implements IEventCallbacks {
         }
     }
 
-    @Override
-    public void onServerTick(ServerPlayer player){
+    public static void onServerPlayerTick(ServerPlayer player){
         for (KeybindWrapper key : KeybindWrapper.ALL.values()){
             if (key.isPressed(player)){
                 key.onHeldTickAction.accept(player);

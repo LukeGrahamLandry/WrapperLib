@@ -17,6 +17,7 @@ public enum Available {
     DATA("ca.lukegrahamlandry.lib.data.DataWrapper"),
     CONFIG("ca.lukegrahamlandry.lib.config.ConfigWrapper"),
     REGISTRY("ca.lukegrahamlandry.lib.registry.RegistryWrapper"),
+    KEYBIND("ca.lukegrahamlandry.lib.keybind.KeybindWrapper"),
     ENTITY_HELPER("ca.lukegrahamlandry.lib.helper.EntityHelper"),
     PLATFORM_HELPER("ca.lukegrahamlandry.lib.helper.PlatformHelper");
 
