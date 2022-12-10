@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.data.sync;
 
+import ca.lukegrahamlandry.lib.base.WorkInProgress;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.MapDataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.TileFileDataWrapper;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Objects;
 
+@WorkInProgress
 public class TileFileDataMessage implements ClientSideHandler {
     String value;
     BlockPos pos;

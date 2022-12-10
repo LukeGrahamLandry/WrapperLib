@@ -7,10 +7,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.lib.data.impl.file;
+package ca.lukegrahamlandry.lib.base;
 
-public interface MapFileHandler<K, I, V> {
-    void save();
-    void load();
-    void clear(I id);
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * Indicates a class that is not complete and should not be used yet.
+ */
+@Retention(RetentionPolicy.SOURCE)
+public @interface WorkInProgress {
 }

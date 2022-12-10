@@ -4,6 +4,7 @@
 - [X] ConfigWrapper can load a List or Map as the top level object
 - [X] KeybindWrapper
 - [X] PlatformHelper: isModLoaded
+- [X] MapDataWrapper optional lazy loading
 - [ ] data packs
 - [ ] config reloading
 - [ ] config array / map comments on fields brought to top if list empty

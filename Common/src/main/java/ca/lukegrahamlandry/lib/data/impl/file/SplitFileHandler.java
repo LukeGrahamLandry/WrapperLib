@@ -21,8 +21,8 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class SplitFileHandler<K, I, V> implements MapFileHandler {
-    private final MapDataWrapper<K, I, V> wrapper;
+public class SplitFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
+    protected final MapDataWrapper<K, I, V> wrapper;
 
     public SplitFileHandler(MapDataWrapper<K, I, V> wrapper){
         this.wrapper = wrapper;
@@ -32,6 +32,8 @@ public class SplitFileHandler<K, I, V> implements MapFileHandler {
     public void save() {
         Gson pretty = this.wrapper.getGson().newBuilder().setPrettyPrinting().create();
         this.wrapper.data.forEach((key, value) -> {
+            if (!this.wrapper.isDirty(key)) return;
+
             Path path = this.getFilePath(key);
             path.toFile().getParentFile().mkdirs();
             String json = pretty.toJson(value);
@@ -61,6 +63,11 @@ public class SplitFileHandler<K, I, V> implements MapFileHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void clear(I id) {
+        getFilePath(id).toFile().delete();
     }
 
     public Path getFilePath(I id){

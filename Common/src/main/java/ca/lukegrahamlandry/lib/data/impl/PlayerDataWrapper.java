@@ -14,8 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.UUID;
 
 // TODO: something clever for only syncing tracked players
-// TODO: something clever for only loading players that are actually logged in for big servers
-
 /**
  * Data is saved per uuid not per player entity so data is maintained between deaths and dimension changes.
  */

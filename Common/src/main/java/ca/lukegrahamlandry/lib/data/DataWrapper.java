@@ -198,7 +198,6 @@ public abstract class DataWrapper<T> {
         }
     }
 
-
     public static final Logger LOGGER = LoggerFactory.getLogger(DataWrapper.class);
     protected void createLogger(){
         String id = DataWrapper.class.getName() + ": ";

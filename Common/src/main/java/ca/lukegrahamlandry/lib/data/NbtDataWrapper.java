@@ -1,5 +1,15 @@
+/*
+ * This file is part of WrapperLib
+ * Copyright 2022 LukeGrahamLandry
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package ca.lukegrahamlandry.lib.data;
 
+import ca.lukegrahamlandry.lib.base.WorkInProgress;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -10,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+@WorkInProgress
 public abstract class NbtDataWrapper<O, V> {
     Map<Integer, V> lastDataObjects = new HashMap<>();
 
@@ -47,9 +58,9 @@ public abstract class NbtDataWrapper<O, V> {
         set(obj, lastDataObjects.get(getHashCode(obj)));
     }
 
-    abstract CompoundTag getTag(O obj);
+    protected abstract CompoundTag getTag(O obj);
 
-    abstract int getHashCode(O obj);
+    protected abstract int getHashCode(O obj);
 
     Type actualType;
     Logger logger;
