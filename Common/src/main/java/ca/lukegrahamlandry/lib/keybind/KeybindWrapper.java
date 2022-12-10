@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 public class KeybindWrapper {
     /**
+     * This can safely be called from common code (it will not crash dedicated servers).
      * @param defaultKey ex. GLFW.GLFW_KEY_A
      */
     public static KeybindWrapper of(String name, String category, int defaultKey){
@@ -32,23 +33,35 @@ public class KeybindWrapper {
         return of(name, category, -1);
     }
 
+    /**
+     * Cause the state of your keybind to sync to the logical server.
+     * This will cause the press, release, and hold actions to fire on the logical server as well.
+     */
     public KeybindWrapper synced(){
         if (!Available.NETWORK.get()) throw new RuntimeException("Called KeybindWrapper#synced but WrapperLib Network module is missing.");
         this.shouldSync = true;
         return this;
     }
 
+    /**
+     * @param action will be called when a player initially presses the key.
+     */
     public KeybindWrapper onPress(Consumer<Player> action){
         this.onPressAction = action;
         return this;
     }
 
-    // does this fire if they die / log out?
+    /**
+     * @param action will be called when a player releases the key.
+     */
     public KeybindWrapper onRelease(Consumer<Player> action){
         this.onReleaseAction = action;
         return this;
     }
 
+    /**
+     * @param action will be called every tick while a player holds down the key.
+     */
     public KeybindWrapper onHeldTick(Consumer<Player> action){
         this.onHeldTickAction = action;
         return this;
@@ -63,7 +76,7 @@ public class KeybindWrapper {
 
     // IMPL
 
-    public static Map<String, KeybindWrapper> ALL = new HashMap<>();
+    static Map<String, KeybindWrapper> ALL = new HashMap<>();
     final String id;
     Consumer<Player> onPressAction = (p) -> {};
     Consumer<Player> onReleaseAction = (p) -> {};
@@ -74,6 +87,7 @@ public class KeybindWrapper {
     public KeybindWrapper(String nameTranslationId, int defaultKey, String categoryTranslationId){
         this.id = nameTranslationId;
         ALL.put(this.id, this);
+
         if (!Available.PLATFORM_HELPER.get()) throw new RuntimeException("Tried to create KeybindWrapper but WrapperLib PlatformHelper is missing.");
         if (PlatformHelper.isDedicatedServer()) return;
 
@@ -82,6 +96,8 @@ public class KeybindWrapper {
     }
 
     /**
+     * Adds a new key bind to the vanilla settings gui.
+     * This will automatically be called when you create a new KeybindWrapper (but not on dedicated servers).
      * This may ONLY be called on the CLIENT.
      */
     @ExpectPlatform

@@ -11,6 +11,7 @@ package ca.lukegrahamlandry.lib.helper.forge;
 
 
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 public class PlatformHelperImpl {
@@ -20,5 +21,10 @@ public class PlatformHelperImpl {
 
     public static boolean isDevelopmentEnvironment(){
         return !FMLLoader.isProduction();
+    }
+
+
+    public static boolean isModLoaded(String modid){
+        return ModList.get().isLoaded(modid);
     }
 }

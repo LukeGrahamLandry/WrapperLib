@@ -24,4 +24,12 @@ public class PlatformHelper {
     public static boolean isDevelopmentEnvironment(){
         throw new AssertionError();
     }
+
+    /**
+     * You can use isModLoaded("forge") to check which loader you're on.
+     */
+    @ExpectPlatform
+    public static boolean isModLoaded(String modid){
+        throw new AssertionError();
+    }
 }

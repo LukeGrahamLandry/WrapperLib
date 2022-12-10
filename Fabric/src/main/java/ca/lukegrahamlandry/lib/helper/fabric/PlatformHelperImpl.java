@@ -21,4 +21,8 @@ public class PlatformHelperImpl {
     public static boolean isDevelopmentEnvironment(){
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
+
+    public static boolean isModLoaded(String modid){
+        return FabricLoader.getInstance().isModLoaded(modid);
+    }
 }

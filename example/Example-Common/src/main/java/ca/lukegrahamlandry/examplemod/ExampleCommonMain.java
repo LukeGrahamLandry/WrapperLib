@@ -18,6 +18,7 @@ import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
 import ca.lukegrahamlandry.lib.keybind.KeybindWrapper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import org.lwjgl.glfw.GLFW;
@@ -40,7 +41,7 @@ public class ExampleCommonMain {
         // ensure RegistryTest is class loaded
         RegistryTest.ITEMS.init();
 
-        KeybindWrapper.of("float", MOD_ID, GLFW.GLFW_KEY_Z).synced()
+        KeybindWrapper.of("float", MOD_ID, InputConstants.KEY_Z).synced()
                 .onHeldTick(player -> {
                     if (!player.level.isClientSide()) {
                         player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 20));
