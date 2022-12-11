@@ -10,13 +10,13 @@
 package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.base.Available;
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
-import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +109,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * Calling this has the same effect as caching the object returned by ConfigWrapper#get
      */
     public ConfigWrapper<T> noReload(){
-        this.reloadable = false;
+        this.shouldReload = false;
         return this;
     }
 
@@ -233,7 +233,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     public Supplier<T> defaultValue;
     private String name;
     public final Side side;
-    private boolean reloadable;
+    public boolean shouldReload = true;
     public Class<T> clazz;
     protected T value;
     private Logger logger;
@@ -251,7 +251,6 @@ public class ConfigWrapper<T> implements Supplier<T> {
     public ConfigWrapper(TypeToken<T> type, Side side){
         this.side = side;
         this.fileExtension = "json5";
-        this.reloadable = false;
         this.withGson(JsonHelper.get());
         ALL.add(this);
 
@@ -275,6 +274,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return clazz.getSimpleName().toLowerCase(Locale.ROOT).replace("config", "").replace("server", "").replace("client", "");
     }
 
+    @InternalUseOnly
     void set(Object v){
         this.value = (T) v;
     }
@@ -312,7 +312,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return this.name + "-" + this.side.name().toLowerCase(Locale.ROOT) + "." + this.fileExtension;
     }
 
-    private Path getFolderPath(){
+    protected Path getFolderPath(){
         Path path;
         if (this.side.inWorldDir) path = server.getWorldPath(LevelResource.ROOT).resolve("serverconfig");
         else path = Paths.get("config");
@@ -360,7 +360,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         if (other.getSubDirectory() != null) this.dir(other.getSubDirectory());
         this.ext(other.fileExtension);
         this.withGson(other.getGson());
-        this.reloadable = other.reloadable;
+        this.shouldReload = other.shouldReload;
         if (other.clazz == this.clazz) this.setDefaultValue((Supplier<T>) other.defaultValue);
         return this;
     }

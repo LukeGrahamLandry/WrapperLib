@@ -5,8 +5,8 @@
 - [X] KeybindWrapper
 - [X] PlatformHelper: isModLoaded
 - [X] MapDataWrapper optional lazy loading
+- [X] server side configs reload on /reload command 
 - [ ] data packs
-- [ ] config reloading
 - [ ] config array / map comments on fields brought to top if list empty
 - [ ] nbt data for tile, entity, item
 - [ ] quilt example mod

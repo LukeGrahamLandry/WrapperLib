@@ -45,14 +45,15 @@ public class EventCallbacks implements IEventCallbacks {
         });
     }
 
-    // figure out dealing with client ones where the player might not have perms to use reload command
-//    @Override
-//    public void onReloadCommand(){
-//        ConfigWrapper.ALL.forEach((config) -> {
-//            if (config.reloadable){
-//                config.load();
-//                config.sync();
-//            }
-//        });
-//    }
+    public static void onReloadCommand(){
+        if (ConfigWrapper.server == null) return;
+        ConfigWrapper.ALL.forEach((config) -> {
+            if (config.shouldReload && config.side.inWorldDir){
+                config.load();
+                if (config.side == ConfigWrapper.Side.SYNCED) {
+                    config.sync();
+                }
+            }
+        });
+    }
 }

@@ -29,6 +29,10 @@ public class KeybindWrapper {
         return new KeybindWrapper("key." + category + "." + name, defaultKey, "key.categories." + category);
     }
 
+    /**
+     * This can safely be called from common code (it will not crash dedicated servers).
+     * The key will start off as unbound and the player must set it to something in the options menu before using.
+     */
     public static KeybindWrapper of(String name, String category){
         return of(name, category, -1);
     }
