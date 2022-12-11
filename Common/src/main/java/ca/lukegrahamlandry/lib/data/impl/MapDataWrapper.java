@@ -147,21 +147,13 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
     @Override
     public void sync() {
-        if (!this.shouldSync) {
-            this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-
-        new FullMapDataSyncMessage(this).sendToAllClients();
+        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        else new FullMapDataSyncMessage(this).sendToAllClients();
     }
 
     public void sync(K key) {
-        if (!this.shouldSync) {
-            this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-
-        new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
+        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        else new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
     }
 
     public boolean isDirty(I id) {

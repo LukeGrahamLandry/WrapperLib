@@ -11,6 +11,7 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class EventCallbacks implements IEventCallbacks {
@@ -18,9 +19,7 @@ public class EventCallbacks implements IEventCallbacks {
     public void onServerStarting(MinecraftServer server){
         ConfigWrapper.server = server;
         ConfigWrapper.ALL.forEach((config) -> {
-            if (config.side.inWorldDir){
-                config.load();
-            }
+            if (config.side.inWorldDir) config.load();
         });
     }
 
@@ -29,19 +28,14 @@ public class EventCallbacks implements IEventCallbacks {
         if (player.level.isClientSide()) return;
 
         ConfigWrapper.ALL.forEach((config) -> {
-            if (config.side == ConfigWrapper.Side.SYNCED){
-                // TODO: dont have to resync to all players, just the new one
-                config.sync();
-            }
+            if (config.side == ConfigWrapper.Side.SYNCED) new ConfigSyncMessage(config).sendToClient((ServerPlayer) player);
         });
     }
 
     @Override
     public void onClientSetup(){
         ConfigWrapper.ALL.forEach((config) -> {
-            if (config.side == ConfigWrapper.Side.CLIENT){
-                config.load();
-            }
+            if (config.side == ConfigWrapper.Side.CLIENT) config.load();
         });
     }
 

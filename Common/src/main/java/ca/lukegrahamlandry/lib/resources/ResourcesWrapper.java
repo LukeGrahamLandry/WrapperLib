@@ -9,7 +9,11 @@
 
 package ca.lukegrahamlandry.lib.resources;
 
+import ca.lukegrahamlandry.lib.base.Available;
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
+import ca.lukegrahamlandry.lib.config.ConfigWrapper;
+import ca.lukegrahamlandry.lib.helper.PlatformHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -26,21 +30,35 @@ import java.io.BufferedReader;
 import java.util.*;
 
 public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<ResourceLocation, List<JsonElement>>> {
+    /**
+     * Load information from a data pack on the logical server.
+     */
     public static <T> ResourcesWrapper<T> data(Class<T> clazz, String directory){
         return new ResourcesWrapper<>(TypeToken.get(clazz), directory, true);
     }
 
+    /**
+     * Load information from a resource pack on the logical client.
+     */
     public static <T> ResourcesWrapper<T> assets(Class<T> clazz, String directory){
         return new ResourcesWrapper<>(TypeToken.get(clazz), directory, false);
     }
 
-    public ResourcesWrapper<T> with(MergeRule<T> rule){
+    public ResourcesWrapper<T> mergeWith(MergeRule<T> rule){
         this.mergeRule = rule;
         return this;
     }
 
-    public ResourcesWrapper<T> onReload(Runnable action){
-        this.onReloadAction = action;
+    public ResourcesWrapper<T> onLoad(Runnable action){
+        this.onLoadAction = action;
+        return this;
+    }
+
+    public ResourcesWrapper<T> synced(){
+        if (!this.isServerSide) throw new RuntimeException("ResourcesWrapper#synced may only be called for data packs, NOT resource packs.");
+        if (!Available.NETWORK.get()) throw new RuntimeException("Called ResourcesWrapper#synced but WrapperLib Network module is missing.");
+
+        this.shouldSync = true;
         return this;
     }
 
@@ -67,13 +85,10 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
         return data.get(id);
     }
 
-    public interface MergeRule<V> {
-        V merge(List<V> resources);
-    }
-
     // IMPL
 
-    private TypeToken<T> valueType;
+    static List<ResourcesWrapper<?>> ALL = new ArrayList<>();
+    TypeToken<T> valueType;
     public final String directory;
     public final boolean isServerSide;
     Map<ResourceLocation, T> data;
@@ -81,17 +96,25 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
     public String modid = null;
     protected String suffix = ".json";
     private Gson gson = JsonHelper.get();
-    private Runnable onReloadAction = () -> {};
-    private MergeRule<T> mergeRule = (resources) -> resources.get(resources.size() - 1);  // TODO: make sure I guessed the priority order right
+    boolean shouldSync = false;
+    protected Runnable onLoadAction = () -> {};
+    protected MergeRule<T> mergeRule = (resources) -> resources.get(resources.size() - 1);  // TODO: make sure I guessed the priority order right
     public ResourcesWrapper(TypeToken<T> valueType, String directory, boolean isServerSide){
         this.valueType = valueType;
         this.directory = directory;
         this.isServerSide = isServerSide;
+        if (!this.isServerSide && Available.PLATFORM_HELPER.get() && PlatformHelper.isDedicatedServer()) return;
+        ALL.add(this);
         registerResourceListener(this);
     }
 
-    Gson getGson(){
+    protected Gson getGson(){
         return this.gson;
+    }
+
+    protected void sync() {
+        if (!this.shouldSync) this.logger.error("called ResourcesWrapper#sync for unsynced resources. Ignoring");
+        else new DataPackSyncMessage(this).sendToAllClients();
     }
 
     /**
@@ -128,6 +151,7 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
      */
     @Override
     protected void apply(Map<ResourceLocation, List<JsonElement>> resources, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        this.data = new HashMap<>();
         for (Map.Entry<ResourceLocation, List<JsonElement>> entry : resources.entrySet()){
             ResourceLocation id = entry.getKey();
             List<JsonElement> resourceStack = entry.getValue();
@@ -140,7 +164,13 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
             T finalValue = this.mergeRule.merge(values);
             this.data.put(id, finalValue);
         }
-        this.onReloadAction.run();
+        this.onLoadAction.run();
+        this.sync();
+    }
+
+    @InternalUseOnly
+    void set(Object value) {
+        this.data = (Map<ResourceLocation, T>) value;
     }
 
     /**

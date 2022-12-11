@@ -88,12 +88,8 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
 
     @Override
     public void sync() {
-        if (!this.shouldSync) {
-            this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-
-        new GlobalDataSyncMessage(this).sendToAllClients();
+        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        else new GlobalDataSyncMessage(this).sendToAllClients();
     }
 
     protected Path getFilePath(){

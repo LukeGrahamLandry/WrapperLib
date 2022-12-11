@@ -165,6 +165,11 @@ public class ConfigWrapper<T> implements Supplier<T> {
         return this;
     }
 
+    public ConfigWrapper<T> onLoad(Runnable action){
+        this.onLoadAction = action;
+        return this;
+    }
+
     // API
 
     /**
@@ -196,12 +201,8 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * Requires Packets module
      */
     public void sync() {
-        if (this.side != Side.SYNCED) {
-            this.logger.error("called ConfigWrapper#sync but side=" + this.side);
-            return;
-        }
-
-        new ConfigSyncMessage(this).sendToAllClients();
+        if (this.side != Side.SYNCED) this.logger.error("called ConfigWrapper#sync but side=" + this.side + ". Ignoring.");
+        else new ConfigSyncMessage(this).sendToAllClients();
     }
 
     /**
@@ -226,6 +227,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         }
 
         this.loaded = true;
+        this.onLoadAction.run();
     }
 
     public static MinecraftServer server;
@@ -242,6 +244,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     private Gson gson;
     private String subDirectory = null;
     Type actualType;
+    private Runnable onLoadAction;
 
     private ConfigWrapper(Class<T> clazz, Side side){
         this(TypeToken.get(clazz), side);
