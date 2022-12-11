@@ -36,7 +36,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * Creates a new config object for reading settings from player editable files.
      * The config will be synced to all clients, so it may be used from common code.
      * The config will be loaded from world/serverconfig
-     * If the file is missing we check ./config before using default values.
+     * If the file is missing we check ./defaultconfigs before using default values.
      */
     public static <T> ConfigWrapper<T> synced(Class<T> clazz){
         if (!Available.NETWORK.get()) throw new RuntimeException("Called ConfigWrapper#synced but WrapperLib Network module is missing.");
@@ -56,7 +56,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * Creates a new config object for reading settings from player editable files.
      * The config will ONLY be available on the logical SERVER.
      * The config will be loaded from world/serverconfig
-     * If the file is missing we check ./config before using default values.
+     * If the file is missing we check ./defaultconfigs before using default values.
      */
     public static <T> ConfigWrapper<T> server(Class<T> clazz){
         return new ConfigWrapper<>(clazz, Side.SERVER);

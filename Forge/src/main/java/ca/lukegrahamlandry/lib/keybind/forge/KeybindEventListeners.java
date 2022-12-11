@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus= Mod.EventBusSubscriber.Bus.FORGE)
 public class KeybindEventListeners {
     @SubscribeEvent
-    public static void onServerWorldTick(TickEvent.PlayerTickEvent event){
+    public static void onServerTick(TickEvent.PlayerTickEvent event){
         if (!event.player.level.isClientSide() && event.phase == TickEvent.Phase.END) KeybindTickCallbacks.onServerPlayerTick((ServerPlayer) event.player);
     }
 
