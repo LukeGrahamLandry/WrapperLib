@@ -36,7 +36,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * Creates a new config object for reading settings from player editable files.
      * The config will be synced to all clients, so it may be used from common code.
      * The config will be loaded from world/serverconfig
-     * If the file is missing we check ./defaultconfigs before using default values.
+     * If the file is missing we check ./defaultconfigs then ./config before using default values.
      */
     public static <T> ConfigWrapper<T> synced(Class<T> clazz){
         if (!Available.NETWORK.get()) throw new RuntimeException("Called ConfigWrapper#synced but WrapperLib Network module is missing.");
@@ -56,7 +56,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * Creates a new config object for reading settings from player editable files.
      * The config will ONLY be available on the logical SERVER.
      * The config will be loaded from world/serverconfig
-     * If the file is missing we check ./defaultconfigs before using default values.
+     * If the file is missing we check ./defaultconfigs then ./config before using default values.
      */
     public static <T> ConfigWrapper<T> server(Class<T> clazz){
         return new ConfigWrapper<>(clazz, Side.SERVER);
@@ -282,21 +282,24 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.value = (T) v;
     }
 
+    public static List<Path> defaultConfigFolders = Arrays.asList(Paths.get("defaultconfigs"), Paths.get("config"));
+
     protected void writeDefaultFile() {
         this.getFolderPath().toFile().mkdirs();
 
         if (this.side.inWorldDir){
-            Path globalDefaultLocation = Paths.get("defaultconfigs");
-            if (this.subDirectory != null) globalDefaultLocation = globalDefaultLocation.resolve(this.subDirectory);
-            globalDefaultLocation = globalDefaultLocation.resolve(this.getFilename());
-            if (Files.exists(globalDefaultLocation)){
-                try {
-                    Files.copy(globalDefaultLocation, this.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
-                    this.logger.info("loaded global default config " + globalDefaultLocation.toAbsolutePath().toFile().getCanonicalPath());
-                    return;
-                } catch (IOException e){
-                    this.logger.error("global instance config file existed but could not be copied. generating default");
-                    e.printStackTrace();
+            for (Path defaultLocation : defaultConfigFolders){
+                if (this.subDirectory != null) defaultLocation = defaultLocation.resolve(this.subDirectory);
+                defaultLocation = defaultLocation.resolve(this.getFilename());
+                if (Files.exists(defaultLocation)){
+                    try {
+                        Files.copy(defaultLocation, this.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
+                        this.logger.info("found global default config " + defaultLocation.toAbsolutePath().toFile().getCanonicalPath());
+                        return;
+                    } catch (IOException e){
+                        this.logger.error("global instance config file existed but could not be copied. generating default");
+                        e.printStackTrace();
+                    }
                 }
             }
         }

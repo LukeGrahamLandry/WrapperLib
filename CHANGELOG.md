@@ -1,4 +1,6 @@
-- config array / map comments on fields brought to top if list empty
+- [ ] quilt example mod
+- [ ] config array / map comments on fields brought to top if list empty
+- [X] world configs check ./config (as well as ./defaultconfigs) before generating default
 
 ## 1.1.0
 
