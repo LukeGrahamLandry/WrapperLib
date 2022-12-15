@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
 import com.google.gson.Gson;
@@ -87,12 +88,8 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
 
     @Override
     public void sync() {
-        if (!this.shouldSync) {
-            this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-
-        new GlobalDataSyncMessage(this).sendToAllClients();
+        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        else new GlobalDataSyncMessage(this).sendToAllClients();
     }
 
     protected Path getFilePath(){
@@ -102,10 +99,9 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
         return path;
     }
 
-    // NEVER CALL THIS
-    // its just for the sync stuff
-    // TODO: apionly annotation or whatever
+    @InternalUseOnly
     public void set(Object v){
         this.value = (T) v;
+        this.isLoaded = true;
     }
 }

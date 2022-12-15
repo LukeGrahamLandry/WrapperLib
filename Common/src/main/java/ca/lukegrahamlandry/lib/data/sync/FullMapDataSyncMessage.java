@@ -9,43 +9,38 @@
 
 package ca.lukegrahamlandry.lib.data.sync;
 
-import ca.lukegrahamlandry.lib.config.ConfigSyncMessage;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.MapDataWrapper;
 import ca.lukegrahamlandry.lib.network.ClientSideHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 
 import java.util.Objects;
 
-public class SingleMapDataSyncMessage implements ClientSideHandler {
+public class FullMapDataSyncMessage implements ClientSideHandler {
     String value;
-    String id;
     String name;
     String dir;
 
-    public <I> SingleMapDataSyncMessage(MapDataWrapper<?, I, ?> wrapper, I id) {
+    public FullMapDataSyncMessage(MapDataWrapper<?, ?, ?> wrapper) {
         this.name = wrapper.getName();
         this.dir = wrapper.getSubDirectory();
-        this.id = id.toString();
 
         // encode here using ConfigWrapper#getGson instead of allowing the object to be encoded by the packet module's gson instance
         // this allows adding type adapters to your ConfigWrapper and still having syncing
-        // TODO: since not using a GenericHolder, data may not be a subclass of V
-        this.value = wrapper.getGson().toJson(wrapper.getById(id));
+        // TODO: since this is a Map<S, V> instead of a Map<S, GenericHolder<V>> the entries may not be subclasses of V since the type info will be lost in json conversion
+        this.value = wrapper.getGson().toJson(wrapper.getMap());
     }
 
     public void handle() {
         boolean handled = false;
         for (DataWrapper<?> data : DataWrapper.ALL) {
             if (data instanceof MapDataWrapper<?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
-                Object syncedValue = data.getGson().fromJson(this.value, data.clazz);
-                Object syncedID = ((MapDataWrapper<?, ?, ?>) data).stringToId(this.id);
-                ((MapDataWrapper<?, ?, ?>) data).set(syncedID, syncedValue);
+                JsonObject syncedValue = data.getGson().fromJson(this.value, JsonObject.class);
+                ((MapDataWrapper<?, ?, ?>) data).loadFromMap(syncedValue);
                 handled = true;
             }
         }
 
-        if (!handled) DataWrapper.LOGGER.error("SingleMap. Received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
+        if (!handled) DataWrapper.LOGGER.error("SplitMap. Received data sync for unknown {name: " + this.name + ", dir: " + this.dir + "}");
     }
 }

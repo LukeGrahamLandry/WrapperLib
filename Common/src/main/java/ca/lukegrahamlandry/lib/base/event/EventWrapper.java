@@ -9,6 +9,8 @@
 
 package ca.lukegrahamlandry.lib.base.event;
 
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 public class EventWrapper {
     private static final List<IEventCallbacks> HANDLERS = new ArrayList<>();
 
+    @InternalUseOnly
     public static void add(IEventCallbacks handler){
         HANDLERS.add(handler);
     }
@@ -29,6 +32,7 @@ public class EventWrapper {
      * Only real disadvantage of this is that intellij doesn't auto handle it when I move or rename a class. The shadowJar relocate works fine tho.
      * Could also make an annotation processor to generate the list, but I don't want to deal with it right now.
      */
+    @InternalUseOnly
     public static void add(String handlerClassName){
         try {
             Class<?> clazz = Class.forName(handlerClassName);
@@ -50,6 +54,7 @@ public class EventWrapper {
         add("ca.lukegrahamlandry.lib.network.HandshakeHelper");
         add("ca.lukegrahamlandry.lib.config.EventCallbacks");
         add("ca.lukegrahamlandry.lib.data.EventCallbacks");
+        add("ca.lukegrahamlandry.lib.resources.EventCallbacks");
     }
 
     public static List<IEventCallbacks> get(){

@@ -7,11 +7,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package ca.lukegrahamlandry.examplemod.model;
+package ca.lukegrahamlandry.lib.resources;
 
-import ca.lukegrahamlandry.lib.config.Comment;
+import java.util.List;
 
-public class ExampleClientConfig {
-    @Comment("colour of the text that displays your kills on the hud")
-    public int uiColour = 0xFF0000;
+public interface MergeRule<V> {
+    V merge(List<V> resources);
 }

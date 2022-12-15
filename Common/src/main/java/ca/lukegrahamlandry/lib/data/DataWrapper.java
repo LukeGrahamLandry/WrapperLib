@@ -162,7 +162,6 @@ public abstract class DataWrapper<T> {
     protected DataWrapper(Class<T> clazz){
         this.clazz = clazz;
         this.named(defaultName(clazz));
-        this.withGson(JsonHelper.get());
         this.createDefaultInstance();
         ALL.add(this);
     }
@@ -182,7 +181,7 @@ public abstract class DataWrapper<T> {
     }
 
     public Gson getGson(){
-        return this.gson;
+        return this.gson == null ? JsonHelper.get() : this.gson;
     }
 
     private static String defaultName(Class<?> clazz){
@@ -197,7 +196,6 @@ public abstract class DataWrapper<T> {
             throw new RuntimeException(clazz.getName() + " does not have a public parameterless constructor", e);
         }
     }
-
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DataWrapper.class);
     protected void createLogger(){

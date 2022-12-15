@@ -9,7 +9,8 @@
 
 package ca.lukegrahamlandry.lib.data.impl.file;
 
-public interface MapFileHandler {
+public interface MapFileHandler<K, I, V> {
     void save();
     void load();
+    void clear(I id);
 }

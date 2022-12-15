@@ -12,12 +12,14 @@ package ca.lukegrahamlandry.examplemod;
 import ca.lukegrahamlandry.examplemod.model.KillTracker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class ExampleEventHandlers {
     public static void onJump(LivingEntity entity){
@@ -28,6 +30,8 @@ public class ExampleEventHandlers {
     public static void onJoin(Player player){
         if (player.level.isClientSide()) return;
         player.addItem(ExampleCommonMain.config.get().sword);
+        System.out.println("This is the configured list.");
+        ExampleCommonMain.list_test.get().forEach(System.out::println);
     }
 
     public static void onDeath(LivingEntity entity, DamageSource source){
@@ -35,9 +39,21 @@ public class ExampleEventHandlers {
         Entity killer = source.getEntity();
         if (killer instanceof Player){
             Player player = (Player) killer;
-            if (entity instanceof Player) ExampleCommonMain.kills.get(player).players++;
-            else ExampleCommonMain.kills.get(player).mobs++;
+            ItemStack weapon = player.getItemInHand(InteractionHand.MAIN_HAND);
+            if (entity instanceof Player) {
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * ExampleCommonMain.weaponKills.get(weapon).players));
+                ExampleCommonMain.kills.get(player).players++;
+                ExampleCommonMain.weaponKills.get(weapon).players++;
+            } else {
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * ExampleCommonMain.weaponKills.get(weapon).mobs));
+                ExampleCommonMain.kills.get(player).mobs++;
+                ExampleCommonMain.weaponKills.get(weapon).mobs++;
+
+            }
             ExampleCommonMain.kills.setDirty(player);
+            ExampleCommonMain.weaponKills.setDirty(weapon);
+
+
         }
     }
 

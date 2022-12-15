@@ -21,7 +21,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class SingleFileHandler<K, I, V> implements MapFileHandler {
+public class SingleFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
     private final MapDataWrapper<K, I, V> wrapper;
 
     public SingleFileHandler(MapDataWrapper<K, I, V> wrapper) {
@@ -55,6 +55,14 @@ public class SingleFileHandler<K, I, V> implements MapFileHandler {
             this.wrapper.logger.error(msg);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * since all data is stored in one file, the removed entries will be over written when the rest are saved.
+     */
+    @Override
+    public void clear(I id) {
+        // NO OP
     }
 
     public Path getFilePath(){

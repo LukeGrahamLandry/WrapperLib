@@ -11,6 +11,7 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class EventCallbacks implements IEventCallbacks {
@@ -18,10 +19,13 @@ public class EventCallbacks implements IEventCallbacks {
     public void onServerStarting(MinecraftServer server){
         ConfigWrapper.server = server;
         ConfigWrapper.ALL.forEach((config) -> {
-            if (config.side.inWorldDir){
-                config.load();
-            }
+            if (config.side.inWorldDir) config.load();
         });
+    }
+
+    @Override
+    public void onServerStopped(MinecraftServer server) {
+        ConfigWrapper.server = null;
     }
 
     @Override
@@ -29,30 +33,26 @@ public class EventCallbacks implements IEventCallbacks {
         if (player.level.isClientSide()) return;
 
         ConfigWrapper.ALL.forEach((config) -> {
-            if (config.side == ConfigWrapper.Side.SYNCED){
-                // TODO: dont have to resync to all players, just the new one
-                config.sync();
-            }
+            if (config.side == ConfigWrapper.Side.SYNCED) new ConfigSyncMessage(config).sendToClient((ServerPlayer) player);
         });
     }
 
     @Override
     public void onClientSetup(){
         ConfigWrapper.ALL.forEach((config) -> {
-            if (config.side == ConfigWrapper.Side.CLIENT){
-                config.load();
-            }
+            if (config.side == ConfigWrapper.Side.CLIENT) config.load();
         });
     }
 
-    // figure out dealing with client ones where the player might not have perms to use reload command
-//    @Override
-//    public void onReloadCommand(){
-//        ConfigWrapper.ALL.forEach((config) -> {
-//            if (config.reloadable){
-//                config.load();
-//                config.sync();
-//            }
-//        });
-//    }
+    public static void onReloadCommand(){
+        if (ConfigWrapper.server == null) return;
+        ConfigWrapper.ALL.forEach((config) -> {
+            if (config.shouldReload && config.side.inWorldDir){
+                config.load();
+                if (config.side == ConfigWrapper.Side.SYNCED) {
+                    config.sync();
+                }
+            }
+        });
+    }
 }

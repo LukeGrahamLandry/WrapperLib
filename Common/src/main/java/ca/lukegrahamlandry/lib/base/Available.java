@@ -9,22 +9,28 @@
 
 package ca.lukegrahamlandry.lib.base;
 
+/**
+ * Check if certain modules are available. This allows stuff to fail gracefully if you exclude some parts while shadowing.
+ */
 public enum Available {
     NETWORK("ca.lukegrahamlandry.lib.network.NetworkWrapper"),
     DATA("ca.lukegrahamlandry.lib.data.DataWrapper"),
     CONFIG("ca.lukegrahamlandry.lib.config.ConfigWrapper"),
-    ENTITY("ca.lukegrahamlandry.lib.entity.EntityHelper"),
     REGISTRY("ca.lukegrahamlandry.lib.registry.RegistryWrapper"),
-    ENTITY_HELPER("ca.lukegrahamlandry.lib.helper.EntityHelper");
+    KEYBIND("ca.lukegrahamlandry.lib.keybind.KeybindWrapper"),
+    ENTITY_HELPER("ca.lukegrahamlandry.lib.helper.EntityHelper"),
+    PLATFORM_HELPER("ca.lukegrahamlandry.lib.helper.PlatformHelper");
 
     private final String clazz;
+    private Boolean memo;
 
     Available(String clazz){
         this.clazz = clazz;
     }
 
     public boolean get(){
-        return canFindClass(this.clazz);
+        if (this.memo == null) this.memo = canFindClass(this.clazz);
+        return this.memo;
     }
 
     public static boolean canFindClass(String className){

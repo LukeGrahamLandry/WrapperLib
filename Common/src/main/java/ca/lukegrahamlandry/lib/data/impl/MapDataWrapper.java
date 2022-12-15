@@ -9,19 +9,19 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
-import ca.lukegrahamlandry.lib.data.impl.file.MapFileHandler;
-import ca.lukegrahamlandry.lib.data.impl.file.SingleFileHandler;
-import ca.lukegrahamlandry.lib.data.impl.file.SplitFileHandler;
-import ca.lukegrahamlandry.lib.data.sync.SplitMapDataSyncMessage;
-import ca.lukegrahamlandry.lib.data.sync.SingleMapDataSyncMessage;
+import ca.lukegrahamlandry.lib.data.impl.file.*;
+import ca.lukegrahamlandry.lib.data.sync.FullMapDataSyncMessage;
+import ca.lukegrahamlandry.lib.data.sync.SingleEntryMapDataSyncMessage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Set;
 
 /**
  * @param <K> the user facing key object. ie. player or world
@@ -36,7 +36,19 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
      * Save in dir/name/id.etx {data} instead of dir/name.etx {id: data}
      */
     public <W extends MapDataWrapper<K, I, V>> W splitFiles(){
-        this.fileHandler = new SplitFileHandler<>(this);
+        if (!this.shouldLazyLoad) this.fileHandler = new SplitFileHandler<>(this);
+        return (W) this;
+    }
+
+    /**
+     * This will cause the normal MapFileHandler#load method to not fire.
+     * Instead, an entry will be loaded from disk when you request it with MapDataWrapper#get.
+     * As usual, all dirty entries will be saved on MapFileHandler#save.
+     * Implies MapFileHandler#splitFiles (save in dir/name/id.etx {data} instead of dir/name.etx {id: data}).
+     */
+    public <W extends MapDataWrapper<K, I, V>> W lazy(){
+        this.fileHandler = new LazyFileHandler<>(this);
+        this.shouldLazyLoad = true;
         return (W) this;
     }
 
@@ -47,29 +59,40 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     }
 
     /**
-     * Same as setDirty() but only syncs data for the one instance that changed.
-     * Results in a smaller packet being sent.
-     * TODO: if useMultipleFiles=true we should only write the changed file as well. so i guess keep a Map I->Boolean isDirty
+     * Same as setDirty() but only syncs data for the one instance that changed. Results in a smaller packet being sent.
+     * If splitFiles or lazyLoaded only the files for the dirty entries will be written.
      */
     public void setDirty(K key){
         this.isDirty = true;
+        this.dirtyEntries.add(keyToId(key));
         if (this.shouldSync) this.sync(key);
     }
 
+    @Override
+    public void setDirty() {
+        super.setDirty();
+        this.dirtyEntries.addAll(this.data.keySet());
+    }
 
     /**
      * Resets the data for one entry to default values.
      */
-    public void clear(K key){
+    public void remove(K key){
         this.data.remove(this.keyToId(key));
+        this.fileHandler.clear(this.keyToId(key));
         this.setDirty(key);
+
+        // fileHandler#clear already deleted the file if relevent. the setDirty call will recreate the default object to sync it. dont mark entry dirty so we dont just write out the default object for no reason.
+        this.dirtyEntries.remove(keyToId(key));
     }
 
     // IMPL
 
     public Map<I, V> data = new HashMap<>();
     private final Class<I> idClazz; // for json deserialization
-    private MapFileHandler fileHandler;
+    private MapFileHandler<K, I, V> fileHandler;
+    private boolean shouldLazyLoad = false;
+    private Set<I> dirtyEntries = new HashSet<>();
     protected MapDataWrapper(Class<I> idClazz, Class<V> clazz) {
         super(clazz);
         this.idClazz = idClazz;
@@ -87,15 +110,26 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
     public V getById(I id){
         if (!this.isLoaded) {
-            this.logger.error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced");
+            this.logger.error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced (c) on client before sync");
             return null;
         }
-        if (!data.containsKey(id)) data.put(id, this.createDefaultInstance());
+
+        // if key not found, try to load it if lazy, otherwise use default.
+        if (!data.containsKey(id)) {
+            if (this.shouldLazyLoad) ((LazyFileHandler<K, I, V>)this.fileHandler).load(id);
+            if (!data.containsKey(id)) data.put(id, this.createDefaultInstance());
+        }
+
         return data.get(id);
     }
 
     @Override
     public void save() {
+        if (server == null) {
+            String msg = "cannot call DataWrapper#save (a) after server shutdown (b) on client";
+            this.logger.error(msg);
+            throw new RuntimeException(msg);
+        }
         this.fileHandler.save();
     }
 
@@ -111,9 +145,22 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
         this.isLoaded = true;
     }
 
-    // NEVER CALL THIS
-    // its just for the syncing stuff
-    // TODO: apionly annotation or whatever
+    @Override
+    public void sync() {
+        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        else new FullMapDataSyncMessage(this).sendToAllClients();
+    }
+
+    public void sync(K key) {
+        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        else new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
+    }
+
+    public boolean isDirty(I id) {
+        return this.dirtyEntries.contains(id);
+    }
+
+    @InternalUseOnly
     public void loadFromMap(JsonObject json){
         for (Map.Entry<String, JsonElement> entry : json.entrySet()){
             try {
@@ -125,35 +172,16 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
                 e.printStackTrace();
             }
         }
+        this.isLoaded = true;
     }
 
-    @Override
-    public void sync() {
-        if (!this.shouldSync) {
-            this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-
-        new SplitMapDataSyncMessage(this).sendToAllClients();
-    }
-
-    public void sync(K key) {
-        if (!this.shouldSync) {
-            this.logger.error("called DataWrapper#sync but shouldSync=false");
-            return;
-        }
-
-        new SingleMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
-    }
-
-    // NEVER CALL THIS
-    // its just for the syncing stuff
-    // TODO: apionly annotation or whatever
+    @InternalUseOnly
     public void set(Object id, Object value) {
         this.data.put((I) id, (V) value);
+        this.isLoaded = true;
     }
 
-    // internal use only
+    @InternalUseOnly
     public Map<I, V> getMap() {
         return this.data;
     }

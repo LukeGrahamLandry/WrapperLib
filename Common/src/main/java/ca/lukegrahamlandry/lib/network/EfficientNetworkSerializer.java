@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.network;
 
+import ca.lukegrahamlandry.lib.base.WorkInProgress;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -20,9 +21,7 @@ import java.util.*;
 
 import static ca.lukegrahamlandry.lib.base.GenericHolder.NETWORK_MAX_CHARS;
 
-/**
- * WIP. unused
- */
+@WorkInProgress
 public class EfficientNetworkSerializer {
     // must call .enableComplexMapKeySerialization() so keys of hash maps arent lost. then they're treated as arrays of [key, value] pairs
     private static void recurseEncode(FriendlyByteBuf buffer, JsonElement data){

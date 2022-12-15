@@ -9,10 +9,14 @@
 
 package ca.lukegrahamlandry.lib.base.event;
 
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
 
+@InternalUseOnly
 public interface IEventCallbacks {
     default void onServerStarting(MinecraftServer server) {}
 

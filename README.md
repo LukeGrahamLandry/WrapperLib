@@ -21,7 +21,7 @@ Supported Versions: 1.19, 1.18, ~~1.16, 1.12~~
 
 ## Official Downloads
 
-- curseforge
-- modrinth
+- https://www.curseforge.com/minecraft/mc-mods/wrapperlib
+- https://modrinth.com/mod/wrapperlib
 - https://github.com/LukeGrahamLandry/WrapperLib/releases
 - https://maven.lukegrahamlandry.ca

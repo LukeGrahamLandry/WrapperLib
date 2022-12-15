@@ -1,3 +1,12 @@
+/*
+ * This file is part of WrapperLib
+ * Copyright 2022 LukeGrahamLandry
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package ca.lukegrahamlandry.lib.registry;
 
 import ca.lukegrahamlandry.lib.base.Available;
@@ -99,6 +108,7 @@ public class RegistryThing<T> implements Supplier<T> {
             return this;
         }
         if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withRenderer but WrapperLib EntityHelper is missing.");
+        if (!Available.PLATFORM_HELPER.get()) throw new RuntimeException("Called RegistryThing#withRenderer but WrapperLib PlatformHelper is missing.");
 
         if (PlatformHelper.isDedicatedServer()) return this;
         EntityHelper.renderer(() -> (EntityType<? extends E>) this.get(), (ctx) -> provider.get().apply(ctx));
