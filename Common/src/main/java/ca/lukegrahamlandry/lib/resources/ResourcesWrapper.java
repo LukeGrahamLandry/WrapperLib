@@ -26,7 +26,8 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<ResourceLocation, List<JsonElement>>> {
@@ -111,18 +112,31 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
     @Override
     protected Map<ResourceLocation, List<JsonElement>> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         Map<ResourceLocation, List<JsonElement>> results = new HashMap<>();
-        for (Map.Entry<ResourceLocation, List<Resource>> entry : resourceManager.listResourceStacks(this.directory, file -> file.getPath().endsWith(suffix)).entrySet()) {
-            String actualPath = entry.getKey().getPath().substring(this.directory.length() + 1, entry.getKey().getPath().length() - suffix.length());
-            ResourceLocation id = new ResourceLocation(entry.getKey().getNamespace(), actualPath);
+        Collection<ResourceLocation> locations = resourceManager.listResources(this.directory, filename -> filename.endsWith(suffix));
+
+        for (ResourceLocation location : locations) {
+            String actualPath = location.getPath().substring(this.directory.length() + 1, location.getPath().length() - suffix.length());
+            ResourceLocation id = new ResourceLocation(location.getNamespace(), actualPath);
             List<JsonElement> values = new ArrayList<>();
-            for (Resource resource : entry.getValue()) {
-                try (BufferedReader reader = resource.openAsReader()) {
+
+            List<Resource> resources;
+            try {
+                resources = resourceManager.getResources(location);
+            } catch (IOException e) {
+                this.logger.error("Failed to retrieve resource list for " + id);
+                e.printStackTrace();
+                continue;
+            }
+
+            for (Resource resource : resources) {
+                try (InputStream stream = resource.getInputStream()) {
+                    Reader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
                     values.add(this.getGson().fromJson(reader, JsonElement.class));
                 } catch (JsonSyntaxException e) {
-                    this.logger.error("Failed to parse json for " + id + " from pack " + resource.sourcePackId());
+                    this.logger.error("Failed to parse json for " + id + " from pack " + resource.getSourceName());
                     e.printStackTrace();
                 } catch (Exception e) {
-                    this.logger.error("Failed to read " + id + " from pack " + resource.sourcePackId());
+                    this.logger.error("Failed to read " + id + " from pack " + resource.getSourceName());
                     e.printStackTrace();
                 }
             }
