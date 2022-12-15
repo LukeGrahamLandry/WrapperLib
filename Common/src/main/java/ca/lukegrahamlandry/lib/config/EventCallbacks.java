@@ -24,6 +24,11 @@ public class EventCallbacks implements IEventCallbacks {
     }
 
     @Override
+    public void onServerStopped(MinecraftServer server) {
+        ConfigWrapper.server = null;
+    }
+
+    @Override
     public void onPlayerLoginServer(Player player){
         if (player.level.isClientSide()) return;
 

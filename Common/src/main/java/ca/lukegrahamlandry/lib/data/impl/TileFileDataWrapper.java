@@ -20,7 +20,7 @@ import java.util.Map;
 @WorkInProgress
 public class TileFileDataWrapper<V> extends LevelDataWrapper<Map<BlockPos, V>> {
     public TileFileDataWrapper(Class<Map<BlockPos, V>> clazz) {
-        super(clazz);
+        super(clazz);  // wont work until i switch to using type tokens
     }
 
     public V get(BlockEntity key) {

@@ -244,7 +244,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     private Gson gson;
     private String subDirectory = null;
     Type actualType;
-    private Runnable onLoadAction;
+    private Runnable onLoadAction = () -> {};
 
     private ConfigWrapper(Class<T> clazz, Side side){
         this(TypeToken.get(clazz), side);
@@ -340,7 +340,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     }
 
     public Gson getGson(){
-        return this.gson;
+        return this.gson == null ? JsonHelper.get() : this.gson;
     }
 
     private void createLogger(){

@@ -9,21 +9,32 @@
 
 package ca.lukegrahamlandry.lib.data.nbt;
 
-import ca.lukegrahamlandry.lib.base.WorkInProgress;
-import ca.lukegrahamlandry.lib.data.NbtDataWrapper;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
-@WorkInProgress
+import java.util.Random;
+
+// TODO: do i need to sync manually?
 public class ItemStackDataWrapper<V> extends NbtDataWrapper<ItemStack, V> {
-    protected CompoundTag getTag(ItemStack obj){
+    public static final String ID_TAG_KEY = "_id";
+    private static final Random rand = new Random();
+
+    public ItemStackDataWrapper(TypeToken<V> valueType) {
+        super(valueType);
+    }
+
+    protected CompoundTag getSharedTag(ItemStack obj){
         if (!obj.hasTag()) obj.setTag(obj.getOrCreateTag());
-        return obj.getTag();
+        CompoundTag tag = obj.getTag();
+        if (!tag.contains(PARENT_TAG_KEY)) tag.put(PARENT_TAG_KEY, new CompoundTag());
+        return tag.getCompound(PARENT_TAG_KEY);
     }
 
     @Override
     protected int getHashCode(ItemStack obj) {
-
-        return 0;
+        CompoundTag tag = getSharedTag(obj);
+        if (!tag.contains(ID_TAG_KEY)) tag.putInt(ID_TAG_KEY, rand.nextInt());
+        return tag.getInt(ID_TAG_KEY);
     }
 }

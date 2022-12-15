@@ -34,7 +34,7 @@ public class ResourcesWrapperImpl {
 
         @Override
         public ResourceLocation getFabricId() {
-            return new ResourceLocation(this.wrapper.modid != null ? this.wrapper.modid : "wrapperlib", this.wrapper.directory);
+            return new ResourceLocation("wrapperlib", this.wrapper.directory);
         }
 
         @Override

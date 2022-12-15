@@ -62,14 +62,6 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
         return this;
     }
 
-    /**
-     * This is optional. On fabric, it will be used for IdentifiableResourceReloadListener#getFabricId (defaults to "wrapperlib").
-     */
-    public ResourcesWrapper<T> mod(String modid){
-        this.modid = modid;
-        return this;
-    }
-
     public ResourcesWrapper<T> withGson(Gson gson){
         this.gson = gson;
         return this;
@@ -93,7 +85,6 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
     public final boolean isServerSide;
     Map<ResourceLocation, T> data;
     Logger logger;
-    public String modid = null;
     protected String suffix = ".json";
     private Gson gson = JsonHelper.get();
     boolean shouldSync = false;
@@ -108,13 +99,8 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
         registerResourceListener(this);
     }
 
-    protected Gson getGson(){
+    public Gson getGson(){
         return this.gson;
-    }
-
-    protected void sync() {
-        if (!this.shouldSync) this.logger.error("called ResourcesWrapper#sync for unsynced resources. Ignoring");
-        else new DataPackSyncMessage(this).sendToAllClients();
     }
 
     /**
@@ -165,7 +151,7 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
             this.data.put(id, finalValue);
         }
         this.onLoadAction.run();
-        this.sync();
+        if (this.shouldSync) new DataPackSyncMessage(this).sendToAllClients();
     }
 
     @InternalUseOnly

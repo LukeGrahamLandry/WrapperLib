@@ -16,9 +16,12 @@ import ca.lukegrahamlandry.examplemod.obj.ListItem;
 import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
+import ca.lukegrahamlandry.lib.data.nbt.ItemStackDataWrapper;
+import ca.lukegrahamlandry.lib.data.nbt.NbtDataWrapper;
 import ca.lukegrahamlandry.lib.keybind.KeybindWrapper;
 import ca.lukegrahamlandry.lib.network.NetworkWrapper;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import org.lwjgl.glfw.GLFW;
@@ -34,6 +37,7 @@ public class ExampleCommonMain {
     public static final ConfigWrapper<List<ListItem>> list_test = ConfigWrapper.server(ListItem.class).listOf().named(MOD_ID + "list");
 
     public static final PlayerDataWrapper<KillTracker> kills = DataWrapper.player(KillTracker.class).synced().saved().dir(MOD_ID).named("kills");
+    public static final ItemStackDataWrapper<KillTracker> weaponKills = NbtDataWrapper.itemStack(KillTracker.class).named(new ResourceLocation(MOD_ID, "kills_with_weapon"));
 
     public static void init(){
         NetworkWrapper.handshake(MOD_ID, "1");
