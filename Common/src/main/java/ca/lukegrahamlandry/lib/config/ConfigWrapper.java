@@ -266,7 +266,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
         }
 
         try {
-            String configData = GenerateComments.commentedJson(this.getDefaultValue(), this.getGson());
+            String configData = GenerateComments.commentedJson(this.getDefaultValue(), this.getGsonPretty());
             Files.write(this.getFilePath(), configData.getBytes());
             this.getLogger().info("wrote default config to " + this.displayPath());
         } catch (IOException e){

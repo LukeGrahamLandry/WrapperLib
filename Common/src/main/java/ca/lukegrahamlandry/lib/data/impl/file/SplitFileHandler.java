@@ -30,7 +30,7 @@ public class SplitFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
 
     @Override
     public void save() {
-        Gson pretty = this.wrapper.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.wrapper.getGsonPretty();
         this.wrapper.data.forEach((key, value) -> {
             if (!this.wrapper.isDirty(key)) return;
 

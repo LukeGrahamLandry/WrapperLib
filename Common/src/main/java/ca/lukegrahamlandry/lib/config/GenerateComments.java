@@ -22,11 +22,11 @@ public class GenerateComments {
      * Converts an object to json. Any fields with the @Comment annotation will have a comment above them.
      * Gson does not support generating commented json5 (it will parse it tho). Since I don't want to bundle Jankson, I handle inserting comments myself.
      * @param instance the object to be converted to json
-     * @param gson a gson instance with all required type adapters
+     * @param gson a gson instance with all required type adapters (should be set to prettyPrinting mode)
      * @return a string with the json encoding of instance
      */
     public static <T> String commentedJson(T instance, Gson gson){
-        return commentedJson(instance, gson.newBuilder().setPrettyPrinting().create(), 1);
+        return commentedJson(instance, gson, 1);
     }
 
     private static <T> String commentedJson(T instance, Gson gson, int level){

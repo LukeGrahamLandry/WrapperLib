@@ -8,15 +8,17 @@ A collection of multi-platform implementations of common tasks for developing Mi
 - Each api concept is exposed as a Builder like class with no additional setup required.
 - Extensive documentation (wiki & javadocs).
 
-Supported Mod Loaders: Forge, Fabric, ~~Quilt~~   
-Supported Versions: 1.19, 1.18, ~~1.16, 1.12~~  
+Supported Mod Loaders: Forge, Fabric, Quilt  
+Supported Versions: 1.19.2, 1.18.2, 1.16.5
 
 ## See [wiki](https://github.com/LukeGrahamLandry/WrapperLib/wiki) for more info. 
 
-- [NetworkWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Network): send information between the client and the server.
-- [ConfigWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Config): allow players to configure mod features by editing json files.
-- [DataWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Saved-Data): save extra information with world data.
+- [NetworkWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Network-Usage): send information between the client and the server.
+- [ConfigWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Config-Usage): allow players to configure mod features by editing json files.
+- [DataWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Saved-Data-Usage): save extra information with world data.
 - [RegistryWrapper](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Registry): an api like Forge's deferred register that can be called from common code.
+- [Resources](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Resources): load information from data packs or resource packs.
+- [Keybinds](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Keybinds): react to keyboard input, automatically synced to the server.
 - [Helpers](https://github.com/LukeGrahamLandry/WrapperLib/wiki/Helpers): simple utilities for multi-platform mods.
 
 ## Official Downloads

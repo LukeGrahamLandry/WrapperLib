@@ -11,6 +11,7 @@ package ca.lukegrahamlandry.lib.base;
 
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,22 @@ public abstract class WrappedData<V, S extends WrappedData<V, S>> {
      * Set the gson instance that will be used for config serialization/deserialization when interacting with files or the network.
      * This allows you to register your own type adapters. See JsonHelper for defaults provided.
      * GsonBuilder#setPrettyPrinting will automatically be called when writing defaults to a file (but not for sending over network).
+     * <p>
+     * On 1.16.5, be aware that this mutates the builder into prettyPrinting mode
+     * so the same builder instance should not be passed to this method multiple times on different objects.
+     * We want to have a non-pretty version because we don't want the extra spaces and new lines bloating it for sending over the network.
+     * </p>
      */
-    public S withGson(Gson gson){
-        this.gson = gson;
+    public S withGson(GsonBuilder builder){
+        this.gson = builder.create();
+        this.gsonPretty = this.gson.newBuilder().setPrettyPrinting().create();
         return (S) this;
+    }
+
+    // the version of Gson shipped with 1.16.5 does not have Gson#newBuilder so this method does not exist there.
+    // that's why the normal and pretty gsons are stored separately
+    public S withGson(Gson gson){
+        return withGson(gson.newBuilder());
     }
 
     /**
@@ -41,7 +54,11 @@ public abstract class WrappedData<V, S extends WrappedData<V, S>> {
     // API
 
     public Gson getGson() {
-        return gson == null ? JsonHelper.get() : this.gson;
+        return this.gson == null ? JsonHelper.get() : this.gson;
+    }
+
+    public Gson getGsonPretty() {
+        return this.gsonPretty == null ? JsonHelper.getPretty() : this.gsonPretty;
     }
 
     public V getDefaultValue(){
@@ -60,6 +77,7 @@ public abstract class WrappedData<V, S extends WrappedData<V, S>> {
 
     protected final TypeToken<V> valueType;
     private Gson gson = null;
+    private Gson gsonPretty = null;
     private Supplier<V> defaultValue = null;
     private Logger logger;
 

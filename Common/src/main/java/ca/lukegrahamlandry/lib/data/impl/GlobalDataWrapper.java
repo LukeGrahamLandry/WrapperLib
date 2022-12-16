@@ -78,7 +78,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
     public void save() {
         Path path = this.getFilePath();
         path.toFile().getParentFile().mkdirs();
-        Gson pretty = this.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.getGsonPretty();
         String json = pretty.toJson(this.value);
         try {
             Files.write(path, json.getBytes());
