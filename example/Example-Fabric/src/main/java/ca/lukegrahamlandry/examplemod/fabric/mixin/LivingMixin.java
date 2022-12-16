@@ -25,7 +25,7 @@ public class LivingMixin {
 
     @Inject(at = @At("HEAD"), method = "die")
     private void fireDieEvent(DamageSource damageSource, CallbackInfo ci){
-        if (!((LivingEntity)(Object)this).isRemoved() && !this.dead) ExampleEventHandlers.onDeath((LivingEntity)(Object)this, damageSource);
+        if (!((LivingEntity)(Object)this).isAlive()) ExampleEventHandlers.onDeath((LivingEntity)(Object)this, damageSource);
     }
 
     @Inject(at = @At("HEAD"), method = "jumpFromGround")

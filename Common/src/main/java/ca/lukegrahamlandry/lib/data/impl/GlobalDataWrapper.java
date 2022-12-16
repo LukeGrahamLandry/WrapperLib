@@ -77,7 +77,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
     public void save() {
         Path path = this.getFilePath();
         path.toFile().getParentFile().mkdirs();
-        Gson pretty = this.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.getGson();  // TODO
         String json = pretty.toJson(this.value);
         try {
             Files.write(path, json.getBytes());

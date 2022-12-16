@@ -10,8 +10,10 @@
 package ca.lukegrahamlandry.lib.resources.forge;
 
 import ca.lukegrahamlandry.lib.resources.ResourcesWrapper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -24,7 +26,7 @@ public class ClientListenersEventListener {
     public static final List<ResourcesWrapper<?>> CLIENT_LISTENERS = new ArrayList<>();
 
     @SubscribeEvent
-    public static void registerClientListener(RegisterClientReloadListenersEvent event){
-        CLIENT_LISTENERS.forEach(event::registerReloadListener);
+    public static void registerClientListener(ModelRegistryEvent event){
+        CLIENT_LISTENERS.forEach((listener) -> ((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(listener));
     }
 }

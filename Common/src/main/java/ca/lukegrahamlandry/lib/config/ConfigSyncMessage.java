@@ -11,13 +11,13 @@ package ca.lukegrahamlandry.lib.config;
 
 import ca.lukegrahamlandry.lib.network.ClientSideHandler;
 import com.google.gson.JsonSyntaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Objects;
 
 public class ConfigSyncMessage implements ClientSideHandler {
-    static Logger LOGGER = LoggerFactory.getLogger(ConfigSyncMessage.class);
+    static Logger LOGGER = LogManager.getLogger(ConfigSyncMessage.class);
 
     String value;
     String name;

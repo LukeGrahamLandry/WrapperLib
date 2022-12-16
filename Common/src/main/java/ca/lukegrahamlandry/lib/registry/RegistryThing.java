@@ -10,10 +10,10 @@
 package ca.lukegrahamlandry.lib.registry;
 
 import ca.lukegrahamlandry.lib.base.Available;
-import ca.lukegrahamlandry.lib.helper.PlatformHelper;
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
+import ca.lukegrahamlandry.lib.helper.PlatformHelper;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -25,8 +25,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * @param <T> the type of object that we are
  */
 public class RegistryThing<T> implements Supplier<T> {
-    private static Logger LOGGER = LoggerFactory.getLogger(RegistryThing.class);
+    private static Logger LOGGER = LogManager.getLogger(RegistryThing.class);
     public final Registry<?> registry;
     public final ResourceLocation rl;
 
@@ -102,7 +102,7 @@ public class RegistryThing<T> implements Supplier<T> {
      * @param provider {@code Supplier<EntityRendererProvider<O>>}, a supplier for your EntityRenderer constructor
      * @param <E> the type of entity we are
      */
-    public <E extends Entity> RegistryThing<T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> provider){
+    public <E extends Entity> RegistryThing<T> withRenderer(Supplier<Function<EntityRenderDispatcher, EntityRenderer<E>>> provider){
         if (this.registry != Registry.ENTITY_TYPE){
             LOGGER.error("Cannot call RegistryThing#withRenderer for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;

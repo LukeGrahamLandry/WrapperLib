@@ -13,12 +13,13 @@ import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -118,8 +119,9 @@ public class ConfigWrapper<T> implements Supplier<T> {
      * This allows you to register your own type adapters. See JsonHelper for defaults provided.
      * GsonBuilder#setPrettyPrinting will automatically be called when writing defaults to a file (but not for sending over network).
      */
-    public ConfigWrapper<T> withGson(Gson gson){
-        this.gson = gson;
+    public ConfigWrapper<T> withGson(GsonBuilder gson){
+        this.gson = gson.create();
+        this.prettyGson = gson.setPrettyPrinting().create();
         return this;
     }
 
@@ -245,6 +247,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     private String subDirectory = null;
     Type actualType;
     private Runnable onLoadAction = () -> {};
+    Gson prettyGson;
 
     private ConfigWrapper(Class<T> clazz, Side side){
         this(TypeToken.get(clazz), side);
@@ -254,7 +257,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
     public ConfigWrapper(TypeToken<T> type, Side side){
         this.side = side;
         this.fileExtension = "json5";
-        this.withGson(JsonHelper.get());
+        this.withGson(JsonHelper.GSON_BUILDER);
         ALL.add(this);
 
         this.actualType = type.getType();
@@ -302,7 +305,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         }
 
         try {
-            String configData = GenerateComments.commentedJson(this.defaultValue.get(), this.getGson());
+            String configData = GenerateComments.commentedJson(this.defaultValue.get(), this.prettyGson);
             Files.write(this.getFilePath(), configData.getBytes());
             this.logger.info("wrote default config to " + this.displayPath());
         } catch (IOException e){
@@ -347,7 +350,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         String id = ConfigWrapper.class.getName() + ": ";
         if (this.getSubDirectory() != null) id = id + this.getSubDirectory() + "/";
         id += this.getName() + "-" + side.name();
-        this.logger = LoggerFactory.getLogger(id);
+        this.logger = LogManager.getLogger(id);
     }
 
     public String getName() {
@@ -362,7 +365,7 @@ public class ConfigWrapper<T> implements Supplier<T> {
         this.named(other.getName());
         if (other.getSubDirectory() != null) this.dir(other.getSubDirectory());
         this.ext(other.fileExtension);
-        this.withGson(other.getGson());
+        this.gson = other.gson;
         this.shouldReload = other.shouldReload;
         if (other.clazz == this.clazz) this.setDefaultValue((Supplier<T>) other.defaultValue);
         return this;

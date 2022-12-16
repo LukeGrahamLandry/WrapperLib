@@ -10,8 +10,8 @@
 package ca.lukegrahamlandry.lib.helper;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,8 +20,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 
-import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class EntityHelper {
@@ -52,5 +50,9 @@ public class EntityHelper {
 
     public interface ModdedSpawnEggFactory {
         SpawnEggItem create(Supplier<EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Item.Properties props);
+    }
+
+    public interface EntityRendererProvider<E extends Entity> {
+        EntityRenderer<E> create(EntityRenderDispatcher manager);
     }
 }

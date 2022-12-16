@@ -45,7 +45,7 @@ public class ExampleCommonMain {
         // ensure RegistryTest is class loaded
         RegistryTest.ITEMS.init();
 
-        KeybindWrapper.of("float", MOD_ID, InputConstants.KEY_Z).synced()
+        KeybindWrapper.of("float", MOD_ID, GLFW.GLFW_KEY_Z).synced()
                 .onHeldTick(player -> {
                     if (!player.level.isClientSide()) {
                         player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 20));

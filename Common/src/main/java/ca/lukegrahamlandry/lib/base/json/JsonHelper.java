@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Locale;
 
 public class JsonHelper {
-    private static final GsonBuilder GSON_BUILDER = new GsonBuilder().setLenient()
+    public static final GsonBuilder GSON_BUILDER = new GsonBuilder().setLenient()
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
             .registerTypeAdapter(GenericHolder.class, new GenericHolder.TypeAdapter())
             .registerTypeAdapter(CompoundTag.class, new NbtTypeAdapter())

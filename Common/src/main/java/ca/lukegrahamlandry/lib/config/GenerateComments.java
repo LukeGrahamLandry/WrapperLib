@@ -10,6 +10,7 @@
 package ca.lukegrahamlandry.lib.config;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class GenerateComments {
      * @return a string with the json encoding of instance
      */
     public static <T> String commentedJson(T instance, Gson gson){
-        return commentedJson(instance, gson.newBuilder().setPrettyPrinting().create(), 1);
+        return commentedJson(instance, gson, 1);
     }
 
     private static <T> String commentedJson(T instance, Gson gson, int level){

@@ -30,7 +30,7 @@ public class SingleFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
 
     @Override
     public void save() {
-        Gson pretty = this.wrapper.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.wrapper.getGson();  // TODO
         this.getFilePath().toFile().getParentFile().mkdirs();
         String json = pretty.toJson(this.wrapper.data);
         try {

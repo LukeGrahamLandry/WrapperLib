@@ -19,8 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -212,7 +212,7 @@ public class NetworkWrapper {
         }
     }
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(NetworkWrapper.class);
+    public static final Logger LOGGER = LogManager.getLogger(NetworkWrapper.class);
     public static final Map<String, BiConsumer<ServerPlayer, ?>> SERVER_BOUND_HANDLERS = new HashMap<>();
     public static final Map<String, Consumer<?>> CLIENT_BOUND_HANDLERS = new HashMap<>();
 

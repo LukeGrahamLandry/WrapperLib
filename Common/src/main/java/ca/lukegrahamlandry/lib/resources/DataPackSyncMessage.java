@@ -15,8 +15,8 @@ import ca.lukegrahamlandry.lib.network.ClientSideHandler;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class DataPackSyncMessage implements ClientSideHandler {
-    static Logger LOGGER = LoggerFactory.getLogger(DataPackSyncMessage.class);
+    static Logger LOGGER = LogManager.getLogger(DataPackSyncMessage.class);
 
     String value;
     String directory;

@@ -30,7 +30,7 @@ public class WrapperLibModInitializer implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> EventWrapper.get().forEach((event) -> event.onServerStarting(server)));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> EventWrapper.get().forEach((event) -> event.onServerStopped(server)));
         ServerWorldEvents.UNLOAD.register((server, world) -> EventWrapper.get().forEach((event) -> event.onLevelSave(world)));
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> EventWrapper.get().forEach((event) -> event.onPlayerLoginServer(handler.getPlayer())));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> EventWrapper.get().forEach((event) -> event.onPlayerLoginServer(handler.player)));
 
         if (Available.KEYBIND.get())
             ServerTickEvents.END_WORLD_TICK.register(

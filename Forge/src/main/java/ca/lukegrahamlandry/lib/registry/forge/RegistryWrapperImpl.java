@@ -16,8 +16,7 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryManager;
+import net.minecraftforge.registries.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,21 +24,22 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class RegistryWrapperImpl {
-    public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
+    public static <T extends IForgeRegistryEntry<T>> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
         RegistryContainer.of(registry, rl.getNamespace()).deferred.register(rl.getPath(), constructor);
     }
 
-    private static class RegistryContainer<T> {
+    private static class RegistryContainer<T extends IForgeRegistryEntry<T>> {
         final DeferredRegister<T> deferred;
         final String modid;
         private RegistryContainer(Registry<T> registry, String modid){
             this.modid = modid;
-            this.deferred = DeferredRegister.create(registry.key(), modid);
+            ForgeRegistry<T> forgeRegistry = RegistryManager.ACTIVE.getRegistry(registry.key().location());
+            this.deferred = DeferredRegister.create(forgeRegistry, modid);
             this.deferred.register(this.getModEventBus());
         }
 
         private static final Map<String, RegistryContainer<?>> registries = new HashMap<>();
-        private static <T> RegistryContainer<T> of(Registry<T> registry, String modid){
+        private static <T extends IForgeRegistryEntry<T>> RegistryContainer<T> of(Registry<T> registry, String modid){
             String descriptor = modid + "-" + registry.key().location();
             if (!registries.containsKey(descriptor)) registries.put(descriptor, new RegistryContainer<>(registry, modid));
             return (RegistryContainer<T>) registries.get(descriptor);

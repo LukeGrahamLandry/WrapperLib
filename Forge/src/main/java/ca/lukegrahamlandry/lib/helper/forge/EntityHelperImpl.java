@@ -12,7 +12,6 @@ package ca.lukegrahamlandry.lib.helper.forge;
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
 import ca.lukegrahamlandry.lib.helper.forge.entity.AddEntityAttributesImpl;
 import ca.lukegrahamlandry.lib.helper.forge.entity.AddEntityRendererImpl;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +25,7 @@ public class EntityHelperImpl {
         AddEntityAttributesImpl.add(type, builder);
     }
 
-    public static <E extends Entity> void renderer(Supplier<EntityType<? extends E>> type, EntityRendererProvider<E> renderer) {
+    public static <E extends Entity> void renderer(Supplier<EntityType<? extends E>> type, EntityHelper.EntityRendererProvider<E> renderer) {
         AddEntityRendererImpl.add(type, renderer);
     }
 

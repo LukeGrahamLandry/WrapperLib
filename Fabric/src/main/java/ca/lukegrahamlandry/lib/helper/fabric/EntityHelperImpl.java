@@ -10,9 +10,8 @@
 package ca.lukegrahamlandry.lib.helper.fabric;
 
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,8 +25,8 @@ public class EntityHelperImpl {
         FabricDefaultAttributeRegistry.register(type.get(), builder.get());
     }
 
-    public static <E extends Entity> void renderer(Supplier<EntityType<? extends E>> type, EntityRendererProvider<E> renderer) {
-        EntityRendererRegistry.register(type.get(), renderer);
+    public static <E extends Entity> void renderer(Supplier<EntityType<? extends E>> type, EntityHelper.EntityRendererProvider<E> renderer) {
+        EntityRendererRegistry.INSTANCE.register(type.get(), (manager, ctx) -> renderer.create(manager));
     }
 
     public static EntityHelper.ModdedSpawnEggFactory getSpawnEggConstructor() {

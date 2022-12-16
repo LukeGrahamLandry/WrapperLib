@@ -9,13 +9,15 @@
 
 package ca.lukegrahamlandry.lib.helper.forge.entity;
 
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import ca.lukegrahamlandry.lib.helper.EntityHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,25 +28,25 @@ import java.util.function.Supplier;
 public class AddEntityRendererImpl {
     public static final List<RendererContainer<?>> renderers = new ArrayList<>();
 
-    public static <E extends Entity> void add(Supplier<EntityType<? extends E>> type, EntityRendererProvider<E> renderer) {
+    public static <E extends Entity> void add(Supplier<EntityType<? extends E>> type, EntityHelper.EntityRendererProvider<E> renderer) {
         renderers.add(new RendererContainer<>(type, renderer));
     }
 
     @SubscribeEvent
-    public static void onClientSetup(EntityRenderersEvent.RegisterRenderers event) {
-        renderers.forEach((container) -> container.call(event::registerEntityRenderer));
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        renderers.forEach((container) -> container.call(RenderingRegistry::registerEntityRenderingHandler));
     }
 
     private static class RendererContainer<E extends Entity> {
         final Supplier<EntityType<? extends E>> type;
-        final EntityRendererProvider<E> renderer;
-        private RendererContainer(Supplier<EntityType<? extends E>> type, EntityRendererProvider<E> renderer){
+        final EntityHelper.EntityRendererProvider<E> renderer;
+        private RendererContainer(Supplier<EntityType<? extends E>> type, EntityHelper.EntityRendererProvider<E> renderer){
             this.type = type;
             this.renderer = renderer;
         }
 
-        private void call(BiConsumer<EntityType<? extends E>, EntityRendererProvider<E>> action){
-            action.accept(this.type.get(), this.renderer);
+        private void call(BiConsumer<EntityType<? extends E>, IRenderFactory<E>> action){
+            action.accept(this.type.get(), this.renderer::create);
         }
     }
 }

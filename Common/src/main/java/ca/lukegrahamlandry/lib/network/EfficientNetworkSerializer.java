@@ -27,7 +27,7 @@ public class EfficientNetworkSerializer {
     private static void recurseEncode(FriendlyByteBuf buffer, JsonElement data){
         if (data.isJsonObject()) {
             JsonObject obj = data.getAsJsonObject();
-            List<String> keys = new ArrayList<>(obj.keySet());
+            List<String> keys = new ArrayList<>(obj.entrySet().stream().map(Map.Entry::getKey).toList());
             buffer.writeInt(keys.size());
             Collections.sort(keys);
             for (String key : keys){

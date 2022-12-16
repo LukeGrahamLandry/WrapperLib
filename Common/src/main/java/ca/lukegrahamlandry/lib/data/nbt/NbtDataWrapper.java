@@ -15,8 +15,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -117,6 +117,6 @@ public abstract class NbtDataWrapper<O, V> {
 
     protected void createLogger(){
         String id = this.getClass().getName() + ": " + this.name;
-        this.logger = LoggerFactory.getLogger(id);
+        this.logger = LogManager.getLogger(id);
     }
 }
