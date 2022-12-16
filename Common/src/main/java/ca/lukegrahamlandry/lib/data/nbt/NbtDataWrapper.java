@@ -48,7 +48,7 @@ public abstract class NbtDataWrapper<O, V, S extends NbtDataWrapper<O, V, S>> ex
         if (this.getSharedTag(obj).contains(this.getFullTagKey())) {
             String data = this.getSharedTag(obj).getString(this.getFullTagKey());
             try {
-                value = this.getGson().fromJson(data, this.getValueClass());
+                value = this.getGson().fromJson(data, this.getValueType());
             } catch (JsonSyntaxException e){
                 this.getLogger().error("Using default. Failed to parse data: " + data);
                 e.printStackTrace();

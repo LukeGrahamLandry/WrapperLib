@@ -116,7 +116,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      */
     public <L extends List<T>> ConfigWrapper<L> listOf(){
         ALL.remove(this);
-        TypeToken<L> type = (TypeToken<L>) TypeToken.getParameterized(ArrayList.class, this.getValueClass());
+        TypeToken<L> type = (TypeToken<L>) TypeToken.getParameterized(ArrayList.class, this.getValueType());
         ConfigWrapper<L> newWrapper = new ConfigWrapper<>(type, this.side);
         return newWrapper.withSettings(this);
     }
@@ -138,7 +138,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      */
     public <K, M extends Map<K, T>> ConfigWrapper<M> mapOf(Class<K> keyClass){
         ALL.remove(this);
-        TypeToken<M> type = (TypeToken<M>) TypeToken.getParameterized(HashMap.class, keyClass, this.getValueClass());
+        TypeToken<M> type = (TypeToken<M>) TypeToken.getParameterized(HashMap.class, keyClass, this.getValueType());
         ConfigWrapper<M> newWrapper = new ConfigWrapper<>(type, this.side);
         return newWrapper.withSettings(this);
     }
@@ -197,7 +197,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
 
         try {
             Reader reader = Files.newBufferedReader(this.getFilePath());
-            this.value = this.getGson().fromJson(reader, this.getValueClass());
+            this.value = this.getGson().fromJson(reader, this.getValueType());
             reader.close();
             this.getLogger().info("config loaded from " + this.displayPath());
         } catch (IOException e) {

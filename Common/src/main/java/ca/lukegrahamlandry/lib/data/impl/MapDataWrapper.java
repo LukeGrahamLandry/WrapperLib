@@ -174,7 +174,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()){
             try {
                 I id = this.stringToId(entry.getKey());
-                V value = this.getGson().fromJson(entry.getValue(), this.getValueClass());
+                V value = this.getGson().fromJson(entry.getValue(), this.getValueType());
                 this.data.put(id, value);
             } catch (JsonSyntaxException e){
                 this.getLogger().error("Ignoring key " + entry.getKey() + "; Failed to parse json data: " + entry.getValue());

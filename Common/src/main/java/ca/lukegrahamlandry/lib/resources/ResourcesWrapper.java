@@ -138,7 +138,7 @@ public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> imp
             List<T> values = new ArrayList<>();
 
             for (JsonElement json : resourceStack){
-                values.add(this.getGson().fromJson(json, this.getValueClass()));
+                values.add(this.getGson().fromJson(json, this.getValueType()));
             }
 
             T finalValue = this.mergeRule.merge(values);

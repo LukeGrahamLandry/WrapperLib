@@ -60,7 +60,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
 
         try {
             Reader reader = Files.newBufferedReader(this.getFilePath());
-            this.value = this.getGson().fromJson(reader, this.getValueClass());
+            this.value = this.getGson().fromJson(reader, this.getValueType());
             reader.close();
         } catch (IOException | JsonSyntaxException e) {
             String msg = "failed to load data from " + forDisplay(this.getFilePath());

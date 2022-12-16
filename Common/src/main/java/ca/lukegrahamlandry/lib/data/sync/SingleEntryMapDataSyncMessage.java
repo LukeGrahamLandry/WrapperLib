@@ -36,7 +36,7 @@ public class SingleEntryMapDataSyncMessage implements ClientSideHandler {
         boolean handled = false;
         for (DataWrapper<?, ?> data : DataWrapper.ALL) {
             if (data instanceof MapDataWrapper<?, ?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
-                Object syncedValue = data.getGson().fromJson(this.value, data.getValueClass());
+                Object syncedValue = data.getGson().fromJson(this.value, data.getValueType());
                 Object syncedID = ((MapDataWrapper<?, ?, ?, ?>) data).stringToId(this.id);
                 ((MapDataWrapper<?, ?, ?, ?>) data).set(syncedID, syncedValue);
                 handled = true;

@@ -39,7 +39,7 @@ public class LazyFileHandler<K, I, V> extends SplitFileHandler<K, I, V> {
         if (this.getFilePath(id).toFile().exists()) {
             try {
                 Reader reader = Files.newBufferedReader(getFilePath(id));
-                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.getValueClass());
+                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.getValueType());
                 reader.close();
                 this.wrapper.data.put(id, value);
             } catch (IOException | JsonSyntaxException e) {

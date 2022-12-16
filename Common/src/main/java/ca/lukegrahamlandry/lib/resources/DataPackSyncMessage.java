@@ -40,11 +40,11 @@ public class DataPackSyncMessage implements ClientSideHandler {
         for (ResourcesWrapper<?> resources : ResourcesWrapper.ALL){
             if (resources.isServerSide && resources.shouldSync && Objects.equals(this.directory, resources.directory)) {
                 try {
-                    Type target = TypeToken.getParameterized(HashMap.class, ResourceLocation.class, resources.getValueClass()).getType();
+                    Type target = TypeToken.getParameterized(HashMap.class, ResourceLocation.class, resources.getValueType()).getType();
                     Map<ResourceLocation, ?> syncedValue = resources.getGson().fromJson(this.value, target);
                     resources.set(syncedValue);
                 } catch (JsonSyntaxException e){
-                    LOGGER.error("Failed to parse synced data resources " + this.directory + " to Map: ResourceLocation->" + resources.getValueClass().getTypeName());
+                    LOGGER.error("Failed to parse synced data resources " + this.directory + " to Map: ResourceLocation->" + resources.getValueType());
                     LOGGER.error("data: " + this.value);
                     e.printStackTrace();
                 }

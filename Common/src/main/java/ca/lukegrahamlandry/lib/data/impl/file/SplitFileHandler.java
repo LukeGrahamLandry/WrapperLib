@@ -55,7 +55,7 @@ public class SplitFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
                 Reader reader = Files.newBufferedReader(file.toPath());
                 String filename = file.getName().substring(0, file.getName().lastIndexOf("."));
                 I id = this.wrapper.stringToId(filename);
-                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.getValueClass());
+                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.getValueType());
                 reader.close();
                 this.wrapper.data.put(id, value);
             } catch (IOException | JsonSyntaxException e) {

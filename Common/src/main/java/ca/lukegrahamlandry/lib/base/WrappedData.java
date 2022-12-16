@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.function.Supplier;
 
 public abstract class WrappedData<V, S extends WrappedData<V, S>> {
@@ -65,8 +66,8 @@ public abstract class WrappedData<V, S extends WrappedData<V, S>> {
         return this.defaultValue == null ? this.reflectDefaultInstance() : this.defaultValue.get();
     }
 
-    public Class<V> getValueClass(){
-        return (Class<V>) this.valueType.getRawType();
+    public Type getValueType(){
+        return this.valueType.getType();
     }
 
     public Logger getLogger(){
