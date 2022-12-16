@@ -9,12 +9,13 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public class LevelDataWrapper<T> extends MapDataWrapper<Level, ResourceLocation, T> {
-    public LevelDataWrapper(Class<T> clazz) {
-        super(ResourceLocation.class, clazz);
+public class LevelDataWrapper<T> extends MapDataWrapper<Level, ResourceLocation, T, LevelDataWrapper<T>> {
+    public LevelDataWrapper(TypeToken<T> type) {
+        super(ResourceLocation.class, type);
     }
 
     @Override

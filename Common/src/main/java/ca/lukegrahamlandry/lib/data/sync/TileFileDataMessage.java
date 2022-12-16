@@ -42,9 +42,9 @@ public class TileFileDataMessage implements ClientSideHandler {
 
     public void handle() {
         boolean handled = false;
-        for (DataWrapper<?> data : DataWrapper.ALL) {
+        for (DataWrapper<?, ?> data : DataWrapper.ALL) {
             if (data instanceof TileFileDataWrapper<?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
-                Object syncedValue = data.getGson().fromJson(this.value, data.clazz);
+                Object syncedValue = data.getGson().fromJson(this.value, data.getValueClass());
                 ((TileFileDataWrapper<?>) data).set(dimension, pos, syncedValue);
             }
         }

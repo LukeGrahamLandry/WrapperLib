@@ -9,18 +9,21 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.base.WorkInProgress;
 import ca.lukegrahamlandry.lib.data.sync.TileFileDataMessage;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @WorkInProgress
 public class TileFileDataWrapper<V> extends LevelDataWrapper<Map<BlockPos, V>> {
-    public TileFileDataWrapper(Class<Map<BlockPos, V>> clazz) {
-        super(clazz);  // wont work until i switch to using type tokens
+    public TileFileDataWrapper(Class<V> clazz) {
+        super((TypeToken<Map<BlockPos, V>>) TypeToken.getParameterized(HashMap.class, BlockPos.class, clazz));
     }
 
     public V get(BlockEntity key) {
@@ -39,6 +42,7 @@ public class TileFileDataWrapper<V> extends LevelDataWrapper<Map<BlockPos, V>> {
         get(key.getLevel()).remove(key.getBlockPos());
     }
 
+    @InternalUseOnly
     public void set(ResourceLocation dim, BlockPos pos, Object value) {
         getById(dim).put(pos, (V) value);
     }

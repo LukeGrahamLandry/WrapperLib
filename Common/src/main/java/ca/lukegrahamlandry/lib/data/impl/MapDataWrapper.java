@@ -17,6 +17,7 @@ import ca.lukegrahamlandry.lib.data.sync.SingleEntryMapDataSyncMessage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,13 +32,13 @@ import java.util.Set;
  *           - there must exist a bijection between String and I (using the toString method of I)
  * @param <V> the value to be stored
  */
-public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
+public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, S>> extends DataWrapper<V, S> {
     /**
      * Save in dir/name/id.etx {data} instead of dir/name.etx {id: data}
      */
-    public <W extends MapDataWrapper<K, I, V>> W splitFiles(){
+    public S splitFiles(){
         if (!this.shouldLazyLoad) this.fileHandler = new SplitFileHandler<>(this);
-        return (W) this;
+        return (S) this;
     }
 
     /**
@@ -46,10 +47,10 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
      * As usual, all dirty entries will be saved on MapFileHandler#save.
      * Implies MapFileHandler#splitFiles (save in dir/name/id.etx {data} instead of dir/name.etx {id: data}).
      */
-    public <W extends MapDataWrapper<K, I, V>> W lazy(){
+    public S lazy(){
         this.fileHandler = new LazyFileHandler<>(this);
         this.shouldLazyLoad = true;
-        return (W) this;
+        return (S) this;
     }
 
     // API
@@ -93,8 +94,8 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     private MapFileHandler<K, I, V> fileHandler;
     private boolean shouldLazyLoad = false;
     private Set<I> dirtyEntries = new HashSet<>();
-    protected MapDataWrapper(Class<I> idClazz, Class<V> clazz) {
-        super(clazz);
+    protected MapDataWrapper(Class<I> idClazz, TypeToken<V> type) {
+        super(type);
         this.idClazz = idClazz;
         this.fileHandler = new SingleFileHandler<>(this);
     }
@@ -110,14 +111,14 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
     public V getById(I id){
         if (!this.isLoaded) {
-            this.logger.error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced (c) on client before sync");
+            this.getLogger().error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced (c) on client before sync");
             return null;
         }
 
         // if key not found, try to load it if lazy, otherwise use default.
         if (!data.containsKey(id)) {
             if (this.shouldLazyLoad) ((LazyFileHandler<K, I, V>)this.fileHandler).load(id);
-            if (!data.containsKey(id)) data.put(id, this.createDefaultInstance());
+            if (!data.containsKey(id)) data.put(id, this.getDefaultValue());
         }
 
         return data.get(id);
@@ -127,7 +128,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     public void save() {
         if (server == null) {
             String msg = "cannot call DataWrapper#save (a) after server shutdown (b) on client";
-            this.logger.error(msg);
+            this.getLogger().error(msg);
             throw new RuntimeException(msg);
         }
         this.fileHandler.save();
@@ -137,7 +138,7 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
     public void load() {
         if (server == null) {
             String msg = "cannot call DataWrapper#load (a) before server startup (b) on client";
-            this.logger.error(msg);
+            this.getLogger().error(msg);
             throw new RuntimeException(msg);
         }
 
@@ -147,12 +148,12 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
 
     @Override
     public void sync() {
-        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
         else new FullMapDataSyncMessage(this).sendToAllClients();
     }
 
     public void sync(K key) {
-        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
         else new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
     }
 
@@ -165,10 +166,10 @@ public abstract class MapDataWrapper<K, I, V> extends DataWrapper<V> {
         for (Map.Entry<String, JsonElement> entry : json.entrySet()){
             try {
                 I id = this.stringToId(entry.getKey());
-                V value = this.getGson().fromJson(entry.getValue(), this.clazz);
+                V value = this.getGson().fromJson(entry.getValue(), this.getValueClass());
                 this.data.put(id, value);
             } catch (JsonSyntaxException e){
-                this.logger.error("Ignoring key " + entry.getKey() + "; Failed to parse json data: " + entry.getValue());
+                this.getLogger().error("Ignoring key " + entry.getKey() + "; Failed to parse json data: " + entry.getValue());
                 e.printStackTrace();
             }
         }

@@ -18,7 +18,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 
 public class LazyFileHandler<K, I, V> extends SplitFileHandler<K, I, V> {
-    public LazyFileHandler(MapDataWrapper<K, I, V> wrapper){
+    public LazyFileHandler(MapDataWrapper<K, I, V, ?> wrapper){
         super(wrapper);
     }
 
@@ -39,11 +39,11 @@ public class LazyFileHandler<K, I, V> extends SplitFileHandler<K, I, V> {
         if (this.getFilePath(id).toFile().exists()) {
             try {
                 Reader reader = Files.newBufferedReader(getFilePath(id));
-                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.clazz);
+                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.getValueClass());
                 reader.close();
                 this.wrapper.data.put(id, value);
             } catch (IOException | JsonSyntaxException e) {
-                this.wrapper.logger.error("failed to load data from " + DataWrapper.forDisplay(getFilePath(id)));
+                this.wrapper.getLogger().error("failed to load data from " + DataWrapper.forDisplay(getFilePath(id)));
                 e.printStackTrace();
             }
         }

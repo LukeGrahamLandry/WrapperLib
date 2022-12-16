@@ -21,7 +21,7 @@ public class FullMapDataSyncMessage implements ClientSideHandler {
     String name;
     String dir;
 
-    public FullMapDataSyncMessage(MapDataWrapper<?, ?, ?> wrapper) {
+    public FullMapDataSyncMessage(MapDataWrapper<?, ?, ?, ?> wrapper) {
         this.name = wrapper.getName();
         this.dir = wrapper.getSubDirectory();
 
@@ -33,10 +33,10 @@ public class FullMapDataSyncMessage implements ClientSideHandler {
 
     public void handle() {
         boolean handled = false;
-        for (DataWrapper<?> data : DataWrapper.ALL) {
-            if (data instanceof MapDataWrapper<?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
+        for (DataWrapper<?, ?> data : DataWrapper.ALL) {
+            if (data instanceof MapDataWrapper<?, ?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
                 JsonObject syncedValue = data.getGson().fromJson(this.value, JsonObject.class);
-                ((MapDataWrapper<?, ?, ?>) data).loadFromMap(syncedValue);
+                ((MapDataWrapper<?, ?, ?, ?>) data).loadFromMap(syncedValue);
                 handled = true;
             }
         }
