@@ -89,7 +89,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
 
     // IMPL
 
-    public Map<I, V> data = new HashMap<>();
+    public Map<I, V> data;
     private final Class<I> idClazz; // for json deserialization
     private MapFileHandler<K, I, V> fileHandler;
     private boolean shouldLazyLoad = false;
@@ -110,7 +110,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
     public abstract I stringToId(String id);
 
     public V getById(I id){
-        if (!this.isLoaded) {
+        if (this.data == null) {
             this.getLogger().error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced (c) on client before sync");
             return null;
         }
@@ -132,6 +132,8 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
             throw new RuntimeException(msg);
         }
         this.fileHandler.save();
+        this.isDirty = false;
+        this.dirtyEntries.clear();
     }
 
     @Override
@@ -142,8 +144,8 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
             throw new RuntimeException(msg);
         }
 
+        this.data = new HashMap<>();
         this.fileHandler.load();
-        this.isLoaded = true;
     }
 
     @Override
@@ -157,12 +159,18 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
         else new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
     }
 
+    @Override
+    public void forget() {
+        this.data = null;
+    }
+
     public boolean isDirty(I id) {
         return this.dirtyEntries.contains(id);
     }
 
     @InternalUseOnly
     public void loadFromMap(JsonObject json){
+        this.data = new HashMap<>();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()){
             try {
                 I id = this.stringToId(entry.getKey());
@@ -173,13 +181,11 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
                 e.printStackTrace();
             }
         }
-        this.isLoaded = true;
     }
 
     @InternalUseOnly
     public void set(Object id, Object value) {
         this.data.put((I) id, (V) value);
-        this.isLoaded = true;
     }
 
     @InternalUseOnly

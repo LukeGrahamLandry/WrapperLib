@@ -58,7 +58,7 @@ public class SingleFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
     }
 
     /**
-     * since all data is stored in one file, the removed entries will be over written when the rest are saved.
+     * since all data is stored in one file, the removed entries will be overwritten when the rest are saved.
      */
     @Override
     public void clear(I id) {

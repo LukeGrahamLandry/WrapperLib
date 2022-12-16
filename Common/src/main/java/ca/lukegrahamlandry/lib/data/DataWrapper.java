@@ -10,6 +10,7 @@
 package ca.lukegrahamlandry.lib.data;
 
 import ca.lukegrahamlandry.lib.base.Available;
+import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import ca.lukegrahamlandry.lib.base.WrappedData;
 import ca.lukegrahamlandry.lib.base.json.JsonHelper;
 import ca.lukegrahamlandry.lib.data.impl.GlobalDataWrapper;
@@ -140,7 +141,6 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
     protected String subDirectory = null;
     boolean shouldSave = false;
     protected boolean shouldSync = false;
-    protected boolean isLoaded = false;
     protected boolean isDirty = false;
     public Logger logger;
 
@@ -155,6 +155,12 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
     public abstract void load();
 
     public abstract void sync();
+
+    /**
+     * Sets the data in memory to null. This gets called when the world stops, so you can't accidentally read the wrong data when switching worlds.
+     */
+    @InternalUseOnly
+    public abstract void forget();
 
     public String getName() {
         return this.name;

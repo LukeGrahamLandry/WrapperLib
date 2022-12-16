@@ -31,10 +31,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
 
     @Override
     public T get() {
-        if (!this.isLoaded) {
-            this.getLogger().error("cannot call DataWrapper#get (a) before server startup (b) on client if unsynced");
-            return null;
-        }
+        if (this.value == null) this.getLogger().error("cannot call DataWrapper#get (a) before server startup (b) on client if unsynced");
 
         return this.value;
     }
@@ -57,7 +54,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
 
         if (!this.getFilePath().toFile().exists()) {
             // first world load. no data will be found
-            this.isLoaded = true;
+            this.value = this.getDefaultValue();
             return;
         }
 
@@ -70,8 +67,6 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
             this.getLogger().error(msg);
             e.printStackTrace();
         }
-
-        this.isLoaded = true;
     }
 
     @Override
@@ -82,6 +77,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
         String json = pretty.toJson(this.value);
         try {
             Files.write(path, json.getBytes());
+            this.isDirty = false;
         } catch (IOException e) {
             this.getLogger().error("failed to write data to " + forDisplay(path));
         }
@@ -91,6 +87,11 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
     public void sync() {
         if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
         else new GlobalDataSyncMessage(this).sendToAllClients();
+    }
+
+    @Override
+    public void forget() {
+        this.value = null;
     }
 
     protected Path getFilePath(){
@@ -103,6 +104,5 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
     @InternalUseOnly
     public void set(Object v){
         this.value = (T) v;
-        this.isLoaded = true;
     }
 }

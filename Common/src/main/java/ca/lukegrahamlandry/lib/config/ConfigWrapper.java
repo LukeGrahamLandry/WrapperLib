@@ -151,13 +151,14 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
     // API
 
     /**
-     * Retrieve the current config values as an instance of T
+     * Retrieve the current config values as an instance of T.
+     * Will be null for server/synced configs if called before loaded.
      */
     @Override
     public T get() {
-        if (!this.loaded) {
+        if (this.value == null) {
             if (this.side == Side.CLIENT) this.load();
-            else this.getLogger().info("reading config before calling ConfigWrapper#load, default values will be used for now");
+            else this.getLogger().error("Cannot read server/synced config before the server starts or after it stops (or synced config from client before player receives sync packet)");
         }
         return this.value;
     }
@@ -204,7 +205,6 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
             e.printStackTrace();
         }
 
-        this.loaded = true;
         this.onLoadAction.run();
     }
 
@@ -213,9 +213,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
     private String name;
     public final Side side;
     public boolean shouldReload = true;
-    protected T value;
-    private Logger logger;
-    private boolean loaded = false;
+    protected T value = null;
     private String fileExtension;
     private String subDirectory = null;
     private Runnable onLoadAction = () -> {};
@@ -230,7 +228,6 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
         this.side = side;
         this.fileExtension = "json5";
         ALL.add(this);
-        this.value = this.getDefaultValue();
         this.named(type.toString());
     }
 
@@ -307,7 +304,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
     protected String getAdditionalLoggerId() {
         String id = "";
         if (this.getSubDirectory() != null) id = id + this.getSubDirectory() + "/";
-        id += this.getName() + "-" + side.name();
+        id += this.getName() + "-" + side;
         return id;
     }
 

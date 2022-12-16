@@ -26,6 +26,9 @@ public class EventCallbacks implements IEventCallbacks {
     @Override
     public void onServerStopped(MinecraftServer server) {
         ConfigWrapper.server = null;
+        ConfigWrapper.ALL.forEach((config) -> {
+            if (config.side.inWorldDir) config.value = null;
+        });
     }
 
     @Override
@@ -49,9 +52,7 @@ public class EventCallbacks implements IEventCallbacks {
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.shouldReload && config.side.inWorldDir){
                 config.load();
-                if (config.side == ConfigWrapper.Side.SYNCED) {
-                    config.sync();
-                }
+                if (config.side == ConfigWrapper.Side.SYNCED) config.sync();
             }
         });
     }

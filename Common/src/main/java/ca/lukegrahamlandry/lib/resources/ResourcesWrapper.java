@@ -64,10 +64,18 @@ public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> imp
     // API
 
     public Set<Map.Entry<ResourceLocation, T>> entrySet(){
+        if (this.data == null){
+            this.getLogger().error("Cannot call ResourcesWrapper#entrySet before resource listeners are loaded");
+            return null;
+        }
         return data.entrySet();
     }
 
     public T get(ResourceLocation id){
+        if (this.data == null){
+            this.getLogger().error("Cannot call ResourcesWrapper#get before resource listeners are loaded");
+            return null;
+        }
         return data.get(id);
     }
 
@@ -76,7 +84,7 @@ public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> imp
     static List<ResourcesWrapper<?>> ALL = new ArrayList<>();
     public final String directory;
     public final boolean isServerSide;
-    Map<ResourceLocation, T> data;
+    Map<ResourceLocation, T> data = null;
     protected String suffix = ".json";
     boolean shouldSync = false;
     protected Runnable onLoadAction = () -> {};
@@ -138,6 +146,7 @@ public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> imp
         }
         this.onLoadAction.run();
         if (this.shouldSync) new DataPackSyncMessage(this).sendToAllClients();
+        this.getLogger().info("Loaded " + this.data.size() + " entries.");
     }
 
     // SimplePreparableReloadListener
