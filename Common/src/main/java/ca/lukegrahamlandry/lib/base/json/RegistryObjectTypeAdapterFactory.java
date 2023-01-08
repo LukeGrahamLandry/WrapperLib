@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -38,14 +39,14 @@ public class RegistryObjectTypeAdapterFactory implements TypeAdapterFactory {
     }
 
     static {
-        add(Item.class, Registry.ITEM);
-        add(Block.class, Registry.BLOCK);
-        add(EntityType.class, Registry.ENTITY_TYPE);
-        add(BlockEntityType.class, Registry.BLOCK_ENTITY_TYPE);
-        add(Enchantment.class, Registry.ENCHANTMENT);
-        add(MobEffect.class, Registry.MOB_EFFECT);
-        add(Fluid.class, Registry.FLUID);
-        add(Potion.class, Registry.POTION);
+        add(Item.class, BuiltInRegistries.ITEM);
+        add(Block.class, BuiltInRegistries.BLOCK);
+        add(EntityType.class, BuiltInRegistries.ENTITY_TYPE);
+        add(BlockEntityType.class, BuiltInRegistries.BLOCK_ENTITY_TYPE);
+        add(Enchantment.class, BuiltInRegistries.ENCHANTMENT);
+        add(MobEffect.class, BuiltInRegistries.MOB_EFFECT);
+        add(Fluid.class, BuiltInRegistries.FLUID);
+        add(Potion.class, BuiltInRegistries.POTION);
     }
 
     @Override

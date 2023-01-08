@@ -15,6 +15,7 @@ import ca.lukegrahamlandry.lib.helper.EntityHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -59,7 +60,7 @@ public class RegistryThing<T> implements Supplier<T> {
      * Creates a BlockItem for your Block.
      */
     public RegistryThing<T> withItem(){
-        return this.withItem(() -> new BlockItem((Block) this.get(), new Item.Properties().tab(CreativeModeTab.TAB_BUILDING_BLOCKS)));
+        return this.withItem(() -> new BlockItem((Block) this.get(), new Item.Properties()));
     }
 
     /**
@@ -73,11 +74,11 @@ public class RegistryThing<T> implements Supplier<T> {
      * Creates a BlockItem for your Block.
      */
     public RegistryThing<T> withItem(Supplier<BlockItem> constructor){
-        if (this.registry != Registry.BLOCK){
+        if (this.registry != BuiltInRegistries.BLOCK){
             LOGGER.error("Cannot call RegistryThing#withItem for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be block)");
             return this;
         }
-        RegistryWrapper.register(Registry.ITEM, this.rl, constructor);
+        RegistryWrapper.register(BuiltInRegistries.ITEM, this.rl, constructor);
         return this;
     }
 
@@ -85,7 +86,7 @@ public class RegistryThing<T> implements Supplier<T> {
      * Binds attributes to your EntityType. May only be called if the entity extends LivingEntity.
      */
     public RegistryThing<T> withAttributes(Supplier<AttributeSupplier.Builder> builder){
-        if (this.registry != Registry.ENTITY_TYPE){
+        if (this.registry != BuiltInRegistries.ENTITY_TYPE){
             LOGGER.error("Cannot call RegistryThing#withAttributes for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;
         }
@@ -103,7 +104,7 @@ public class RegistryThing<T> implements Supplier<T> {
      * @param <E> the type of entity we are
      */
     public <E extends Entity> RegistryThing<T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> provider){
-        if (this.registry != Registry.ENTITY_TYPE){
+        if (this.registry != BuiltInRegistries.ENTITY_TYPE){
             LOGGER.error("Cannot call RegistryThing#withRenderer for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;
         }
@@ -119,21 +120,21 @@ public class RegistryThing<T> implements Supplier<T> {
      * Creates a SpawnEggItem for your EntityType. May only be called if the entity extends Mob.
      */
     public RegistryThing<T> withSpawnEgg(int colourA, int colourB){
-        return withSpawnEgg(colourA, colourB, new Item.Properties().tab(CreativeModeTab.TAB_MISC));
+        return withSpawnEgg(colourA, colourB, new Item.Properties());
     }
 
     /**
      * Creates a SpawnEggItem for your EntityType. May only be called if the entity extends Mob.
      */
     public RegistryThing<T> withSpawnEgg(int colourA, int colourB, Item.Properties props){
-        if (this.registry != Registry.ENTITY_TYPE){
+        if (this.registry != BuiltInRegistries.ENTITY_TYPE){
             LOGGER.error("Cannot call RegistryThing#withSpawnEgg for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
             return this;
         }
         if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withSpawnEgg but WrapperLib EntityHelper is missing.");
 
         Supplier<Item> egg = () -> EntityHelper.getSpawnEggConstructor().create(() -> (EntityType<? extends Mob>) this.get(), colourA, colourB, props);
-        RegistryWrapper.register(Registry.ITEM, new ResourceLocation(this.rl.getNamespace(), this.rl.getPath() + "_spawn_egg"), egg);
+        RegistryWrapper.register(BuiltInRegistries.ITEM, new ResourceLocation(this.rl.getNamespace(), this.rl.getPath() + "_spawn_egg"), egg);
         return this;
     }
 }
