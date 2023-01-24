@@ -10,7 +10,7 @@
 package ca.lukegrahamlandry.lib.base.json;
 
 import com.google.gson.*;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -25,7 +25,7 @@ public class ItemStackTypeAdapter implements JsonDeserializer<ItemStack>, JsonSe
     public ItemStack deserialize(JsonElement data, Type type, JsonDeserializationContext ctx) throws JsonParseException {
         JsonObject json = data.getAsJsonObject();
         ResourceLocation itemKey = new ResourceLocation(json.get("item").getAsString());
-        Item item = Registry.ITEM.get(itemKey);
+        Item item = BuiltInRegistries.ITEM.get(itemKey);
         int count = json.get("count").getAsInt();
 
         ItemStack stack = new ItemStack(item, count);
@@ -40,7 +40,7 @@ public class ItemStackTypeAdapter implements JsonDeserializer<ItemStack>, JsonSe
 
     public JsonElement serialize(ItemStack obj, Type type, JsonSerializationContext ctx) {
         JsonObject out = new JsonObject();
-        out.addProperty("item", Registry.ITEM.getKey(obj.getItem()).toString());
+        out.addProperty("item", BuiltInRegistries.ITEM.getKey(obj.getItem()).toString());
         out.addProperty("count", obj.getCount());
         if (obj.hasTag()) out.add("tag", ctx.serialize(obj.getTag()));
         return out;
