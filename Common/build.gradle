@@ -29,3 +29,6 @@ publishing {
         }
     }
 }
+
+// fix error message, idk man
+tasks.register('prepareWorkspace', DefaultTask)

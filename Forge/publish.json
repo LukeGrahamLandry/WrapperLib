@@ -1,11 +1,11 @@
 {
   "loader": "forge",
-  "mc_versions": ["1.19.2"],
+  "mc_versions": ["1.19.3"],
   "releaseType": "release",
   "github": {
     "owner": "LukeGrahamLandry",
     "repo": "WrapperLib",
-    "branch": "1.19"
+    "branch": "1.19.3"
   },
   "curseforge": {
     "id": "721810"
