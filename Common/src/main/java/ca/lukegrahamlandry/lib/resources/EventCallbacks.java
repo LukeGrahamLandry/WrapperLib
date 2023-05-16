@@ -10,6 +10,7 @@
 package ca.lukegrahamlandry.lib.resources;
 
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -21,5 +22,15 @@ public class EventCallbacks implements IEventCallbacks {
         ResourcesWrapper.ALL.forEach((resources) -> {
             if (resources.shouldSync) new DataPackSyncMessage(resources).sendToClient((ServerPlayer) player);
         });
+    }
+
+    @Override
+    public void onServerStarting(MinecraftServer server){
+        ResourcesWrapper.server = server;
+    }
+
+    @Override
+    public void onServerStopped(MinecraftServer server){
+        ResourcesWrapper.server = null;
     }
 }
