@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.data.impl;
 
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
@@ -17,9 +18,9 @@ import java.util.UUID;
 /**
  * Data is saved per uuid not per player entity so data is maintained between deaths and dimension changes.
  */
-public class PlayerDataWrapper<T> extends MapDataWrapper<Player, UUID, T> {
-    public PlayerDataWrapper(Class<T> clazz) {
-        super(UUID.class, clazz);
+public class PlayerDataWrapper<T> extends MapDataWrapper<Player, UUID, T, PlayerDataWrapper<T>> {
+    public PlayerDataWrapper(TypeToken<T> type) {
+        super(UUID.class, type);
     }
 
     @Override

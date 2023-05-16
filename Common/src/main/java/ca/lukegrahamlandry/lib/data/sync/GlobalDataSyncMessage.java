@@ -32,7 +32,7 @@ public class GlobalDataSyncMessage implements ClientSideHandler {
 
     public void handle() {
         boolean handled = false;
-        for (DataWrapper<?> data : DataWrapper.ALL) {
+        for (DataWrapper<?, ?> data : DataWrapper.ALL) {
             if (data instanceof GlobalDataWrapper && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
                 GenericHolder<?> syncedValue = data.getGson().fromJson(this.value, GenericHolder.class);
                 ((GlobalDataWrapper<?>) data).set(syncedValue.value);

@@ -31,7 +31,10 @@ public class ExampleEventHandlers {
         if (player.level.isClientSide()) return;
         player.addItem(ExampleCommonMain.config.get().sword);
         System.out.println("This is the configured list.");
-        ExampleCommonMain.list_test.get().forEach(System.out::println);
+        System.out.println(ExampleCommonMain.list_test.get());
+        System.out.println(ExampleCommonMain.list_test.get().getClass());
+        System.out.println(ExampleCommonMain.list_test.get().get(0).getClass());
+        ExampleCommonMain.list_test.get().forEach((entry) -> System.out.println(entry));
     }
 
     public static void onDeath(LivingEntity entity, DamageSource source){

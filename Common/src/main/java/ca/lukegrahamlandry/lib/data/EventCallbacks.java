@@ -26,6 +26,7 @@ public class EventCallbacks implements IEventCallbacks {
     @Override
     public void onServerStopped(MinecraftServer server){
         DataWrapper.server = null;
+        DataWrapper.ALL.forEach(DataWrapper::forget);
     }
 
     // TODO: we only have to save the data of the level being saved

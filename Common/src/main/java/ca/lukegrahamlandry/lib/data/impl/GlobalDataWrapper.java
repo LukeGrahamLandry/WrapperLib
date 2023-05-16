@@ -14,6 +14,7 @@ import ca.lukegrahamlandry.lib.data.DataWrapper;
 import ca.lukegrahamlandry.lib.data.sync.GlobalDataSyncMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.io.IOException;
@@ -22,18 +23,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
-public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> {
+public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> implements Supplier<T> {
     T value;
-    public GlobalDataWrapper(Class<T> clazz) {
-        super(clazz);
+    public GlobalDataWrapper(TypeToken<T> type) {
+        super(type);
     }
 
     @Override
     public T get() {
-        if (!this.isLoaded) {
-            this.logger.error("cannot call DataWrapper#get (a) before server startup (b) on client if unsynced");
-            return null;
-        }
+        if (this.value == null) this.getLogger().error("cannot call DataWrapper#get (a) before server startup (b) on client if unsynced");
 
         return this.value;
     }
@@ -42,7 +40,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
      * Resets the data to default values.
      */
     public void clear(){
-        this.value = this.createDefaultInstance();
+        this.value = this.getDefaultValue();
         this.setDirty();
     }
 
@@ -50,46 +48,50 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
     public void load() {
         if (server == null) {
             String msg = "cannot call DataWrapper#load (a) before server startup (b) on client";
-            this.logger.error(msg);
+            this.getLogger().error(msg);
             throw new RuntimeException(msg);
         }
 
         if (!this.getFilePath().toFile().exists()) {
             // first world load. no data will be found
-            this.isLoaded = true;
+            this.value = this.getDefaultValue();
             return;
         }
 
         try {
             Reader reader = Files.newBufferedReader(this.getFilePath());
-            this.value = this.getGson().fromJson(reader, this.clazz);
+            this.value = this.getGson().fromJson(reader, this.getValueType());
             reader.close();
         } catch (IOException | JsonSyntaxException e) {
             String msg = "failed to load data from " + forDisplay(this.getFilePath());
-            this.logger.error(msg);
+            this.getLogger().error(msg);
             e.printStackTrace();
         }
-
-        this.isLoaded = true;
     }
 
     @Override
     public void save() {
         Path path = this.getFilePath();
         path.toFile().getParentFile().mkdirs();
-        Gson pretty = this.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.getGsonPretty();
         String json = pretty.toJson(this.value);
         try {
             Files.write(path, json.getBytes());
+            this.isDirty = false;
         } catch (IOException e) {
-            this.logger.error("failed to write data to " + forDisplay(path));
+            this.getLogger().error("failed to write data to " + forDisplay(path));
         }
     }
 
     @Override
     public void sync() {
-        if (!this.shouldSync) this.logger.error("called DataWrapper#sync but shouldSync=false");
+        if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
         else new GlobalDataSyncMessage(this).sendToAllClients();
+    }
+
+    @Override
+    public void forget() {
+        this.value = null;
     }
 
     protected Path getFilePath(){
@@ -102,6 +104,5 @@ public class GlobalDataWrapper<T> extends DataWrapper<T> implements Supplier<T> 
     @InternalUseOnly
     public void set(Object v){
         this.value = (T) v;
-        this.isLoaded = true;
     }
 }

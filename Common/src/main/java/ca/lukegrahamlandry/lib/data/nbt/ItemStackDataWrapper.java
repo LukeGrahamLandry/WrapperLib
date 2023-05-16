@@ -16,12 +16,12 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Random;
 
 // TODO: do i need to sync manually?
-public class ItemStackDataWrapper<V> extends NbtDataWrapper<ItemStack, V> {
+public class ItemStackDataWrapper<V> extends NbtDataWrapper<ItemStack, V, ItemStackDataWrapper<V>> {
     public static final String ID_TAG_KEY = "_id";
     private static final Random rand = new Random();
 
-    public ItemStackDataWrapper(TypeToken<V> valueType) {
-        super(valueType);
+    public ItemStackDataWrapper(TypeToken<V> type) {
+        super(type);
     }
 
     protected CompoundTag getSharedTag(ItemStack obj){

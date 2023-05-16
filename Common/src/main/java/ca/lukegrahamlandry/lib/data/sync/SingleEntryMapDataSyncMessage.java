@@ -21,7 +21,7 @@ public class SingleEntryMapDataSyncMessage implements ClientSideHandler {
     String name;
     String dir;
 
-    public <I> SingleEntryMapDataSyncMessage(MapDataWrapper<?, I, ?> wrapper, I id) {
+    public <I> SingleEntryMapDataSyncMessage(MapDataWrapper<?, I, ?, ?> wrapper, I id) {
         this.name = wrapper.getName();
         this.dir = wrapper.getSubDirectory();
         this.id = id.toString();
@@ -34,11 +34,11 @@ public class SingleEntryMapDataSyncMessage implements ClientSideHandler {
 
     public void handle() {
         boolean handled = false;
-        for (DataWrapper<?> data : DataWrapper.ALL) {
-            if (data instanceof MapDataWrapper<?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
-                Object syncedValue = data.getGson().fromJson(this.value, data.clazz);
-                Object syncedID = ((MapDataWrapper<?, ?, ?>) data).stringToId(this.id);
-                ((MapDataWrapper<?, ?, ?>) data).set(syncedID, syncedValue);
+        for (DataWrapper<?, ?> data : DataWrapper.ALL) {
+            if (data instanceof MapDataWrapper<?, ?, ?, ?> && Objects.equals(this.dir, data.getSubDirectory()) && data.getName().equals(this.name)) {
+                Object syncedValue = data.getGson().fromJson(this.value, data.getValueType());
+                Object syncedID = ((MapDataWrapper<?, ?, ?, ?>) data).stringToId(this.id);
+                ((MapDataWrapper<?, ?, ?, ?>) data).set(syncedID, syncedValue);
                 handled = true;
             }
         }

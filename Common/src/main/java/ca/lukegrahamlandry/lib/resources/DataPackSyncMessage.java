@@ -9,8 +9,6 @@
 
 package ca.lukegrahamlandry.lib.resources;
 
-import ca.lukegrahamlandry.lib.config.ConfigSyncMessage;
-import ca.lukegrahamlandry.lib.config.ConfigWrapper;
 import ca.lukegrahamlandry.lib.network.ClientSideHandler;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -42,11 +40,11 @@ public class DataPackSyncMessage implements ClientSideHandler {
         for (ResourcesWrapper<?> resources : ResourcesWrapper.ALL){
             if (resources.isServerSide && resources.shouldSync && Objects.equals(this.directory, resources.directory)) {
                 try {
-                    Type target = TypeToken.getParameterized(HashMap.class, ResourceLocation.class, resources.valueType.getRawType()).getType();
+                    Type target = TypeToken.getParameterized(HashMap.class, ResourceLocation.class, resources.getValueType()).getType();
                     Map<ResourceLocation, ?> syncedValue = resources.getGson().fromJson(this.value, target);
                     resources.set(syncedValue);
                 } catch (JsonSyntaxException e){
-                    LOGGER.error("Failed to parse synced data resources " + this.directory + " to Map: ResourceLocation->" + resources.valueType.getType().getTypeName());
+                    LOGGER.error("Failed to parse synced data resources " + this.directory + " to Map: ResourceLocation->" + resources.getValueType());
                     LOGGER.error("data: " + this.value);
                     e.printStackTrace();
                 }

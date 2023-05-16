@@ -22,21 +22,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SingleFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
-    private final MapDataWrapper<K, I, V> wrapper;
+    private final MapDataWrapper<K, I, V, ?> wrapper;
 
-    public SingleFileHandler(MapDataWrapper<K, I, V> wrapper) {
+    public SingleFileHandler(MapDataWrapper<K, I, V, ?> wrapper) {
         this.wrapper = wrapper;
     }
 
     @Override
     public void save() {
-        Gson pretty = this.wrapper.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.wrapper.getGsonPretty();
         this.getFilePath().toFile().getParentFile().mkdirs();
         String json = pretty.toJson(this.wrapper.data);
         try {
             Files.write(this.getFilePath(), json.getBytes());
         } catch (IOException e) {
-            this.wrapper.logger.error("failed to write data to " + DataWrapper.forDisplay(this.getFilePath()));
+            this.wrapper.getLogger().error("failed to write data to " + DataWrapper.forDisplay(this.getFilePath()));
         }
     }
 
@@ -52,13 +52,13 @@ public class SingleFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
             this.wrapper.loadFromMap(fileInfo);
         } catch (IOException | JsonSyntaxException e) {
             String msg = "failed to load data from " + DataWrapper.forDisplay(this.getFilePath());
-            this.wrapper.logger.error(msg);
+            this.wrapper.getLogger().error(msg);
             e.printStackTrace();
         }
     }
 
     /**
-     * since all data is stored in one file, the removed entries will be over written when the rest are saved.
+     * since all data is stored in one file, the removed entries will be overwritten when the rest are saved.
      */
     @Override
     public void clear(I id) {

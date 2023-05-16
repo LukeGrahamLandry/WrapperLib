@@ -22,15 +22,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SplitFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
-    protected final MapDataWrapper<K, I, V> wrapper;
+    protected final MapDataWrapper<K, I, V, ?> wrapper;
 
-    public SplitFileHandler(MapDataWrapper<K, I, V> wrapper){
+    public SplitFileHandler(MapDataWrapper<K, I, V, ?> wrapper){
         this.wrapper = wrapper;
     }
 
     @Override
     public void save() {
-        Gson pretty = this.wrapper.getGson().newBuilder().setPrettyPrinting().create();
+        Gson pretty = this.wrapper.getGsonPretty();
         this.wrapper.data.forEach((key, value) -> {
             if (!this.wrapper.isDirty(key)) return;
 
@@ -40,7 +40,7 @@ public class SplitFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
             try {
                 Files.write(path, json.getBytes());
             } catch (IOException e) {
-                this.wrapper.logger.error("failed to write data to " + DataWrapper.forDisplay(path));
+                this.wrapper.getLogger().error("failed to write data to " + DataWrapper.forDisplay(path));
             }
         });
     }
@@ -55,11 +55,11 @@ public class SplitFileHandler<K, I, V> implements MapFileHandler<K, I, V> {
                 Reader reader = Files.newBufferedReader(file.toPath());
                 String filename = file.getName().substring(0, file.getName().lastIndexOf("."));
                 I id = this.wrapper.stringToId(filename);
-                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.clazz);
+                V value = this.wrapper.getGson().fromJson(reader, this.wrapper.getValueType());
                 reader.close();
                 this.wrapper.data.put(id, value);
             } catch (IOException | JsonSyntaxException e) {
-                this.wrapper.logger.error("failed to load data from " + DataWrapper.forDisplay(file.toPath()));
+                this.wrapper.getLogger().error("failed to load data from " + DataWrapper.forDisplay(file.toPath()));
                 e.printStackTrace();
             }
         }
