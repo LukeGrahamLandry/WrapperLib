@@ -20,6 +20,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -30,6 +31,8 @@ import java.io.BufferedReader;
 import java.util.*;
 
 public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<ResourceLocation, List<JsonElement>>> {
+    static MinecraftServer server = null;
+
     /**
      * Load information from a data pack on the logical server.
      */
@@ -54,6 +57,12 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
         return this;
     }
 
+    public ResourcesWrapper<T> onReceiveSync(Runnable action){
+        if (!this.shouldSync) throw new RuntimeException("ResourcesWrapper#onReceiveSync may only be called for synced data packs");
+        this.onReceiveSyncAction = action;
+        return this;
+    }
+
     public ResourcesWrapper<T> synced(){
         if (!this.isServerSide) throw new RuntimeException("ResourcesWrapper#synced may only be called for data packs, NOT resource packs.");
         if (!Available.NETWORK.get()) throw new RuntimeException("Called ResourcesWrapper#synced but WrapperLib Network module is missing.");
@@ -74,7 +83,12 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
     }
 
     public T get(ResourceLocation id){
+        if (data == null) return null;
         return data.get(id);
+    }
+
+    public boolean isLoaded(){
+        return this.data != null;
     }
 
     // IMPL
@@ -89,6 +103,7 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
     private Gson gson = JsonHelper.get();
     boolean shouldSync = false;
     protected Runnable onLoadAction = () -> {};
+    protected Runnable onReceiveSyncAction = () -> {};
     protected MergeRule<T> mergeRule = (resources) -> resources.get(resources.size() - 1);  // TODO: make sure I guessed the priority order right
     public ResourcesWrapper(TypeToken<T> valueType, String directory, boolean isServerSide){
         this.valueType = valueType;
@@ -151,12 +166,13 @@ public class ResourcesWrapper<T> extends SimplePreparableReloadListener<Map<Reso
             this.data.put(id, finalValue);
         }
         this.onLoadAction.run();
-        if (this.shouldSync) new DataPackSyncMessage(this).sendToAllClients();
+        if (this.shouldSync && server != null) new DataPackSyncMessage(this).sendToAllClients();
     }
 
     @InternalUseOnly
     void set(Object value) {
         this.data = (Map<ResourceLocation, T>) value;
+        this.onReceiveSyncAction.run();
     }
 
     /**

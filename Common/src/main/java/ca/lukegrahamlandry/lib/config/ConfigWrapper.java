@@ -280,6 +280,11 @@ public class ConfigWrapper<T> implements Supplier<T> {
     @InternalUseOnly
     void set(Object v){
         this.value = (T) v;
+        this.loaded = true;
+    }
+
+    public boolean isLoaded(){
+        return this.loaded;
     }
 
     protected void writeDefaultFile() {

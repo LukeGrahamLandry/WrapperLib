@@ -12,6 +12,7 @@ package ca.lukegrahamlandry.lib.event.fabric;
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
+import ca.lukegrahamlandry.lib.keybind.KeybindClientTickCallbacks;
 import ca.lukegrahamlandry.lib.keybind.KeybindTickCallbacks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -23,6 +24,6 @@ public class WrapperLibClientInitializer implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         EventWrapper.get().forEach(IEventCallbacks::onClientSetup);
-        if (Available.KEYBIND.get()) ClientTickEvents.END_CLIENT_TICK.register(client -> KeybindTickCallbacks.onClientTick());
+        if (Available.KEYBIND.get()) ClientTickEvents.END_CLIENT_TICK.register(client -> KeybindClientTickCallbacks.onClientTick());
     }
 }
