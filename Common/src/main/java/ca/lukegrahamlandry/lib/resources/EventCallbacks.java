@@ -13,10 +13,11 @@ import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 
-public class EventCallbacks implements IEventCallbacks {
+class EventCallbacks implements IEventCallbacks {
     @Override
-    public void onPlayerLoginServer(Player player){
+    public void onPlayerLoginServer(@NotNull Player player){
         if (player.level.isClientSide()) return;
 
         ResourcesWrapper.ALL.forEach((resources) -> {
@@ -25,12 +26,15 @@ public class EventCallbacks implements IEventCallbacks {
     }
 
     @Override
-    public void onServerStarting(MinecraftServer server){
+    public void onServerStarting(@NotNull MinecraftServer server){
         ResourcesWrapper.server = server;
     }
 
     @Override
-    public void onServerStopped(MinecraftServer server){
+    public void onServerStopped(@NotNull MinecraftServer server){
         ResourcesWrapper.server = null;
+        ResourcesWrapper.ALL.forEach((resources) -> {
+            if (resources.isServerSide) resources.data = null;
+        });
     }
 }

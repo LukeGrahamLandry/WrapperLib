@@ -9,6 +9,7 @@
 
 package ca.lukegrahamlandry.lib.registry;
 
+import ca.lukegrahamlandry.lib.WrapperLibException;
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.helper.PlatformHelper;
 import ca.lukegrahamlandry.lib.helper.EntityHelper;
@@ -25,6 +26,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,21 +36,25 @@ import java.util.function.Supplier;
 /**
  * @param <T> the type of object that we are
  */
-public class RegistryThing<T> implements Supplier<T> {
-    private static Logger LOGGER = LoggerFactory.getLogger(RegistryThing.class);
+public class RegistryThing<T> implements Supplier<@NotNull T> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryThing.class);
     public final Registry<?> registry;
     public final ResourceLocation rl;
 
-    RegistryThing(Registry<?> registry, ResourceLocation rl){
+    RegistryThing(@NotNull Registry<?> registry, @NotNull ResourceLocation rl){
         this.registry = registry;
         this.rl = rl;
     }
 
     @Override
+    @NotNull
     public T get() {
-        return (T) this.registry.get(rl);
+        T obj = (T) this.registry.get(rl);
+        this.require(this.registry != null, "RegistryThing#get was null");
+        return obj;
     }
 
+    @NotNull
     public ResourceLocation getId() {
         return this.rl;
     }
@@ -73,10 +79,7 @@ public class RegistryThing<T> implements Supplier<T> {
      * Creates a BlockItem for your Block.
      */
     public RegistryThing<T> withItem(Supplier<BlockItem> constructor){
-        if (this.registry != Registry.BLOCK){
-            LOGGER.error("Cannot call RegistryThing#withItem for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be block)");
-            return this;
-        }
+        this.require(this.registry == Registry.BLOCK, "Calling RegistryThing#withItem requires EntityType");
         RegistryWrapper.register(Registry.ITEM, this.rl, constructor);
         return this;
     }
@@ -85,11 +88,8 @@ public class RegistryThing<T> implements Supplier<T> {
      * Binds attributes to your EntityType. May only be called if the entity extends LivingEntity.
      */
     public RegistryThing<T> withAttributes(Supplier<AttributeSupplier.Builder> builder){
-        if (this.registry != Registry.ENTITY_TYPE){
-            LOGGER.error("Cannot call RegistryThing#withAttributes for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
-            return this;
-        }
-        if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withAttributes but WrapperLib EntityHelper is missing.");
+        this.require(this.registry == Registry.ENTITY_TYPE, "Calling RegistryThing#withRenderer requires EntityType");
+        this.require(Available.ENTITY_HELPER.get(), "Called RegistryThing#withAttributes but WrapperLib EntityHelper is missing.");
 
         EntityHelper.attributes(() -> (EntityType<? extends LivingEntity>) this.get(), builder);
         return this;
@@ -103,12 +103,9 @@ public class RegistryThing<T> implements Supplier<T> {
      * @param <E> the type of entity we are
      */
     public <E extends Entity> RegistryThing<T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> provider){
-        if (this.registry != Registry.ENTITY_TYPE){
-            LOGGER.error("Cannot call RegistryThing#withRenderer for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
-            return this;
-        }
-        if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withRenderer but WrapperLib EntityHelper is missing.");
-        if (!Available.PLATFORM_HELPER.get()) throw new RuntimeException("Called RegistryThing#withRenderer but WrapperLib PlatformHelper is missing.");
+        this.require(this.registry == Registry.ENTITY_TYPE, "Calling RegistryThing#withRenderer requires EntityType");
+        this.require(Available.ENTITY_HELPER.get(), "Called RegistryThing#withRenderer but WrapperLib EntityHelper is missing.");
+        this.require(Available.PLATFORM_HELPER.get(), "Called RegistryThing#withRenderer but WrapperLib PlatformHelper is missing.");
 
         if (PlatformHelper.isDedicatedServer()) return this;
         EntityHelper.renderer(() -> (EntityType<? extends E>) this.get(), (ctx) -> provider.get().apply(ctx));
@@ -126,14 +123,20 @@ public class RegistryThing<T> implements Supplier<T> {
      * Creates a SpawnEggItem for your EntityType. May only be called if the entity extends Mob.
      */
     public RegistryThing<T> withSpawnEgg(int colourA, int colourB, Item.Properties props){
-        if (this.registry != Registry.ENTITY_TYPE){
-            LOGGER.error("Cannot call RegistryThing#withSpawnEgg for " + this.rl + " (" + this.registry.key().location().getPath() + ", should be entity type)");
-            return this;
-        }
-        if (!Available.ENTITY_HELPER.get()) throw new RuntimeException("Called RegistryThing#withSpawnEgg but WrapperLib EntityHelper is missing.");
+        this.require(this.registry == Registry.ENTITY_TYPE, "Calling RegistryThing#withSpawnEgg requires EntityType");
+        this.require(Available.ENTITY_HELPER.get(), "Called RegistryThing#withSpawnEgg but WrapperLib EntityHelper is missing.");
 
         Supplier<Item> egg = () -> EntityHelper.getSpawnEggConstructor().create(() -> (EntityType<? extends Mob>) this.get(), colourA, colourB, props);
         RegistryWrapper.register(Registry.ITEM, new ResourceLocation(this.rl.getNamespace(), this.rl.getPath() + "_spawn_egg"), egg);
         return this;
+    }
+
+
+    protected void require(boolean flag, String msg){
+        if (!flag){
+            msg += " (" + this.rl + " " + this.registry.key() + ")";
+            LOGGER.error(msg);
+            WrapperLibException.maybeThrow(msg);
+        }
     }
 }

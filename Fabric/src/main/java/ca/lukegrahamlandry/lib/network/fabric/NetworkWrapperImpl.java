@@ -20,6 +20,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class NetworkWrapperImpl implements IEventCallbacks {
     private static MinecraftServer SERVER;
@@ -41,12 +42,12 @@ public class NetworkWrapperImpl implements IEventCallbacks {
     }
 
     @Override
-    public void onServerStarting(MinecraftServer server) {
+    public void onServerStarting(@NotNull MinecraftServer server) {
         SERVER = server;
     }
 
     @Override
-    public void onServerStopped(MinecraftServer server) {
+    public void onServerStopped(@NotNull MinecraftServer server) {
         SERVER = null;
     }
 

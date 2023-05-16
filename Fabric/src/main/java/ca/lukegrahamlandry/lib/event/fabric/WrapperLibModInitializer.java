@@ -11,7 +11,7 @@ package ca.lukegrahamlandry.lib.event.fabric;
 
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.base.event.EventWrapper;
-import ca.lukegrahamlandry.lib.config.EventCallbacks;
+import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import ca.lukegrahamlandry.lib.keybind.KeybindTickCallbacks;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -38,6 +38,6 @@ public class WrapperLibModInitializer implements ModInitializer {
                             p -> KeybindTickCallbacks.onServerPlayerTick(p)));  // if you use method reference it tries to class load LocalPlayer, idk man
 
         if (Available.CONFIG.get())
-            ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, resourceManager) -> EventCallbacks.onReloadCommand());
+            ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, resourceManager) -> EventWrapper.get().forEach(IEventCallbacks::onReloadCommand));
     }
 }

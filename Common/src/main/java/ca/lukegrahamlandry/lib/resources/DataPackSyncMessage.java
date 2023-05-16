@@ -21,13 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DataPackSyncMessage implements ClientSideHandler {
+class DataPackSyncMessage implements ClientSideHandler {
     static Logger LOGGER = LoggerFactory.getLogger(DataPackSyncMessage.class);
 
     String value;
     String directory;
 
-    public DataPackSyncMessage(ResourcesWrapper<?> wrapper){
+    DataPackSyncMessage(ResourcesWrapper<?> wrapper){
         this.directory = wrapper.directory;
 
         // encode here using ResourcesWrapper#getGson instead of allowing the object to be encoded by the packet module's gson instance

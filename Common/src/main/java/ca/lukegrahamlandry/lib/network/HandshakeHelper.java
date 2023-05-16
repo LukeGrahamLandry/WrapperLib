@@ -9,24 +9,25 @@
 
 package ca.lukegrahamlandry.lib.network;
 
+import ca.lukegrahamlandry.lib.base.SafeClientHelper;
 import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class HandshakeHelper implements IEventCallbacks {
+class HandshakeHelper implements IEventCallbacks {
     private static final HashMap<String, ModProtocol> ACTIVE_VERSIONS = new HashMap<>();
     public static final HashMap<String, Predicate<String>> CLIENT_VERSION_CHECKERS = new HashMap<>();
     public static final HashMap<String, Predicate<String>> SERVER_VERSION_CHECKERS = new HashMap<>();
 
-    public static void add(ModProtocol protocol) {
+    public static void add(@NotNull ModProtocol protocol) {
         ACTIVE_VERSIONS.put(protocol.modid, protocol);
     }
 
@@ -39,7 +40,7 @@ public class HandshakeHelper implements IEventCallbacks {
     }
 
     @Override
-    public void onPlayerLoginServer(Player player) {
+    public void onPlayerLoginServer(@NotNull Player player) {
         new HandshakeMessage(ACTIVE_VERSIONS.values()).sendToClient((ServerPlayer) player);
     }
 
@@ -49,7 +50,7 @@ public class HandshakeHelper implements IEventCallbacks {
     }
 
     @Override
-    public void onServerStarting(MinecraftServer server) {
+    public void onServerStarting(@NotNull MinecraftServer server) {
         logProtocolVersions();
     }
 
@@ -61,7 +62,7 @@ public class HandshakeHelper implements IEventCallbacks {
 
         @Override
         public void handle() {
-            boolean accepted = this.validate(CLIENT_VERSION_CHECKERS, (msg) -> Minecraft.getInstance().player.connection.getConnection().disconnect(msg), "client");
+            boolean accepted = this.validate(CLIENT_VERSION_CHECKERS, (msg) -> SafeClientHelper.getMinecraft().player.connection.getConnection().disconnect(msg), "client");
             if (accepted){
                 NetworkWrapper.LOGGER.info("client accepts server's mod protocol versions");
                 new HandshakeMessage(ACTIVE_VERSIONS.values()).sendToServer();

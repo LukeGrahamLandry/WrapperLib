@@ -19,6 +19,8 @@ import ca.lukegrahamlandry.lib.data.impl.PlayerDataWrapper;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,7 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
      * Mark the DataWrapper to be synced to all clients.
      */
     public S synced(){
-        if (!Available.NETWORK.get()) throw new RuntimeException("Called DataWrapper#synced but WrapperLib Network module is missing.");
+        this.require(Available.NETWORK.get(), "Called DataWrapper#synced but WrapperLib Network module is missing.");
         this.shouldSync = true;
         return (S) this;
     }
@@ -80,7 +82,7 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
      * Set the location to be used for your data file.
      * If saved, the file will be [namespace]/[path]-[side].[ext]
      */
-    public S named(ResourceLocation name){
+    public S named(@NotNull ResourceLocation name){
         this.dir(name.getNamespace());
         this.named(name.getPath());
         return (S) this;
@@ -89,7 +91,7 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
     /**
      * @param name the name of the DataWrapper. This will be used for the filename if saved and for matching instances when syncing.
      */
-    public S named(String name){
+    public S named(@NotNull String name){
         this.name = JsonHelper.safeFileName(name);
         this.updateLogger();
         return (S) this;
@@ -98,7 +100,7 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
     /**
      * @param subDirectory the category name of the DataWrapper. This will be used as the folder if saved and for matching instances when syncing.
      */
-    public S dir(String subDirectory){
+    public S dir(@NotNull String subDirectory){
         this.subDirectory = JsonHelper.safeFileName(subDirectory);
         this.updateLogger();
         return (S) this;
@@ -107,7 +109,7 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
     /**
      * @param fileExtension the file extension to be used when writing to disk.
      */
-    public S ext(String fileExtension){
+    public S ext(@NotNull String fileExtension){
         this.fileExtension = fileExtension;
         return (S) this;
     }
@@ -162,10 +164,12 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
     @InternalUseOnly
     public abstract void forget();
 
+    @NotNull
     public String getName() {
         return this.name;
     }
 
+    @Nullable
     public String getSubDirectory() {
         return this.subDirectory;
     }
@@ -183,6 +187,7 @@ public abstract class DataWrapper<T, S extends DataWrapper<T, S>> extends Wrappe
         return id;
     }
 
+    @NotNull
     public static String forDisplay(Path path){
         try {
             return path.toAbsolutePath().toFile().getCanonicalPath();

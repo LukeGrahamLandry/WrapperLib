@@ -15,6 +15,6 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Indicates a class that is not complete and should not be used yet.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface WorkInProgress {
 }

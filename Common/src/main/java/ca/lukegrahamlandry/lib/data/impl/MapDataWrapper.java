@@ -18,6 +18,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,7 +57,8 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
 
     // API
 
-    public V get(K key){
+    @Nullable
+    public V get(@NotNull K key){
         return this.getById(this.keyToId(key));
     }
 
@@ -63,7 +66,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
      * Same as setDirty() but only syncs data for the one instance that changed. Results in a smaller packet being sent.
      * If splitFiles or lazyLoaded only the files for the dirty entries will be written.
      */
-    public void setDirty(K key){
+    public void setDirty(@NotNull K key){
         this.isDirty = true;
         this.dirtyEntries.add(keyToId(key));
         if (this.shouldSync) this.sync(key);
@@ -78,7 +81,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
     /**
      * Resets the data for one entry to default values.
      */
-    public void remove(K key){
+    public void remove(@NotNull K key){
         this.data.remove(this.keyToId(key));
         this.fileHandler.clear(this.keyToId(key));
         this.setDirty(key);
@@ -100,20 +103,20 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
         this.fileHandler = new SingleFileHandler<>(this);
     }
 
-    public abstract I keyToId(K key);
+    @NotNull
+    public abstract I keyToId(@NotNull K key);
 
     /**
      *
      * @param id the toString value of the original id object
      * @return a recreation of the original id object with the same hashcode
      */
-    public abstract I stringToId(String id);
+    @NotNull
+    public abstract I stringToId(@NotNull String id);
 
-    public V getById(I id){
-        if (this.data == null) {
-            this.getLogger().error("cannot call DataWrapper get (a) before server startup (b) on client if unsynced (c) on client before sync");
-            return null;
-        }
+    @NotNull
+    public V getById(@NotNull I id){
+        this.require(this.data != null, "cannot call DataWrapper get (a) before server startup (b) on client if unsynced (c) on client before sync");
 
         // if key not found, try to load it if lazy, otherwise use default.
         if (!data.containsKey(id)) {
@@ -126,11 +129,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
 
     @Override
     public void save() {
-        if (server == null) {
-            String msg = "cannot call DataWrapper#save (a) after server shutdown (b) on client";
-            this.getLogger().error(msg);
-            throw new RuntimeException(msg);
-        }
+        this.require(server != null, "cannot call DataWrapper#save (a) after server shutdown (b) on client");
         this.fileHandler.save();
         this.isDirty = false;
         this.dirtyEntries.clear();
@@ -138,25 +137,20 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
 
     @Override
     public void load() {
-        if (server == null) {
-            String msg = "cannot call DataWrapper#load (a) before server startup (b) on client";
-            this.getLogger().error(msg);
-            throw new RuntimeException(msg);
-        }
-
+        this.require(server != null, "cannot call DataWrapper#load (a) before server startup (b) on client");
         this.data = new HashMap<>();
         this.fileHandler.load();
     }
 
     @Override
     public void sync() {
-        if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
-        else new FullMapDataSyncMessage(this).sendToAllClients();
+        this.require(this.shouldSync, "called DataWrapper#sync but shouldSync=false");
+        new FullMapDataSyncMessage(this).sendToAllClients();
     }
 
     public void sync(K key) {
-        if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
-        else new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
+        this.require(this.shouldSync, "called DataWrapper#sync but shouldSync=false");
+        new SingleEntryMapDataSyncMessage(this, this.keyToId(key)).sendToAllClients();
     }
 
     @Override
@@ -164,7 +158,7 @@ public abstract class MapDataWrapper<K, I, V, S extends MapDataWrapper<K, I, V, 
         this.data = null;
     }
 
-    public boolean isDirty(I id) {
+    public boolean isDirty(@NotNull I id) {
         return this.dirtyEntries.contains(id);
     }
 

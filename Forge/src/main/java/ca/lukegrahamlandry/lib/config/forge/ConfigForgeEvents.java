@@ -9,7 +9,8 @@
 
 package ca.lukegrahamlandry.lib.config.forge;
 
-import ca.lukegrahamlandry.lib.config.EventCallbacks;
+import ca.lukegrahamlandry.lib.base.event.EventWrapper;
+import ca.lukegrahamlandry.lib.base.event.IEventCallbacks;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -18,6 +19,6 @@ import net.minecraftforge.fml.common.Mod;
 public class ConfigForgeEvents {
     @SubscribeEvent
     public static void reloadConfigs(AddReloadListenerEvent event){
-        EventCallbacks.onReloadCommand();
+        EventWrapper.get().forEach(IEventCallbacks::onReloadCommand);
     }
 }

@@ -18,10 +18,13 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.util.*;
@@ -29,39 +32,50 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> implements PreparableReloadListener {
+    static MinecraftServer server = null;
+
     /**
      * Load information from a data pack on the logical server.
      */
-    public static <T> ResourcesWrapper<T> data(Class<T> clazz, String directory){
+    public static <T> ResourcesWrapper<T> data(@NotNull Class<T> clazz, @NotNull String directory){
         return new ResourcesWrapper<>(TypeToken.get(clazz), directory, true);
     }
 
     /**
      * Load information from a resource pack on the logical client.
      */
-    public static <T> ResourcesWrapper<T> assets(Class<T> clazz, String directory){
+    public static <T> ResourcesWrapper<T> assets(@NotNull Class<T> clazz, @NotNull String directory){
         return new ResourcesWrapper<>(TypeToken.get(clazz), directory, false);
     }
 
-    public ResourcesWrapper<T> mergeWith(MergeRule<T> rule){
+    public ResourcesWrapper<T> mergeWith(@NotNull MergeRule<T> rule){
         this.mergeRule = rule;
         return this;
     }
 
+    /**
+     * The `action` is called whenever the resources are loaded.
+     * data -> logical server: first load or reload command used
+     * assets -> logical client:
+     */
     public ResourcesWrapper<T> onLoad(Runnable action){
         this.onLoadAction = action;
         return this;
     }
 
+    /**
+     *  The `action` will be called when a sync packet is received.
+     *  data -> logical client: the player joined or someone used the reload command
+     */
     public ResourcesWrapper<T> onReceiveSync(Runnable action){
-        if (!this.shouldSync) throw new RuntimeException("ResourcesWrapper#onReceiveSync may only be called for synced data packs");
+        this.require(this.shouldSync, "ResourcesWrapper#onReceiveSync may only be called for synced data packs");
         this.onReceiveSyncAction = action;
         return this;
     }
 
     public ResourcesWrapper<T> synced(){
-        if (!this.isServerSide) throw new RuntimeException("ResourcesWrapper#synced may only be called for data packs, NOT resource packs.");
-        if (!Available.NETWORK.get()) throw new RuntimeException("Called ResourcesWrapper#synced but WrapperLib Network module is missing.");
+        this.require(this.isServerSide, "ResourcesWrapper#synced may only be called for data packs, NOT resource packs.");
+        this.require(Available.NETWORK.get(), "Called ResourcesWrapper#synced but WrapperLib Network module is missing.");
 
         this.shouldSync = true;
         return this;
@@ -69,19 +83,15 @@ public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> imp
 
     // API
 
+    @NotNull
     public Set<Map.Entry<ResourceLocation, T>> entrySet(){
-        if (this.data == null){
-            this.getLogger().error("Cannot call ResourcesWrapper#entrySet before resource listeners are loaded");
-            return null;
-        }
+        this.require(this.data != null, "Cannot call ResourcesWrapper#entrySet before resource listeners are loaded");
         return data.entrySet();
     }
 
+    @Nullable
     public T get(ResourceLocation id){
-        if (this.data == null){
-            this.getLogger().error("Cannot call ResourcesWrapper#get before resource listeners are loaded");
-            return null;
-        }
+        this.require(this.data != null, "Cannot call ResourcesWrapper#entrySet before resource listeners are loaded");
         return data.get(id);
     }
 
@@ -156,7 +166,7 @@ public class ResourcesWrapper<T> extends WrappedData<T, ResourcesWrapper<T>> imp
             this.data.put(id, finalValue);
         }
         this.onLoadAction.run();
-        if (this.shouldSync) new DataPackSyncMessage(this).sendToAllClients();
+        if (this.shouldSync && server != null) new DataPackSyncMessage(this).sendToAllClients();
         this.getLogger().info("Loaded " + this.data.size() + " entries.");
     }
 

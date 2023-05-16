@@ -9,11 +9,14 @@
 
 package ca.lukegrahamlandry.lib.keybind;
 
+import ca.lukegrahamlandry.lib.WrapperLibException;
 import ca.lukegrahamlandry.lib.base.Available;
 import ca.lukegrahamlandry.lib.helper.PlatformHelper;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +45,7 @@ public class KeybindWrapper {
      * This will cause the press, release, and hold actions to fire on the logical server as well.
      */
     public KeybindWrapper synced(){
-        if (!Available.NETWORK.get()) throw new RuntimeException("Called KeybindWrapper#synced but WrapperLib Network module is missing.");
+        if (!Available.NETWORK.get()) WrapperLibException.maybeThrow("Called KeybindWrapper#synced but WrapperLib Network module is missing.");
         this.shouldSync = true;
         return this;
     }
@@ -50,7 +53,7 @@ public class KeybindWrapper {
     /**
      * @param action will be called when a player initially presses the key.
      */
-    public KeybindWrapper onPress(Consumer<Player> action){
+    public KeybindWrapper onPress(Consumer<@NotNull Player> action){
         this.onPressAction = action;
         return this;
     }
@@ -58,7 +61,7 @@ public class KeybindWrapper {
     /**
      * @param action will be called when a player releases the key.
      */
-    public KeybindWrapper onRelease(Consumer<Player> action){
+    public KeybindWrapper onRelease(Consumer<@NotNull Player> action){
         this.onReleaseAction = action;
         return this;
     }
@@ -66,14 +69,14 @@ public class KeybindWrapper {
     /**
      * @param action will be called every tick while a player holds down the key.
      */
-    public KeybindWrapper onHeldTick(Consumer<Player> action){
+    public KeybindWrapper onHeldTick(Consumer<@NotNull Player> action){
         this.onHeldTickAction = action;
         return this;
     }
 
     // API
 
-    public boolean isPressed(Player player){
+    public boolean isPressed(@Nullable Player player){
         if (player == null || !player.isAlive()) return false;
         return pressed.getOrDefault(player.getUUID(), false);
     }
@@ -88,11 +91,11 @@ public class KeybindWrapper {
     boolean shouldSync = false;
     Map<UUID, Boolean> pressed = new HashMap<>();
     KeyMapping mapping = null;
-    public KeybindWrapper(String nameTranslationId, int defaultKey, String categoryTranslationId){
+    public KeybindWrapper(@NotNull String nameTranslationId, int defaultKey, @NotNull String categoryTranslationId){
         this.id = nameTranslationId;
         ALL.put(this.id, this);
 
-        if (!Available.PLATFORM_HELPER.get()) throw new RuntimeException("Tried to create KeybindWrapper but WrapperLib PlatformHelper is missing.");
+        if (!Available.PLATFORM_HELPER.get()) WrapperLibException.maybeThrow("Tried to create KeybindWrapper but WrapperLib PlatformHelper is missing.");
         if (PlatformHelper.isDedicatedServer()) return;
 
         this.mapping = new KeyMapping(nameTranslationId, defaultKey, categoryTranslationId);
@@ -105,7 +108,7 @@ public class KeybindWrapper {
      * This may ONLY be called on the CLIENT.
      */
     @ExpectPlatform
-    public static void register(KeyMapping key){
+    public static void register(@NotNull KeyMapping key){
         throw new AssertionError();
     }
 }

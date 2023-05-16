@@ -14,6 +14,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
@@ -27,6 +28,7 @@ public class RegistryWrapper<T> {
      * @param modid will be used as the path of your object's registry name.
      * @return a RegistryWrapper that allows you to register new game objects.
      */
+    @NotNull
     public static <T> RegistryWrapper<T> create(Registry<T> vanillaRegistry, String modid){
         return new RegistryWrapper<>(vanillaRegistry, modid);
     }
@@ -37,6 +39,7 @@ public class RegistryWrapper<T> {
      * @param constructor A supplier for your object. You cannot use a direct instance because Forge is weird.
      * @return A supplier for your object that will only resolve after registration has been handled (which is immediately on fabric).
      */
+    @NotNull
     public <O extends T> RegistryThing<O> register(String name, Supplier<O> constructor){
         ResourceLocation rl = new ResourceLocation(this.modid, name);
         register(this.registry, rl, constructor);
@@ -55,6 +58,7 @@ public class RegistryWrapper<T> {
     /**
      * Register a new entity type without manually calling EntityType.Builder#build
      */
+    @NotNull
     public <E extends Entity> RegistryThing<EntityType<E>> register(String name, EntityType.Builder<E> entityBuilder){
         ResourceLocation rl = new ResourceLocation(this.modid, name);
         register(this.registry, rl, () -> (T) entityBuilder.build(name));
@@ -74,6 +78,7 @@ public class RegistryWrapper<T> {
      * Preform platform specific registration of a single object.
      */
     @ExpectPlatform
+    @NotNull
     public static <T> void register(Registry<T> registry, ResourceLocation rl, Supplier<? extends T> constructor) {
         throw new AssertionError();
     }

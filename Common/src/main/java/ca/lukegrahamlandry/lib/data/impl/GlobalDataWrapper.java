@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.world.level.storage.LevelResource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -30,10 +32,14 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
     }
 
     @Override
+    @NotNull
     public T get() {
-        if (this.value == null) this.getLogger().error("cannot call DataWrapper#get (a) before server startup (b) on client if unsynced");
-
+        this.require(this.value != null, "cannot call DataWrapper#get (a) before server startup (b) on client if unsynced");
         return this.value;
+    }
+
+    public boolean isLoaded(){
+        return this.value == null;
     }
 
     /**
@@ -46,11 +52,7 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
 
     @Override
     public void load() {
-        if (server == null) {
-            String msg = "cannot call DataWrapper#load (a) before server startup (b) on client";
-            this.getLogger().error(msg);
-            throw new RuntimeException(msg);
-        }
+        this.require(server != null, "cannot call DataWrapper#load (a) before server startup (b) on client if unsynced");
 
         if (!this.getFilePath().toFile().exists()) {
             // first world load. no data will be found
@@ -63,9 +65,10 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
             this.value = this.getGson().fromJson(reader, this.getValueType());
             reader.close();
         } catch (IOException | JsonSyntaxException e) {
-            String msg = "failed to load data from " + forDisplay(this.getFilePath());
+            String msg = "failed to load data from " + forDisplay(this.getFilePath()) + ". Using default instead.";
             this.getLogger().error(msg);
             e.printStackTrace();
+            this.value = this.getDefaultValue();
         }
     }
 
@@ -85,8 +88,8 @@ public class GlobalDataWrapper<T> extends DataWrapper<T, GlobalDataWrapper<T>> i
 
     @Override
     public void sync() {
-        if (!this.shouldSync) this.getLogger().error("called DataWrapper#sync but shouldSync=false");
-        else new GlobalDataSyncMessage(this).sendToAllClients();
+        this.require(this.shouldSync, "called DataWrapper#sync but shouldSync=false");
+        new GlobalDataSyncMessage(this).sendToAllClients();
     }
 
     @Override

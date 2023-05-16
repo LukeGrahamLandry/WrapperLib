@@ -20,7 +20,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public interface ClientSideHandler {
     /**
      * The method to be called when an object of this type is received, through the network, on the client.
-     * It is safe to call client only code here. Although the object will be initialized on the server, this method will never be called there so client classes referenced here will not be loaded.
+     * Although the object will be initialized on the server, this method will never be called there so client classes referenced here will not be loaded.
+     * However, forge seems to proactively class load things in a way I don't fully understand, so you should avoid directly referencing client only classes here.
+     * For example, delegate to another class if you need to call Minecraft.getInstance()
      */
     void handle();
 

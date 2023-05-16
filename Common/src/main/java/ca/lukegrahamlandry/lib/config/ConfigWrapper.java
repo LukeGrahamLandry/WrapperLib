@@ -17,7 +17,8 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
-import org.slf4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -35,7 +36,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * The config will be loaded from world/serverconfig
      * If the file is missing we check ./defaultconfigs then ./config before using default values.
      */
-    public static <T> ConfigWrapper<T> synced(Class<T> clazz){
+    public static <T> ConfigWrapper<T> synced(@NotNull Class<T> clazz){
         if (!Available.NETWORK.get()) throw new RuntimeException("Called ConfigWrapper#synced but WrapperLib Network module is missing.");
         return new ConfigWrapper<>(clazz, Side.SYNCED);
     }
@@ -45,7 +46,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * The config will ONLY be available on the logical CLIENT.
      * The config will be loaded from ./config
      */
-    public static <T> ConfigWrapper<T> client(Class<T> clazz){
+    public static <T> ConfigWrapper<T> client(@NotNull Class<T> clazz){
         return new ConfigWrapper<>(clazz, Side.CLIENT);
     }
 
@@ -55,7 +56,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * The config will be loaded from world/serverconfig
      * If the file is missing we check ./defaultconfigs then ./config before using default values.
      */
-    public static <T> ConfigWrapper<T> server(Class<T> clazz){
+    public static <T> ConfigWrapper<T> server(@NotNull Class<T> clazz){
         return new ConfigWrapper<>(clazz, Side.SERVER);
     }
 
@@ -63,7 +64,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * Set the location to be used for your config file.
      * The file will be [namespace]/[path]-[side].[ext]
      */
-    public ConfigWrapper<T> named(ResourceLocation name){
+    public ConfigWrapper<T> named(@NotNull ResourceLocation name){
         this.dir(name.getNamespace());
         this.named(name.getPath());
         return this;
@@ -73,7 +74,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * Set the name to be used for your config file (and log messages).
      * The file will be [name]-[side].[ext]
      */
-    public ConfigWrapper<T> named(String name){
+    public ConfigWrapper<T> named(@NotNull String name){
         this.name = JsonHelper.safeFileName(name);
         this.updateLogger();
         return this;
@@ -82,7 +83,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
     /**
      * @param subDirectory the category name of the ConfigWrapper. This will be used as the folder and for matching instances when syncing.
      */
-    public ConfigWrapper<T> dir(String subDirectory){
+    public ConfigWrapper<T> dir(@NotNull String subDirectory){
         this.subDirectory = JsonHelper.safeFileName(subDirectory);
         this.updateLogger();
         return this;
@@ -94,7 +95,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * The file will be [name]-[side].[ext]
      * Defaults to json5, other reasonable options might be json, cfg, data, config
      */
-    public ConfigWrapper<T> ext(String fileExtension){
+    public ConfigWrapper<T> ext(@NotNull String fileExtension){
         this.fileExtension = fileExtension;
         return this;
     }
@@ -136,7 +137,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      *            Examples that work: numbers, String, UUID, ResourceLocation
      * @param <M> {@code Map<K, T>}
      */
-    public <K, M extends Map<K, T>> ConfigWrapper<M> mapOf(Class<K> keyClass){
+    public <K, M extends Map<K, T>> ConfigWrapper<M> mapOf(@NotNull Class<K> keyClass){
         ALL.remove(this);
         TypeToken<M> type = (TypeToken<M>) TypeToken.getParameterized(HashMap.class, keyClass, this.getValueType());
         ConfigWrapper<M> newWrapper = new ConfigWrapper<>(type, this.side);
@@ -154,11 +155,14 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * Retrieve the current config values as an instance of T.
      * Will be null for server/synced configs if called before loaded.
      */
+    @Nullable
     @Override
     public T get() {
         if (this.value == null) {
             if (this.side == Side.CLIENT) this.load();
-            else this.getLogger().error("Cannot read server/synced config before the server starts or after it stops (or synced config from client before player receives sync packet)");
+            else {
+                this.reportError("Cannot read server/synced config before the server starts or after it stops (or synced config from client before player receives sync packet)");
+            }
         }
         return this.value;
     }
@@ -180,6 +184,7 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
      * Requires Packets module
      */
     public void sync() {
+
         if (this.side != Side.SYNCED) this.getLogger().error("called ConfigWrapper#sync but side=" + this.side + ". Ignoring.");
         else new ConfigSyncMessage(this).sendToAllClients();
     }
@@ -218,12 +223,12 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
     private String subDirectory = null;
     private Runnable onLoadAction = () -> {};
 
-    private ConfigWrapper(Class<T> clazz, Side side){
+    private ConfigWrapper(@NotNull Class<T> clazz, @NotNull Side side){
         this(TypeToken.get(clazz), side);
         this.named(defaultName(clazz));
     }
 
-    public ConfigWrapper(TypeToken<T> type, Side side){
+    public ConfigWrapper(@NotNull TypeToken<T> type, @NotNull Side side){
         super(type);
         this.side = side;
         this.fileExtension = "json5";
@@ -238,11 +243,6 @@ public class ConfigWrapper<T> extends WrappedData<T, ConfigWrapper<T>> implement
     @InternalUseOnly
     void set(Object v){
         this.value = (T) v;
-        this.loaded = true;
-    }
-
-    public boolean isLoaded(){
-        return this.loaded;
     }
 
     public static List<Path> defaultConfigFolders = Arrays.asList(Paths.get("defaultconfigs"), Paths.get("config"));

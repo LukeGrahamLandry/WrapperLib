@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class TileFileDataWrapper<V> extends LevelDataWrapper<Map<BlockPos, V>> {
         super((TypeToken<Map<BlockPos, V>>) TypeToken.getParameterized(HashMap.class, BlockPos.class, clazz));
     }
 
+    @Nullable
     public V get(BlockEntity key) {
         if (!key.hasLevel()) return null;
         return get(key.getLevel()).get(key.getBlockPos());

@@ -11,6 +11,7 @@ package ca.lukegrahamlandry.lib.data.impl;
 
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -24,12 +25,12 @@ public class PlayerDataWrapper<T> extends MapDataWrapper<Player, UUID, T, Player
     }
 
     @Override
-    public UUID keyToId(Player key) {
+    public @NotNull UUID keyToId(@NotNull Player key) {
         return key.getUUID();
     }
 
     @Override
-    public UUID stringToId(String id) {
+    public @NotNull UUID stringToId(@NotNull String id) {
         return UUID.fromString(id);
     }
 }

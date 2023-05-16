@@ -16,6 +16,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +36,17 @@ public abstract class NbtDataWrapper<O, V, S extends NbtDataWrapper<O, V, S>> ex
         return (S) this;
     }
 
-    public S named(ResourceLocation name){
+    public S named(@NotNull ResourceLocation name){
         return this.named(name.toString());
     }
 
     // API
 
-    public V get(O obj){
+    /**
+     * Returns the default value if not set already.
+     */
+    @NotNull
+    public V get(@NotNull O obj){
         int hashcode = this.getHashCode(obj);
         if (previousDataObjects.containsKey(hashcode)) return previousDataObjects.get(hashcode);
 
@@ -62,17 +68,17 @@ public abstract class NbtDataWrapper<O, V, S extends NbtDataWrapper<O, V, S>> ex
         return value;
     }
 
-    public void set(O obj, V value){
+    public void set(@NotNull O obj, @NotNull V value){
         String data = this.getGson().toJson(value);
         this.getSharedTag(obj).putString(this.getFullTagKey(), data);
         previousDataObjects.put(this.getHashCode(obj), value);
     }
 
-    public void setDirty(O obj){
+    public void setDirty(@NotNull O obj){
         this.set(obj, previousDataObjects.get(this.getHashCode(obj)));
     }
 
-    public void remove(O obj){
+    public void remove(@NotNull O obj){
         previousDataObjects.remove(this.getHashCode(obj));
         this.getSharedTag(obj).remove(this.getFullTagKey());
     }
@@ -91,6 +97,7 @@ public abstract class NbtDataWrapper<O, V, S extends NbtDataWrapper<O, V, S>> ex
         return this.name;
     }
 
+    @NotNull
     protected abstract CompoundTag getSharedTag(O obj);
 
     protected abstract int getHashCode(O obj);

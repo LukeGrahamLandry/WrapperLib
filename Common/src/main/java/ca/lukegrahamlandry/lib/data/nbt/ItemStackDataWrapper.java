@@ -12,6 +12,7 @@ package ca.lukegrahamlandry.lib.data.nbt;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -20,13 +21,14 @@ public class ItemStackDataWrapper<V> extends NbtDataWrapper<ItemStack, V, ItemSt
     public static final String ID_TAG_KEY = "_id";
     private static final Random rand = new Random();
 
-    public ItemStackDataWrapper(TypeToken<V> type) {
+    public ItemStackDataWrapper(@NotNull TypeToken<V> type) {
         super(type);
     }
 
-    protected CompoundTag getSharedTag(ItemStack obj){
+    protected @NotNull CompoundTag getSharedTag(ItemStack obj){
         if (!obj.hasTag()) obj.setTag(obj.getOrCreateTag());
         CompoundTag tag = obj.getTag();
+        assert tag != null;
         if (!tag.contains(PARENT_TAG_KEY)) tag.put(PARENT_TAG_KEY, new CompoundTag());
         return tag.getCompound(PARENT_TAG_KEY);
     }

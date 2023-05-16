@@ -11,25 +11,23 @@ package ca.lukegrahamlandry.lib.base.event;
 
 import ca.lukegrahamlandry.lib.base.InternalUseOnly;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
+import org.jetbrains.annotations.NotNull;
 
 @InternalUseOnly
 public interface IEventCallbacks {
-    default void onServerStarting(MinecraftServer server) {}
+    default void onServerStarting(@NotNull MinecraftServer server) {}
 
-    default void onServerStopped(MinecraftServer server) {}
+    default void onServerStopped(@NotNull MinecraftServer server) {}
 
-    default void onLevelSave(LevelAccessor level) {}
+    default void onLevelSave(@NotNull LevelAccessor level) {}
 
-    default void onPlayerLoginServer(Player player) {}
+    default void onPlayerLoginServer(@NotNull Player player) {}
 
     default void onClientSetup() {}
 
     default void onInit() {}
 
-    // TODO. needs mixin?
-    // default void onReloadCommand() {}
+    default void onReloadCommand() {}
 }
