@@ -12,6 +12,7 @@ package ca.lukegrahamlandry.examplemod;
 import ca.lukegrahamlandry.examplemod.model.KillTracker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -23,19 +24,19 @@ import net.minecraft.world.item.ItemStack;
 
 public class ExampleEventHandlers {
     public static void onJump(LivingEntity entity){
-        if (entity.level.isClientSide()) return;
+        if (entity.level().isClientSide()) return;
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, ExampleCommonMain.config.get().speedLevel));
     }
 
     public static void onJoin(Player player){
-        if (player.level.isClientSide()) return;
+        if (player.level().isClientSide()) return;
         player.addItem(ExampleCommonMain.config.get().sword);
         System.out.println("This is the configured list.");
         ExampleCommonMain.list_test.get().forEach(System.out::println);
     }
 
     public static void onDeath(LivingEntity entity, DamageSource source){
-        if (entity.level.isClientSide()) return;
+        if (entity.level().isClientSide()) return;
         Entity killer = source.getEntity();
         if (killer instanceof Player){
             Player player = (Player) killer;
@@ -57,9 +58,9 @@ public class ExampleEventHandlers {
         }
     }
 
-    public static void drawOverlay(PoseStack stack) {
+    public static void drawOverlay(GuiGraphics gui) {
         KillTracker kills = ExampleCommonMain.kills.get(Minecraft.getInstance().player);
-        Minecraft.getInstance().font.draw(stack, "Player Kills: " + kills.players, 20, 20, ExampleCommonMain.clientConfig.get().uiColour);
-        Minecraft.getInstance().font.draw(stack, "Mob Kills: " + kills.mobs, 20, 40, ExampleCommonMain.clientConfig.get().uiColour);
+        gui.drawString(Minecraft.getInstance().font, "Player Kills: " + kills.players, 20, 20, ExampleCommonMain.clientConfig.get().uiColour);
+        gui.drawString(Minecraft.getInstance().font, "Mob Kills: " + kills.mobs, 20, 40, ExampleCommonMain.clientConfig.get().uiColour);
     }
 }

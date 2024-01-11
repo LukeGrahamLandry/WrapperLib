@@ -20,6 +20,6 @@ import net.minecraftforge.fml.common.Mod;
 public class KeybindEventListeners {
     @SubscribeEvent
     public static void onServerTick(TickEvent.PlayerTickEvent event){
-        if (!event.player.level.isClientSide() && event.phase == TickEvent.Phase.END) KeybindTickCallbacks.onServerPlayerTick((ServerPlayer) event.player);
+        if (!event.player.level().isClientSide() && event.phase == TickEvent.Phase.END) KeybindTickCallbacks.onServerPlayerTick((ServerPlayer) event.player);
     }
 }

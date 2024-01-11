@@ -47,11 +47,11 @@ public class ExampleCommonMain {
 
         KeybindWrapper.of("float", MOD_ID, InputConstants.KEY_Z).synced()
                 .onHeldTick(player -> {
-                    if (!player.level.isClientSide()) {
+                    if (!player.level().isClientSide()) {
                         player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 20));
                     }
                 }).onRelease(player -> {
-                    if (!player.level.isClientSide()) {
+                    if (!player.level().isClientSide()) {
                         player.removeEffect(MobEffects.LEVITATION);
                     }
                 });

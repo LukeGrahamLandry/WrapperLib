@@ -30,7 +30,7 @@ public class EventCallbacks implements IEventCallbacks {
 
     @Override
     public void onPlayerLoginServer(Player player){
-        if (player.level.isClientSide()) return;
+        if (player.level().isClientSide()) return;
 
         ConfigWrapper.ALL.forEach((config) -> {
             if (config.side == ConfigWrapper.Side.SYNCED) new ConfigSyncMessage(config).sendToClient((ServerPlayer) player);

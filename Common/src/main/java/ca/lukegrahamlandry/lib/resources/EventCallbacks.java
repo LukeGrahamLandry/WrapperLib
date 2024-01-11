@@ -17,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 public class EventCallbacks implements IEventCallbacks {
     @Override
     public void onPlayerLoginServer(Player player){
-        if (player.level.isClientSide()) return;
+        if (player.level().isClientSide()) return;
 
         ResourcesWrapper.ALL.forEach((resources) -> {
             if (resources.shouldSync) new DataPackSyncMessage(resources).sendToClient((ServerPlayer) player);

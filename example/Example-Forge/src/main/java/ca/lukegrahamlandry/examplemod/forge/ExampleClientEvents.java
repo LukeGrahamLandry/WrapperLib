@@ -24,7 +24,7 @@ public class ExampleClientEvents {
     @SubscribeEvent
     public static void drawHud(RenderGuiOverlayEvent.Post event) {
         if (event.getOverlay() == VanillaGuiOverlay.CROSSHAIR.type()) {
-            ExampleEventHandlers.drawOverlay(event.getPoseStack());
+            ExampleEventHandlers.drawOverlay(event.getGuiGraphics());
         }
     }
 }
